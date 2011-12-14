@@ -24,33 +24,34 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from lekatnet.remote import registerRemoteCommandPlugin
-from lekatnet.remote import RemoteCommand
+from tentakel.remote import registerRemoteCommandPlugin
+from tentakel.remote import RemoteCommand
 import time
 import commands
 import random
 import md5
 
 class RSHRemoteCommand(RemoteCommand):
-	"RSH remote execution class"
+  """RSH remote execution class"""
 
-	def __init__(self, destination, params):
-		self.rshpath = params['rsh_path']
-		self.user = params['user']
-		RemoteCommand.__init__(self, destination, params)
-		self.delim = md5.md5(str(random.random())).hexdigest()
+  def __init__(self, destination, params):
+    self.rsh_path = params['rsh_path']
+    self.user = params['user']
+    RemoteCommand.__init__(self, destination, params)
+    self.delim = md5.md5(str(random.random())).hexdigest()
 
-	def _rexec(self, command):
-		s = '%s -l %s %s "%s; echo %s \\$?"' % (self.rshpath, self.user, self.destination, command,self.delim)
-		t1 = time.time()
-		ol = commands.getoutput(s).split('\n')
-		for linenumber, line in enumerate(ol):
-			i = line.find(self.delim)
-			if i != -1:
-				status = line.split(' ')[1]
-				ol.pop(linenumber)
-				break
-		self.duration = time.time() - t1
-		return (int(status), '\n'.join(ol))
+  def _rexec(self, command):
+    s = '%s -l %s %s "%s; echo %s \\$?"' % (
+      self.rsh_path, self.user, self.destination, command,self.delim)
+    t1 = time.time()
+    ol = commands.getoutput(s).split('\n')
+    for line_number, line in enumerate(ol):
+      i = line.find(self.delim)
+      if i != -1:
+        status = line.split(' ')[1]
+        ol.pop(line_number)
+        break
+    self.duration = time.time() - t1
+    return (int(status), '\n'.join(ol))
 
 registerRemoteCommandPlugin('rsh', RSHRemoteCommand)

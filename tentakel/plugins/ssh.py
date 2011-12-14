@@ -1,7 +1,7 @@
 
-# $Id: error.py,v 1.7 2005/03/15 08:11:47 cran Exp $
+# $Id: ssh.py,v 1.4 2005/03/17 21:55:27 cran Exp $
 #
-# Copyright (c) 2002, 2003, 2004, 2005 Sebastian Stark
+# Copyright (c) 2002, 2003, 2004 Sebastian Stark
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions
@@ -24,14 +24,25 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+from tentakel.remote import registerRemoteCommandPlugin
+from tentakel.remote import RemoteCommand
+import time
+import commands
 
-"""error and user notification for tentakel"""
+class SSHRemoteCommand(RemoteCommand):
+  """SSH remote execution class"""
 
-import sys
+  def __init__(self, destination, params):
+    self.sshpath = params['ssh_path']
+    self.user = params['user']
+    RemoteCommand.__init__(self, destination, params)
 
-def err(errstring):
-	sys.stderr.write("tentakel error: %s\n" % errstring)
-	sys.exit(1)
+  def _rexec(self, command):
+    s = '%s %s@%s "%s"' % (self.sshpath, self.user, self.destination, command)
+    t1 = time.time()
+    status, output = commands.getstatusoutput(s)
+    self.duration = time.time() - t1
+    # shift 8 bits right to strip signal number from status
+    return (status >> 8, output)
 
-def warn(warnstring):
-	sys.stderr.write("tentakel: %s\n" % warnstring)
+registerRemoteCommandPlugin('ssh', SSHRemoteCommand)

@@ -15,7 +15,7 @@ setup(
 	license = "BSD",
 	platforms = "All that support threading",
 
-	packages = ["lekatnet", "lekatnet.plugins"],
+	packages = ["tentakel", "tentakel.plugins"],
 	scripts = ["bin/tentakel"],
 	data_files = [	("man/man1", ["tentakel.1"]),
 			("share/doc/tentakel", ["tentakel.conf.example",
