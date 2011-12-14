@@ -1,0 +1,1385 @@
+2005-03-20 16:16  cran
+
+	* py/lekatnet/remote.py: In .run(), wait a bit for _stopEvent.
+	  Makes thread joining much faster.
+
+	  taken from
+	  http://aspn.activestate.com/ASPN/Cookbook/Python/Recipe/65448
+
+2005-03-18 09:36  cran
+
+	* TODO, py/lekatnet/plugins/__init__.py: ignore missing user plugin
+	  dir
+
+2005-03-18 09:22  cran
+
+	* ChangeLog: generate ChangeLog from cvs, more information.
+
+2005-03-18 09:17  cran
+
+	* PLUGINS: oops. (%d -> %t)
+
+2005-03-17 22:58  cran
+
+	* tentakel.1, tentakel.1.html: mention PLUGINS document in the
+	  manual page
+
+2005-03-17 22:55  cran
+
+	* Makefile, PLUGINS, py/setup.py: Plugin documentation
+
+2005-03-17 22:55  cran
+
+	* py/lekatnet/plugins/: rsh.py, ssh.py: fix imports
+
+2005-03-17 21:51  cran
+
+	* Makefile: include lekatnet/plugins/__init__.py in release tarball
+
+2005-03-17 21:45  cran
+
+	* ChangeLog, py/lekatnet/remote.py:
+	   - update ChangeLog
+	   - remove unit tests from remote.py. They do not work with
+	  plugins
+	     and bseides this they're shit.
+
+2005-03-17 21:39  cran
+
+	* py/: tentakel, lekatnet/remote.py: use config.__user_dir
+
+2005-03-17 21:25  cran
+
+	* tentakel.1, tentakel.1.html, py/lekatnet/config.py,
+	  py/lekatnet/remote.py, py/lekatnet/plugins/__init__.py,
+	  py/lekatnet/plugins/rsh.py, py/lekatnet/plugins/ssh.py: monster
+	  commit, bring the plugin importer into an acceptable state.
+
+	   - do not use execfile to source plugins, it's ugly. use "from
+	  plugins import *" instead
+	   - put all importer logic in plugins/__init__.py
+	   - mention plugins in the manual page
+	   - much better docstring for remote.py, explain concepts
+
+2005-03-17 02:57  cran
+
+	* py/lekatnet/plugins/__init__.py: forgot to check this in
+
+2005-03-17 02:56  cran
+
+	* py/lekatnet/remote.py:
+	  make plugin imports a bit nicer
+
+	   - make the plugin registry a private attribute
+	   - error when a plugin class does not inherit from RemoteCommand
+	   - user plugins get loaded last, so one can override standard
+	  methods
+
+2005-03-17 01:12  cran
+
+	* py/: setup.py, lekatnet/remote.py, lekatnet/plugins/rsh.py,
+	  lekatnet/plugins/ssh.py:
+	  First shot at plugin loading
+
+	   - move *RemoteCommand classes into plugin dir
+	   - make setup.py aware of this directory/package
+	   - kind of ugly importer using execfile
+	   - finds user plugins in $HOME/.tentakel/plugins/
+
+2005-03-15 09:11  cran
+
+	* tentakel.1, tentakel.1.html, py/tentakel, py/lekatnet/config.py,
+	  py/lekatnet/error.py, py/lekatnet/remote.py,
+	  py/lekatnet/shell.py: update copyright for 2005
+
+2005-03-14 17:11  cran
+
+	* py/lekatnet/remote.py:
+	  - add some comments on RemoteCommand.slot to point out the
+	  problems
+
+	  - _maxparallel -> __maxparallel
+
+	  - only create the slot semaphore when needed and then only once
+	  (this was   a minor bug in the first version)
+
+2005-03-14 15:33  cran
+
+	* py/lekatnet/remote.py:
+	  Rework displayAll().
+
+	  Now the RemoteCommand class has an auxiliary queue holding
+	  references to objects that have results pending. This way
+	  displayAll() can simply wait (blocking) for the next result by
+	  calling the auxiliary queues get() method.
+
+	  Makes displayAll() easier to understand and also a bit faster.
+	  (speed is getting more and more an issue with tentakel...)
+
+	  As a side effect this also fixes a silly bug that allowed only
+	  one command to be executed during an interactive tentakel
+	  session.
+
+2005-03-13 19:57  cran
+
+	* TODO: update
+
+2005-03-13 19:50  cran
+
+	* TODO: update
+
+2005-03-13 19:46  cran
+
+	* tentakel.1, tentakel.1.html: make clear that maxparallel is set
+	  to 0 by default
+
+2005-03-13 19:43  cran
+
+	* ChangeLog, tentakel.1, tentakel.1.html, tentakel.conf.example,
+	  py/lekatnet/config.py, py/lekatnet/remote.py: Add "maxparallel"
+	  parameter.
+
+	  This was surprisingly easy to implement by simply adding (and
+	  using) a BoundedSemaphore to the RemoteCommand class as a class
+	  attribute.
+
+2005-03-05 23:11  cran
+
+	* tentakel.1, tentakel.1.html: Add some pieces of plugin
+	  documentation
+
+2005-03-05 23:04  cran
+
+	* Makefile: include plugin directory in release
+
+2005-03-05 22:54  cran
+
+	* py/lekatnet/shell.py: Ignore readline import errors.
+
+	  This fixes compatibility with e. g. Solaris.
+
+2005-03-05 22:23  cran
+
+	* ChangeLog, INSTALL, Makefile, py/setup.py, py/tentakel: Set
+	  version to 2.2
+
+	  Put a notice in INSTALL to make people use packages in favor of a
+	  source install.
+
+	  Update ChangeLog (optimistically...)
+
+2005-03-05 22:12  cran
+
+	* py/lekatnet/remote.py: Do not make RemoteCommands daemonic
+	  because one of the last changes made it necessary. Unfortunately
+	  I don't know why. Since tentakel seems to do fine without
+	  setDaemon(1) I don't care at the moment.
+
+2004-12-29 14:07  cran
+
+	* py/lekatnet/plugins/: rsh.py, ssh.py:
+	   First shot at plugin infrastructure
+
+2004-12-29 14:04  cran
+
+	* py/lekatnet/remote.py:
+	  cumulative check-in, cause I made many changes and forgot to
+	  check in afterwards...
+
+	   - better separation for the *RemoteCommand classes, commandQueue
+	     is now semi-private. Leads to easier client interface
+
+	   - fix bug that lead to many stale threads when changing the
+	  configuration
+	     interactively
+
+	   - RSHRemoteCommand can now determine the rsh return status
+
+	   - attempt to make thread handling better: output results
+	  immediately when
+	     they're ready (in the resultQueue). For that reason
+	  displayAll() sort
+	     of polls the resultQueue
+
+	  This commit might break things at first.
+
+2004-11-21 12:32  cran
+
+	* TODO: more
+
+2004-10-06 23:28  cran
+
+	* INSTALL: add a note about problems that may occur when an
+	  optional python-dev package is missing from the system. Noted by
+	  Marlon 10 months ago. :)
+
+2004-09-27 02:41  cran
+
+	* py/lekatnet/remote.py: more elegant way to choose needed
+	  RemoteCommand derivate
+
+2004-09-26 22:04  cran
+
+	* INSTALL: change installation instructions regarding the python
+	  version that has to be 2.3 at least.
+
+2004-09-26 22:01  cran
+
+	* ChangeLog: set release date for 2.1.3
+
+2004-09-26 21:58  cran
+
+	* ChangeLog, README, TODO, tentakel.1, tentakel.1.html,
+	  py/tentakel, py/lekatnet/config.py, py/lekatnet/remote.py:
+	  Second part of the RemoteCommand overhaul
+
+	   - RemoteCommand is now a generic class, all remote command
+	     classes inherit from there
+
+	   - SSHRemoteCommand and RSHRemoteCommand are the first ones
+
+	   - introduce "rsh" method and "rsh_path" variable
+
+	   - update TODO
+
+	   - update manpage
+
+	   - update and reformat README
+
+	   - remove warning message about which config file is used that
+	     was there only for debugging reasons
+
+	   - IMPORTANT CHANGE: parameters for a specific hosts are now
+	  taken
+	     from it's nearest enclosing group and not from the top-level
+	  group.
+	     A simple change makes this possible: the
+	  ConfigBase.getGroupMembers()
+	     method now returns a list of tuples where each tuple contains
+	  a
+	     destination and a complete set of group config parameters
+
+2004-09-26 15:28  cran
+
+	* Makefile, py/setup.py, py/tentakel: crank version number
+
+2004-09-26 15:25  cran
+
+	* py/lekatnet/: config.py, remote.py:
+	  First step of the RemoteCommand overhaul:
+
+	  The goal is to have a generic RemoteCommand class and one class
+	  for each remote methode that inherits from RemoteCommand.
+
+	   - Unify RemoteCommand __init__ parameters. This way the
+	     container object does not need to know about the remote
+	     method and its specific parameters. Instead the container
+	     has to supply the group specific parameters as a dictionary.
+
+	   - For this it is needed to be able to ask the ConfigBase class
+	     for a complete set of configuration directives for a specific
+	     group. You can do this with the getGroupParams() method now.
+
+	   - rename: ConfigBase.getExpandedGroup() ->
+	  ConfigBase.getGroupMembers()
+
+	   - rename: ConfigBase.getGroup() -> ConfigBase._getGroup()
+
+	   - update docstrings
+
+	   - update unit tests
+
+2004-09-26 13:55  cran
+
+	* tentakel.1, tentakel.1.html: typo
+
+2004-09-26 13:52  cran
+
+	* ChangeLog, tentakel.1, tentakel.1.html, py/lekatnet/config.py,
+	  py/lekatnet/remote.py:
+	  Introduce %t expansion:
+
+	   - add to format parser token list
+	   - RemoteCommand objects must now provide a duration
+	   - update documentation accordingly (fix typo in manpage as well:
+	  ommited -> omitted)
+	   - update ChangeLog
+	   - change default format to illustrate usage of %t
+
+2004-09-26 13:41  cran
+
+	* TODO: update
+
+2004-09-26 12:24  cran
+
+	* py/: tentakel, lekatnet/config.py, lekatnet/remote.py: update,
+	  fix and add a lot of documentation
+
+2004-09-26 11:54  cran
+
+	* py/lekatnet/config.py:
+	  Forgot to remove TODO for previous commit
+
+2004-09-26 11:51  cran
+
+	* py/: tentakel, lekatnet/config.py:
+	  - make config.dump() and config.load() take a file object
+	  parameter   and not a string containing the path.  - use
+	  TemporaryFile or NamedTemporaryFile instead of mktemp.
+
+	  This limits backwards compatibility to python 2.3.
+
+2004-09-25 15:23  cran
+
+	* py/setup.py:
+	  - update homepage URL
+
+2004-09-25 15:21  cran
+
+	* py/: tentakel, lekatnet/config.py, lekatnet/error.py,
+	  lekatnet/remote.py, lekatnet/shell.py:
+	  - update copyright notices (years) - change python default path
+	  to /usr/bin/python
+
+2004-09-25 15:19  cran
+
+	* py/lekatnet/remote.py: typo: failure -> failures
+
+	  In case of a failure, this lead to a failure :)
+
+2004-01-25 19:06  cran
+
+	* py/: tentakel, lekatnet/config.py, lekatnet/remote.py,
+	  lekatnet/shell.py: don't use "from ... import *", instead,
+	  explicitely name the module name.
+
+	  This is much easier to read and debug.
+
+2004-01-25 15:31  cran
+
+	* py/lekatnet/: config.py, remote.py: - use new-style classes where
+	  possible - better format map handling:   - better variable names
+	  - put %% in the default format map of the formatter class   -
+	  make formatMap a property in the formatter class - use zip()
+	  instead of map(lambda...) to zero the default values in
+	  ConfigGroup
+
+2004-01-25 15:21  cran
+
+	* py/lekatnet/remote.py: fix for braindead regression test (still
+	  braindead enough)
+
+2004-01-18 14:47  cran
+
+	* TODO, py/lekatnet/config.py: quite hard to do: reacting to
+	  programs that require terminal input
+
+2004-01-17 19:58  cran
+
+	* ChangeLog: update
+
+2004-01-17 19:54  cran
+
+	* Makefile, py/setup.py, py/tentakel: set version to 2.1.2
+
+2004-01-17 19:50  cran
+
+	* py/lekatnet/: config.py, remote.py: use english quoting style in
+	  warning and error messages
+
+2004-01-17 19:35  cran
+
+	* py/tentakel:
+	    - (err nameclash in config.py fixed before)
+	    - first try config file that was specified on the command line
+	      and err out if it does not work
+	    - than try user config and site config and err out if they
+	  don't work
+	    - finally tell user that no config has been found
+
+2004-01-17 19:13  cran
+
+	* py/lekatnet/remote.py: shift status 8 bits left to remove signal
+	  number
+
+2004-01-17 19:12  cran
+
+	* py/lekatnet/config.py: allow "-" in hostnames
+
+2004-01-11 14:15  cran
+
+	* ChangeLog, py/lekatnet/config.py:  - fix some regression tests
+	   - add one to test ugly syntax parsing
+
+2004-01-11 00:34  cran
+
+	* py/lekatnet/config.py:
+	    - put empty lines between groups in config dump
+	    - put clarifying comment into temporary config edit file
+
+2004-01-10 23:44  cran
+
+	* Makefile, py/lekatnet/remote.py:
+	    simple unit tests for RemoteCommand
+
+2004-01-10 23:28  cran
+
+	* Makefile, py/lekatnet/config.py:
+	    introduce some unit tests (which were commited partially
+	  before)
+
+	    regression testing is triggered with "make regress" in the main
+	  directory
+
+2004-01-10 22:48  cran
+
+	* py/lekatnet/: config.py, remote.py:
+	    - remove bug from parser that zeroed out all global settings
+	    - sanitize getParam()
+	    - rework __doc__ for getParam()
+	    - remove superfluous variable in remote.py
+
+2004-01-10 21:26  cran
+
+	* ChangeLog, Makefile, py/setup.py, py/tentakel: set version to
+	  2.1.1
+
+2004-01-10 21:17  cran
+
+	* py/lekatnet/: config.py, remote.py:
+	   - put default values in the PARAMS dictionary because it is more
+	     obvious
+	   - make comments a non-terminal in the config file grammar.
+	  Rather
+	     use tpg.Parser.extract() to cut them out. This should fix the
+	     problem where one could not use # in a parameter value
+
+2004-01-06 13:12  cran
+
+	* py/lekatnet/remote.py: remove -x from ssh command
+
+2004-01-06 13:10  cran
+
+	* py/lekatnet/config.py: initialise keyword token from PARAMS
+
+	  this is some kind of hack since it involves setting the docstring
+	  with __doc__ = r"""......""" % ...
+
+2004-01-05 22:27  cran
+
+	* tentakel.1, tentakel.1.html: typo
+
+2004-01-05 16:23  cran
+
+	* py/lekatnet/config.py: fix getParam() to match expected behaviour
+
+2004-01-05 15:51  cran
+
+	* ChangeLog: set release date
+
+2004-01-05 15:45  cran
+
+	* tentakel.conf.example: change config file example after recent
+	  changes
+
+2004-01-05 15:39  cran
+
+	* py/lekatnet/config.py:
+	   - put all config parameters into a global variable PARAMS
+	   - __str__ global parameters only if their value is non-empty
+
+2004-01-05 00:36  cran
+
+	* Makefile, py/setup.py, py/tentakel: set version to 2.1
+
+2004-01-05 00:34  cran
+
+	* tentakel.1, tentakel.1.html: mention how parameters of sub-groups
+	  are treated
+
+2004-01-05 00:33  cran
+
+	* ChangeLog: update
+
+2004-01-05 00:33  cran
+
+	* py/lekatnet/config.py:
+	   determine user globally, not in each group
+
+2004-01-04 15:40  cran
+
+	* tentakel.1, tentakel.1.html:
+	   change manual page after to reflect recent grammar changes
+
+2004-01-04 15:40  cran
+
+	* py/lekatnet/: config.py, remote.py:
+	   - restructure/simplify grammar
+	   - now all values (after =) have to be quoted with ""
+	   - all parameters may appear in a set statement, which makes them
+	  global
+	   - all parameters may appear in a group spec, which makes them
+	  local to this group
+
+2004-01-04 13:59  cran
+
+	* py/lekatnet/: config.py, remote.py:
+	   - introduce "set varname=value" directives in the configuration
+	  file
+	   - currently supported is ssh_path="/some/path/to/ssh"
+	   - new category in the config AST: "settings"
+	   - use self["settings"]["ssh_path"] from the config AST to set
+	  the ssh path
+	   - minor optimisations in the config file grammar (not ready yet)
+
+2004-01-04 13:08  cran
+
+	* ChangeLog, README, tentakel.1, tentakel.1.html: update homepage
+	  address (now: http://tentakel.biskalar.de/)
+
+2004-01-04 01:02  cran
+
+	* Makefile, tentakel.1.html, py/setup.py: add html version of
+	  manpage
+
+2004-01-02 19:08  cran
+
+	* TODO: more
+
+2004-01-02 19:03  cran
+
+	* tentakel.conf.example: make clear that host definitions do not
+	  need to be separated by newlines
+
+2004-01-02 18:08  cran
+
+	* ANNOUNCE-2.0: announcement text for rel 2.0
+
+2004-01-01 19:58  cran
+
+	* ChangeLog: 2.0 release
+
+2004-01-01 19:45  cran
+
+	* tentakel.conf.example, TODO: more
+
+2004-01-01 19:35  cran
+
+	* Makefile:
+	   - remove redundant information
+
+2004-01-01 19:34  cran
+
+	* INSTALL:
+	   - more install hints
+	   - minor fixes
+
+2003-12-29 15:40  cran
+
+	* tentakel.1: nicer postscript output
+
+2003-12-28 22:40  cran
+
+	* py/lekatnet/: remote.py, shell.py:
+	   - don't use __str__ when a normal method makes more sense...
+
+2003-12-28 22:26  cran
+
+	* py/lekatnet/error.py:
+	   - tentakel warnings and errors go to sys.stderr
+	   - indicate errors as such
+
+2003-12-28 22:22  cran
+
+	* py/lekatnet/config.py: catch RuntimeError from possible loops in
+	  configuration files
+
+2003-12-28 21:40  cran
+
+	* README:
+	   modernize README
+
+2003-12-28 21:24  cran
+
+	* tentakel.1:
+	   - better formatting in a lot of places
+	   - document interactive mode
+	   - change suse7.3 example to myGroup
+
+2003-12-28 17:06  cran
+
+	* TODO: update
+
+2003-12-28 16:39  cran
+
+	* TODO: update
+
+2003-12-28 16:22  cran
+
+	* tentakel.1:
+	   - make the manpage more exact
+	   - complete config file description
+	   - fix some issues with postscript output
+
+2003-12-28 13:22  cran
+
+	* Makefile, py/setup.py, py/tentakel: set version to 2.0
+
+2003-12-28 13:04  cran
+
+	* TODO: done
+
+2003-12-28 13:04  cran
+
+	* tentakel.1, tentakel.conf.example, py/tentakel,
+	  py/lekatnet/config.py, py/lekatnet/remote.py,
+	  py/lekatnet/shell.py:
+	   - formats are now defined in the config file as groupspec
+	  parameters
+	   - formats are stored in the abstract syntax tree for each group
+	   - format is set in RemoteCollator.useConf()
+	   - update manpage and example config file accordingly
+
+2003-12-27 15:33  cran
+
+	* TODO: some more TODOs
+
+2003-12-27 15:28  cran
+
+	* Makefile, README: add TPG to the distribution
+
+2003-12-27 15:25  cran
+
+	* py/: tentakel, lekatnet/config.py, lekatnet/error.py,
+	  lekatnet/remote.py, lekatnet/shell.py: add licenses
+
+2003-12-27 15:13  cran
+
+	* py/lekatnet/: config.py, error.py, remote.py:
+	  Just give a warning on some errors instead of killing tentakel
+
+2003-12-27 14:55  cran
+
+	* README, tentakel.1: dont use the term "site shell"
+
+2003-12-27 14:53  cran
+
+	* tentakel.1, tentakel.conf.example: move config file documentation
+	  into manpage
+
+2003-12-27 14:38  cran
+
+	* ChangeLog: update
+
+2003-12-27 14:33  cran
+
+	* tentakel.1, py/tentakel:
+	   - if existant use $HOME/.tentakel/tentakel.conf instead of
+	  /etc/tentakel.conf
+	   - document this behaviour
+
+2003-12-27 14:12  cran
+
+	* tentakel.1, py/tentakel, py/lekatnet/remote.py:
+	   - use TPG to parse formatstrings
+	   - use \n and \t for newline and tab
+	   - change manpage accordingly
+
+2003-12-27 13:54  cran
+
+	* tentakel.1: fix example
+
+2003-12-27 04:48  cran
+
+	* README, tentakel.1, py/tentakel: rename -d parameter to -g
+
+2003-12-27 04:38  cran
+
+	* tentakel.1, py/tentakel: let the user decide which config file to
+	  use with the new -c parameter
+
+2003-12-27 04:21  cran
+
+	* py/setup.py, py/tentakel, Makefile: crank beta version number
+
+2003-12-27 04:20  cran
+
+	* TODO, tentakel.conf.example, py/lekatnet/config.py:
+	   - better syntax for the configuration file, see the grammar diff
+	  and example
+
+2003-12-27 00:59  cran
+
+	* py/: tentakel, lekatnet/config.py, lekatnet/remote.py,
+	  lekatnet/tpg.py:
+	   - import tpg into package lekatnet (maybe remove it later)
+	   - use tpg to generate a parser for the configuration file
+	   - simplify the abstract syntax tree in config.py much
+
+2003-12-18 16:21  cran
+
+	* INSTALL: more hints about installing tentakel
+
+2003-12-18 09:49  cran
+
+	* tentakel.1: document -v
+
+2003-12-17 23:38  cran
+
+	* py/lekatnet/config.py:
+	   - use tempfile module to get a temporary pathname for
+	  ConfigBase.edit()
+	     This is not really safe but acceptable for the time being.
+	   - get EDITOR or VISUAL from environment, fallback to vi
+
+2003-12-17 23:11  cran
+
+	* py/: tentakel, lekatnet/error.py:
+	   - move helptext for -h where it belongs, tentakel, not error.py
+	   - tentakel -v now outputs version information
+
+2003-12-17 23:02  cran
+
+	* TODO, py/tentakel, py/lekatnet/config.py, py/lekatnet/remote.py:
+	   - if a the user value in tentakel.conf is set to "$user" then
+	  the
+	     effective uid of the tentakel process is used.
+
+2003-12-14 18:47  cran
+
+	* INSTALL, Makefile:
+	    - respect PREFIX environment variable during installation
+
+2003-12-14 18:14  cran
+
+	* INSTALL, Makefile, py/config.py, py/error.py, py/remote.py,
+	  py/setup.py, py/shell.py, py/tentakel, py/tentakel.py,
+	  py/lekatnet/__init__.py, py/lekatnet/config.py,
+	  py/lekatnet/error.py, py/lekatnet/remote.py,
+	  py/lekatnet/shell.py:
+	   - move modules into own package "letaknet"
+	   - use distutils for installation
+	   - adopt changes to INSTALL and Makefile
+
+2003-12-13 16:10  cran
+
+	* tentakel.1, py/tentakel.py:
+	   - don't err when no groupname is specified on the command line,
+	     just use "default".
+
+2003-12-13 16:09  cran
+
+	* Makefile:
+	   - include temporary python files in clean target
+
+2003-12-13 15:59  cran
+
+	* ChangeLog, README, TODO, hostlist.example, tentakel, tentakel.1,
+	  tentakel.conf.example, tentakel.old:
+	   - Bring ChangeLog and documentation in sync with recent changes
+	   - rename old shell version to tentakel.old
+
+2003-12-13 11:02  cran
+
+	* py/shell.py: This is not true
+
+2003-12-13 10:55  cran
+
+	* py/: shell.py, tentakel.py:  - put shell into own module
+	   - no globals are referenced anymore from the class body
+
+2003-12-13 00:18  cran
+
+	* py/tentakel.py:
+	   - "listgroups" in interactive mode lists available groups
+	   - "use" in interactive mode sets current group and also changes
+	  the prompt
+
+2003-12-12 22:58  cran
+
+	* py/: config.py, error.py, remote.py, tentakel.py:
+	   - sprinkle some TODOs
+	   - style: always newlines after docstrings
+
+2003-12-12 22:44  cran
+
+	* py/: config.py, error.py, remote.py, tentakel.py: A *lot* of
+	  changes. too much to list all of them.
+
+	   - restructured a lot of objects
+	   - use cmd.Cmd for interactive mode
+	   - rename some variables
+	   - more useful docstrings
+	   - use __str__ for the ConfigItem-style objects. Not it's very
+	  easy
+	     to dump a config object back to a human readable file
+
+	  Still lotsa bugs.
+
+2003-12-08 15:37  cran
+
+	* py/: config.py, error.py, remote.py, tentakel.py:
+	  First shot at a python version of tentakel.  Not quite ready yet,
+	  but usable.
+
+2003-05-28 00:23  imaginat
+
+	* tentakel: Provided a solution to the problem with the assert
+	  function. "set +e" is not supported by many shell, so Sebastians
+	  solution wasnt perfect. The ksh and the Unix V7 sh exits for the
+	  code "set -e; eval false || true", but it doesnt, when it's
+	  wrapped in ``. So I got rid of the set +e and used something
+	  similar to "if `eval false`" instead.
+
+2003-05-23 04:28  cran
+
+	* TODO: reflect recent changes and clarify a bit
+
+2003-05-23 04:22  cran
+
+	* tentakel, tentakel.1: Introduce -C option which can be used to
+	  restrict command execution to a specific number of hosts.
+
+2003-05-23 04:13  cran
+
+	* tentakel: make assert() actually work (never worked before)
+
+2003-05-22 12:42  cran
+
+	* tentakel.conf.example: o No default parameters, <method> and
+	  <user> for each host object now mandatory o Lists of lists o
+	  Clarify that nesting of lists is possible without limits o Update
+	  comments and syntax description accordingly
+
+2003-05-20 14:41  cran
+
+	* tentakel.conf.example: Proposal for a general tentakel.conf file
+	  format.
+
+	  This is just an example .conf file, there is still no code that
+	  interprets it.
+
+2003-05-19 19:27  cran
+
+	* ChangeLog, Makefile, tentakel: bugfix release 0.3.1
+
+2003-05-19 15:44  imaginat
+
+	* tentakel: First draft on fixing that stupid dot error.
+
+2003-04-19 18:16  cran
+
+	* Makefile: o Rename INSTALLMAN->MANDIR and INSTALLBIN->BINDIR to
+	  avoid confusion.  o Tell user that configure is not implemented
+	  yet.
+
+2003-04-19 17:25  cran
+
+	* INSTALL, Makefile, install.sh, mkrelease.sh: First version of a
+	  Makefile. install.sh and mkrelease.sh are obsolete now.
+
+	  Update INSTALL to reflect changes in the installation process.
+
+2003-04-18 13:12  imaginat
+
+	* INSTALL: Update list of necessary tools.
+
+2003-04-18 13:07  imaginat
+
+	* tentakel: Remove -f flag for rm command. (When something goes
+	  wrong, it should at least be reported, not silently ignored)
+	  Change the assertion for dprint back: It has to be invoked with
+	  exactly one argument.
+
+2003-04-17 13:30  cran
+
+	* tentakel: use "rm -f" in *_destroy()
+
+2003-04-17 13:28  cran
+
+	* tentakel.1: document -d switch
+
+2003-04-17 13:27  cran
+
+	* tentakel: Match manpage SYNOPSIS in usage() output
+
+2003-04-17 13:25  cran
+
+	* TODO: remove stuff that is implemented
+
+2003-04-17 13:23  cran
+
+	* ChangeLog: release 0.3
+
+2003-04-17 13:18  cran
+
+	* INSTALL, README, tentakel.1: Documentation overhaul
+
+	  o remote return value in separator string o mention hardcoded
+	  /usr/bin/ssh in BUGS
+
+2003-04-17 13:13  cran
+
+	* tentakel: o Temporarily fix possible loop in dprint()/assert() o
+	  Use "$*" in dprint argument instead of "$@"
+
+2003-04-17 08:52  cran
+
+	* tentakel: set MYVER to 0.3
+
+2003-04-17 08:50  cran
+
+	* INSTALL, README: Don't put my email address in those files
+
+2003-04-17 08:49  cran
+
+	* ChangeLog: restructure ChangeLog and reflect latest changes
+
+2003-04-17 08:45  cran
+
+	* tentakel, tentakel.1: Back out -s option. Setting (format)strings
+	  on the commandline is unneeded complexity and we don't really
+	  support it yet.
+
+	  This feature may return once we have a working format string
+	  expansion facility.
+
+2003-04-17 01:25  imaginat
+
+	* tentakel.1: Take the ENVIRONMENT section out. The only entry
+	  there was about DEXECHOST, but that's not in use now, and similar
+	  functionality will be implemented in a more abstract way.
+
+2003-04-17 01:17  imaginat
+
+	* tentakel: Move the check for given commands from the execute
+	  function to the setup function.
+
+2003-04-17 00:45  imaginat
+
+	* tentakel: Change the exit code setting to allow usage of set -e
+	  again.
+
+2003-04-16 18:03  imaginat
+
+	* tentakel: Reporting of the local exit code works now.
+	  Unfortunately, for this to work, "set -e" has to be commented
+	  out.
+
+2003-04-16 16:14  imaginat
+
+	* tentakel: Moved the wait command to the container call method.
+
+2003-04-16 15:48  imaginat
+
+	* tentakel: Corrected and inserted assertions. Corrected code that
+	  sets the local exit code.
+
+2003-04-16 14:44  imaginat
+
+	* tentakel, tentakel.1: Rename temporary files to prefix tentakel.
+	  Separate remote stdout and stderr.
+
+2003-04-16 13:55  cran
+
+	* tentakel: simplify usage() output
+
+2003-04-16 13:54  cran
+
+	* tentakel, tentakel.1: Introduce -s parameter that can be used to
+	  specify a custom separator string.
+
+2003-04-16 10:51  cran
+
+	* tentakel: Forgot a closing quote.
+
+2003-04-16 10:48  cran
+
+	* tentakel.1: We're beta now.
+
+2003-04-16 10:47  cran
+
+	* README, tentakel: Remove lies about the need to quote the remote
+	  command in a whole.  This was just a bug that has vanished in the
+	  meanwhile.
+
+2003-04-16 10:43  cran
+
+	* README, tentakel, tentakel.1: o Rename flag -c to -l since -c
+	  will be used for the global config file.  o Reflect this change
+	  in the documentation as well.  o Rename FLAG_CONFIG to
+	  FLAG_HOSTLIST for the same reason.
+
+2003-04-16 10:30  cran
+
+	* tentakel: rename parse_config() to parse_hostlist() because we
+	  need this name for the function that will parse the global
+	  configfile
+
+2003-04-16 10:10  cran
+
+	* tentakel: rename functions to match their meaning better:
+
+	  o callit() becomes distribute_command() o execute() becomes
+	  execute_command()
+
+2003-04-16 01:48  imaginat
+
+	* tentakel: Add a class that takes over the repetitive calling of
+	  methods of the host objects. Restructure the callit function to
+	  make use of this class.  Change make_host to use only one
+	  parameter by throwing the currently unused dexechost out. Change
+	  the class definition syntax slightly by omitting the semanticly
+	  misguiding {} in make_host.
+
+2003-04-16 01:28  imaginat
+
+	* tentakel.1: Due to the OO rewrite the DEXECHOST feature is not
+	  implemented at the moment. Note this in the ENVIRONMENT section.
+
+2003-04-14 23:58  imaginat
+
+	* tentakel: The bourne shell doesnt support the unary negation
+	  operator !, that negates the return code of pipelines. Remove the
+	  only appearance.
+
+2003-04-14 21:20  imaginat
+
+	* tentakel: Introduce a first try on object oriented programming to
+	  tentakel.  Rewrite the whole callit function to make use of the
+	  new object model for hosts.
+
+2003-04-14 15:48  cran
+
+	* TODO: more
+
+2003-04-14 15:45  cran
+
+	* tentakel.1: Don't keep the users from being smart themselves.
+
+2003-04-12 02:33  imaginat
+
+	* tentakel: Remove RSHFLAGS (those configuration will be taken over
+	  by configuration files) and DOWNHOSTS (which is obsolete).
+
+2003-04-12 01:46  imaginat
+
+	* TODO: Some additional notes. Remove the entry about writing a
+	  manpage.
+
+2003-04-12 00:27  imaginat
+
+	* README: Take the information about the now obsolete alive check
+	  out.
+
+2003-04-12 00:26  imaginat
+
+	* tentakel.1: Update according to the changes in the code (take the
+	  aliveness check out).
+
+2003-04-12 00:21  imaginat
+
+	* tentakel: Take the test for aliveness of remote hosts out.  As a
+	  result of that, the now useless flags -o and -a have also been
+	  removed. -q is the same as -a.
+
+2003-04-11 00:31  cran
+
+	* INSTALL, README, tentakel, tentakel.1: No more nmap. Instead, use
+	  ping to determine aliveness of hosts.  Since some implementations
+	  of ping don't support setting an explicit timeout value we're
+	  bound to the default.
+
+	  Comment two asserts that bugged me while I'm here.
+
+2003-04-11 00:27  imaginat
+
+	* tentakel.1: Use correct quotation marks (mainly useful for
+	  postscript output).
+
+2003-04-10 20:18  imaginat
+
+	* tentakel: Introduce the function assert. Use it in some
+	  functions.
+
+2003-04-10 18:54  imaginat
+
+	* tentakel: Revision of the callit function, remove some non-bourne
+	  dependencies.
+
+2003-04-10 10:46  cran
+
+	* ChangeLog: more
+
+2003-04-10 10:42  cran
+
+	* tentakel.1: further explanations for the DEXECHOST variable
+
+2003-04-10 10:27  cran
+
+	* tentakel.1: proper license and RCS id
+
+2003-04-10 10:06  cran
+
+	* tentakel.1: document DEXECHOST variable in new section
+	  ENVIRONMENT
+
+2003-04-09 22:03  imaginat
+
+	* tentakel: Minor corrections / hacks: Ignorance of nmap's stderr,
+	  fix a missing "then", include the main program.
+
+2003-04-09 21:50  imaginat
+
+	* tentakel: Introduce the setup function to evaluate the results of
+	  the command line parsing. Move the dprint function generation to
+	  the setup function.  Introduce the function alive_echo. Moved the
+	  setting of the CFGFILE-variable from parse_config to setup.
+
+2003-04-09 21:16  imaginat
+
+	* tentakel: Change parse_options to be just a parser, don't execute
+	  any code there.  Removed FLAG_QUIET to conform to documentation
+	  to prohibit possible side effects. Removed command line option -h
+	  and added --version for displaying version information.
+
+2003-04-09 20:58  imaginat
+
+	* tentakel: Simplify the execute function
+
+2003-04-09 20:41  imaginat
+
+	* tentakel: Split the huge code block at the end of the file into
+	  separate functions.  Rename Version and Usage to version and
+	  usage, resp.
+
+2003-04-09 20:34  imaginat
+
+	* tentakel: Stripped some comments.
+
+2003-04-09 20:25  imaginat
+
+	* tentakel: Introduce a function to output the current version
+	  number and remove this from the Usage function
+
+2003-04-09 20:22  imaginat
+
+	* tentakel: Substitution of tabulator characters in the output of
+	  the Usage function
+
+2003-04-09 16:56  imaginat
+
+	* tentakel: Added quotes in the dprint function.
+
+2003-04-09 00:17  imaginat
+
+	* tentakel: Replacement of "[" by "test" for better compatibility.
+	  Cleaner semanticss for the tests like -eq instead = for numbers.
+
+2003-04-09 00:05  imaginat
+
+	* tentakel.1: Added the "Reporting Bugs" section and my name to the
+	  author's list.
+
+2003-04-08 23:53  imaginat
+
+	* tentakel: Improved bourne compatibility. Dropped some uses of
+	  "$(())"- and "${}"-expansion that are not present in all bourne
+	  shells.
+
+2003-04-08 15:54  cran
+
+	* tentakel: remove unnecessary comment
+
+2003-04-08 15:45  imaginat
+
+	* tentakel: Changed the indentation to use 8 character wide columns
+	  globally.
+
+2003-04-08 15:22  imaginat
+
+	* tentakel: Removed the unnecessary encapsulation of the nmap|grep
+	  pipe in the alive function.
+
+2003-04-08 15:19  imaginat
+
+	* tentakel: Changed the semantics of the tempfile function. Error
+	  is now reported through the exit code from the mktemp process
+	  itself. The caller doesn't have to check if the created file name
+	  is "/dev/null" anymore.
+
+2003-04-08 15:16  imaginat
+
+	* tentakel: Changed the function err to exit by itself after
+	  showing the error.  Adapted this behaviour to every places where
+	  the err function was used. Introduced the "warn" function to
+	  output warnings without exiting.
+
+2003-04-08 15:01  imaginat
+
+	* tentakel: Got rid of the "checksoft" function. It's still too
+	  early for such a functionality.
+
+2003-04-03 01:15  cran
+
+	* ChangeLog: more
+
+2003-04-03 01:14  cran
+
+	* TODO: some new, some done, some changed
+
+2003-04-01 12:25  cran
+
+	* tentakel: initialize FLAG_* with numbers, not strings.
+
+2003-04-01 12:07  cran
+
+	* README: forgot one ~ -> $HOME
+
+2003-04-01 12:06  cran
+
+	* INSTALL, tentakel, tentakel.1:  o use `` instead of $()
+	   o use $HOME instead of ~
+	  I hope this commit makes tentakel bourne shell compatible again.
+
+2003-03-30 18:51  cran
+
+	* tentakel.1: missing ,
+
+2003-03-30 18:42  cran
+
+	* tentakel, tentakel.1: Remove -s option because it makes
+	  absolutely no sense.	Return values should be handled in a better
+	  way.
+
+2003-03-30 18:36  cran
+
+	* tentakel: sync -h output with manpage
+
+2003-03-30 17:36  cran
+
+	* ChangeLog, INSTALL, install.sh, mkrelease.sh: installation helper
+
+2003-03-30 17:10  cran
+
+	* tentakel: User numbers, not strings, to express flags.  Change [
+	  parameters accordingly. (= -> -eq, != -> -ne)
+
+2003-03-30 15:27  cran
+
+	* INSTALL, README, TODO, tentakel, tentakel.1: tentacle -> tentakel
+	  name change
+
+2003-03-30 15:23  cran
+
+	* mkrelease.sh: put manpage into tarball
+
+2003-03-29 22:49  cran
+
+	* ChangeLog: o manpage o rcs id
+
+2003-03-29 22:39  cran
+
+	* TODO: host list sorting functions
+
+2003-03-29 22:20  cran
+
+	* README, tentakel, tentakel.1: No logfile anymore. Instead, use
+	  dprint for debugging output.	Debug output is enabled using the
+	  -d switch.
+
+2003-03-26 18:39  cran
+
+	* TODO: o manpage mostly done o new todo: stdin/stdout handling
+
+2003-03-26 18:36  cran
+
+	* tentakel.1: some clarifications
+
+2003-03-26 18:29  cran
+
+	* ChangeLog: unnecessary
+
+2003-03-26 15:08  imaginat
+
+	* tentakel.1: Written the initial manpage.
+
+2003-03-26 15:05  cran
+
+	* README: typo in example
+
+2003-03-26 15:04  cran
+
+	* README: Some usage examples
+
+2003-03-26 14:56  cran
+
+	* TODO: more
+
+2003-03-26 14:46  cran
+
+	* tentakel: add error handling function and use it where
+	  appropriate
+
+2003-03-26 14:39  cran
+
+	* mkrelease.sh: document a bit
+
+2003-03-26 14:11  imaginat
+
+	* INSTALL: Corrected one of the spelling errors.
+
+2003-03-26 13:23  cran
+
+	* ChangeLog: append yesterdays and todays changes
+
+2003-03-26 13:23  cran
+
+	* TODO: more
+
+2003-03-26 13:19  cran
+
+	* INSTALL, hostlist.example, mkrelease.sh, tentakel: o clarify
+	  install process o provide hostlist example o raise version number
+	  to 0.3-beta
+
+2003-03-26 13:09  cran
+
+	* ChangeLog, mkrelease.sh: add (empty) ChangeLog
+
+2003-03-26 13:04  cran
+
+	* INSTALL, README: MUCH more information
+
+2003-03-26 13:04  cran
+
+	* TODO: manpage
+
+2003-03-26 12:51  cran
+
+	* mkrelease.sh: put TODO in release tarballs as well
+
+2003-03-25 13:09  cran
+
+	* INSTALL, README: sprinkle some rcs ids
+
+2003-03-25 13:08  cran
+
+	* TODO: some todos
+
+2003-03-25 12:56  cran
+
+	* tentakel: german -> english
+
+2003-03-25 11:25  cran
+
+	* mkrelease.sh: make release script
+
+2003-03-25 10:36  cran
+
+	* INSTALL, README, tentakel: Initial import
+
+2003-03-25 10:36  cran
+
+	* INSTALL, README, tentakel: Initial revision
+

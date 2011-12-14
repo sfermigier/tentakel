@@ -5,7 +5,7 @@ from distutils.core import setup
 
 setup(
 	name = "tentakel",
-	version = "2.2",
+	version = "2.3",
 	description = "distributed command execution",
 	url = "http://tentakel.biskalar.de/",
 	author = "Sebastian Stark, Marlon Berlin",
@@ -16,11 +16,11 @@ setup(
 	platforms = "All that support threading",
 
 	packages = ["lekatnet", "lekatnet.plugins"],
-	scripts = ["tentakel"],
-	data_files = [	("man/man1", ["../tentakel.1"]),
-			("share/doc/tentakel", ["../tentakel.conf.example",
-						"../README",
-						"../TODO",
-						"../PLUGINS",
-						"../tentakel.1.html"]) ]
+	scripts = ["bin/tentakel"],
+	data_files = [	("man/man1", ["tentakel.1"]),
+			("share/doc/tentakel", ["tentakel.conf.example",
+						"README",
+						"TODO",
+						"PLUGINS",
+						"tentakel.1.html"]) ]
 )

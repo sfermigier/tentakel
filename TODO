@@ -1,4 +1,12 @@
-$Id: TODO,v 1.28 2005/03/18 08:36:39 cran Exp $
+New TODO
+========
+
+- Change name of library (lekatnet -> tentakel)
+- Clean Makefile
+- Add test suite
+
+Old TODO
+========
 
 Lots of TODOs are directly written as comments in the source.
 
