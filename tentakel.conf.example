@@ -1,0 +1,30 @@
+# $Id: tentakel.conf.example,v 1.10 2005/03/13 18:43:41 cran Exp $
+
+# Example configuration file for tentakel
+
+# first section: global parameters
+set ssh_path="/usr/bin/ssh"
+set method="ssh"
+#set user="root"	# use EUID of the tentakel process when user is unset
+#set format="%d %o\n"
+#set maxparallel="3"	# run at most 3 commands in parallel
+
+# second section: groups
+group default () @all
+
+group all (user="stark") @debws
+
+group debws (format="%d(%s): %o\n")
+	#+mosel
+	+aare +donau +euphrat
+	+garonne +havel +iller
+	+isar +maas +mekong +nagold +nahe
+	+oder +rhone +saar +unstrut
+
+group bar_systems (user="seb")
+	+localhost
+	# non existent group will parse correctly but give an error at runtime.
+	@support
+
+group local ()
+	+127.0.0.1

@@ -1,0 +1,895 @@
+<!-- Creator     : groff version 1.18.1 -->
+<!-- CreationDate: Sun Mar 20 16:53:36 2005 -->
+<html>
+<head>
+<meta name="generator" content="groff -Thtml, see www.gnu.org">
+<meta name="Content-Style" content="text/css">
+<title>TENTAKEL</title>
+</head>
+<body>
+
+<h1 align=center>TENTAKEL</h1>
+<a href="#NAME">NAME</a><br>
+<a href="#SYNOPSIS">SYNOPSIS</a><br>
+<a href="#DESCRIPTION">DESCRIPTION</a><br>
+<a href="#OPTIONS">OPTIONS</a><br>
+<a href="#CONFIGURATION FILE">CONFIGURATION FILE</a><br>
+<a href="#PLUGINS">PLUGINS</a><br>
+<a href="#INTERACTIVE MODE">INTERACTIVE MODE</a><br>
+<a href="#EXAMPLES">EXAMPLES</a><br>
+<a href="#FILES">FILES</a><br>
+<a href="#BUGS">BUGS</a><br>
+<a href="#REPORTING BUGS">REPORTING BUGS</a><br>
+<a href="#AUTHOR">AUTHOR</a><br>
+<a href="#SEE ALSO">SEE ALSO</a><br>
+
+<hr>
+<a name="NAME"></a>
+<h2>NAME</h2>
+<!-- INDENTATION -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="2" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="10%"></td>
+<td width="89%">
+<p>tentakel &minus; distributed command execution</p>
+</td>
+</table>
+<a name="SYNOPSIS"></a>
+<h2>SYNOPSIS</h2>
+<!-- INDENTATION -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="2" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="10%"></td>
+<td width="89%">
+<p><b>tentakel [ -lhv ] [ -c</b> <i>file</i> <b>] [ -g</b>
+<i>group</i> <b>] [</b> <i>command</i> <b>]</b></p>
+</td>
+</table>
+<a name="DESCRIPTION"></a>
+<h2>DESCRIPTION</h2>
+<!-- INDENTATION -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="2" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="10%"></td>
+<td width="89%">
+<p><i>tentakel</i> is a program for executing the same
+command on many hosts in parallel using various remote
+methods.</p>
+<!-- INDENTATION -->
+<p>It can make use of several sets of hosts that are defined
+in a configuration file as groups.</p>
+<!-- INDENTATION -->
+<p>The command is executed in parallel on all hosts in this
+group. By default, every result is printed to stdout. The
+output format can be defined for each group.</p>
+<!-- INDENTATION -->
+<p>If no command is specified <i>tentakel</i> goes into
+interactive mode which can be used for repeated
+commands.</p>
+<!-- INDENTATION -->
+<p>The requirements on the remote hosts depend on the
+selected remote method. The <i>ssh</i> method, for example,
+needs a running sshd on the remote side. <i>tentakel</i>
+itself only needs to be installed on the controlling
+host.</p>
+</td>
+</table>
+<a name="OPTIONS"></a>
+<h2>OPTIONS</h2>
+<!-- INDENTATION -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="2" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="10%"></td>
+<td width="89%">
+<p><b>&minus;c</b> <i>file</i></p></td>
+</table>
+<!-- INDENTATION -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="2" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="21%"></td>
+<td width="77%">
+<p>Use <i>file</i> as the configuration file if specified,
+otherwise try <i>$HOME/.tentakel/tentakel.conf</i> and
+finally <i>/etc/tentakel.conf.</i></p>
+</td>
+</table>
+<!-- INDENTATION -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="2" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="10%"></td>
+<td width="89%">
+<p><b>&minus;g</b> <i>groupname</i></p></td>
+</table>
+<!-- INDENTATION -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="2" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="21%"></td>
+<td width="77%">
+<p>Select the group <i>groupname</i> The group must be
+defined in the configuration file. If not specified
+<i>tentakel</i> implicitely assumes the
+&ldquo;default&rdquo; group.</p>
+</td>
+</table>
+<!-- TABS -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="5" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="2%">
+
+<p><b>&minus;l</b></p>
+</td>
+<td width="13%"></td>
+<td width="60%">
+
+<p>Display a list of possible group choices.</p>
+</td>
+<td width="11%">
+</td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="2%">
+
+<p><b>&minus;h</b></p>
+</td>
+<td width="13%"></td>
+<td width="60%">
+
+<p>Display a brief help message.</p>
+</td>
+<td width="11%">
+</td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="2%">
+
+<p><b>&minus;v</b></p>
+</td>
+<td width="13%"></td>
+<td width="60%">
+
+<p>Display version information.</p>
+</td>
+<td width="11%">
+</td>
+</table>
+<!-- INDENTATION -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="2" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="10%"></td>
+<td width="89%">
+<p><b>command</b></p></td>
+</table>
+<!-- INDENTATION -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="2" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="21%"></td>
+<td width="77%">
+<p>The command that is to be executed on all hosts in the
+current group. If <i>command</i> is omitted, <i>tentakel</i>
+starts in interactive mode.</p>
+</td>
+</table>
+<a name="CONFIGURATION FILE"></a>
+<h2>CONFIGURATION FILE</h2>
+<!-- INDENTATION -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="2" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="10%"></td>
+<td width="89%">
+<p>Everything appearing after a # character will be ignored
+to the next newline. Leading whitespace will be ignored.
+Host and List objects become members of the last named group
+declaration. Forward declarations are allowed.</p>
+<!-- INDENTATION -->
+<p>In the first section you may set global variables
+like:</p>
+<!-- INDENTATION -->
+<p>set <i>var</i>=&quot;<i>value</i>&quot;</p>
+<!-- INDENTATION -->
+<p><i>value</i> must be enclosed in double quotes even if it
+does not contain spaces. To write the double quote
+characters itself in the value, you have to write two
+successive double quote characters, e. g.
+var=&quot;foo(&quot;&quot;bar&quot;&quot;)&quot;.</p>
+<!-- INDENTATION -->
+<p><i>var</i> must be one of the following:</p>
+</td>
+</table>
+<!-- INDENTATION -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="2" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="10%"></td>
+<td width="89%">
+<p><b>ssh_path</b></p></td>
+</table>
+<!-- INDENTATION -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="2" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="21%"></td>
+<td width="77%">
+<p>The path where the <b>ssh</b>(1) binary is located.</p>
+</td>
+</table>
+<!-- INDENTATION -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="2" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="10%"></td>
+<td width="89%">
+<p><b>rsh_path</b></p></td>
+</table>
+<!-- INDENTATION -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="2" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="21%"></td>
+<td width="77%">
+<p>The path where the <b>rsh</b>(1) binary is located.</p>
+</td>
+</table>
+<!-- TABS -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="4" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="8%">
+
+<p><b>method</b></p>
+</td>
+<td width="1%"></td>
+<td width="77%">
+
+<p>You can choose between &quot;ssh&quot; and
+&quot;rsh&quot; (ssh is the default). A user may define
+additional methods by creating plugins, as explained
+later.</p>
+</td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="8%">
+
+<p><b>user</b></p>
+</td>
+<td width="1%"></td>
+<td width="77%">
+
+<p>The user that is used to login to the remote host. If no
+user is specified, the effective uid of the <i>tentakel</i>
+process is used.</p>
+</td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="8%">
+
+<p><b>format</b></p>
+</td>
+<td width="1%"></td>
+<td width="77%">
+
+<p>The format controls how the output of the remote command
+is formatted. Most of the characters in <i>format</i> are
+output verbatim while some character sequences are treated
+special:</p>
+</td>
+</table>
+<!-- TABS -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="4" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="21%"></td>
+<td width="4%">
+
+<p><b>\\</b></p>
+</td>
+<td width="5%"></td>
+<td width="67%">
+
+<p>prints a literal \ character.</p>
+</td>
+<tr valign="top" align="left">
+<td width="21%"></td>
+<td width="4%">
+
+<p><b>\n</b></p>
+</td>
+<td width="5%"></td>
+<td width="67%">
+
+<p>prints a newline character.</p>
+</td>
+<tr valign="top" align="left">
+<td width="21%"></td>
+<td width="4%">
+
+<p><b>\t</b></p>
+</td>
+<td width="5%"></td>
+<td width="67%">
+
+<p>prints a tab character.</p>
+</td>
+<tr valign="top" align="left">
+<td width="21%"></td>
+<td width="4%">
+
+<p><b>%c</b></p>
+</td>
+<td width="5%"></td>
+<td width="67%">
+
+<p>Denotes a formatting expression that is expanded
+dynamically. Formatting expressions consist of a % followed
+by a single character c and are expanded depending on the
+value of c while c can be one of:</p>
+</td>
+</table>
+<!-- TABS -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="4" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="32%"></td>
+<td width="2%">
+
+<p><b>%</b></p>
+</td>
+<td width="8%"></td>
+<td width="55%">
+
+<p>a literal % character.</p>
+</td>
+<tr valign="top" align="left">
+<td width="32%"></td>
+<td width="2%">
+
+<p><b>d</b></p>
+</td>
+<td width="8%"></td>
+<td width="55%">
+
+<p>expanded to the name of the destination (ip or
+hostname).</p>
+</td>
+<tr valign="top" align="left">
+<td width="32%"></td>
+<td width="2%">
+
+<p><b>o</b></p>
+</td>
+<td width="8%"></td>
+<td width="55%">
+
+<p>expanded to the output of the remote command.</p>
+</td>
+<tr valign="top" align="left">
+<td width="32%"></td>
+<td width="2%">
+
+<p><b>s</b></p>
+</td>
+<td width="8%"></td>
+<td width="55%">
+
+<p>expanded to the exit status of the remote command.</p>
+</td>
+<tr valign="top" align="left">
+<td width="32%"></td>
+<td width="2%">
+
+<p><b>t</b></p>
+</td>
+<td width="8%"></td>
+<td width="55%">
+
+<p>expanded to the time (in seconds) that was needed to
+execute the remote command. This includes the time for
+network overhead etc.</p>
+</td>
+</table>
+<!-- INDENTATION -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="2" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="20%"></td>
+<td width="79%">
+<p>The default format is <tt>&quot;### %d(stat: %s, dur(s):
+%t):\n%o\n&quot;</tt>.</p></td>
+</table>
+<!-- INDENTATION -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="2" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="10%"></td>
+<td width="89%">
+<p><b>maxparallel</b></p></td>
+</table>
+<!-- INDENTATION -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="2" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="21%"></td>
+<td width="77%">
+<p>Run at most <i>maxparallel</i> commands in parallel. This
+is useful to avoid, for example, a command overloading a
+download server. &quot;0&quot; means no limit (default).
+Setting it to &quot;1&quot; is more or less senseless.</p>
+</td>
+</table>
+<!-- INDENTATION -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="2" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="4%"></td>
+<td width="95%">
+<p><b>Group Definition</b></p></td>
+</table>
+<!-- INDENTATION -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="2" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="10%"></td>
+<td width="89%">
+<p>Definitions of groups make up the second section of the
+configuration file. A new group is defined by a group
+statement of the form:</p>
+<!-- INDENTATION -->
+<p>group <i>name</i> ( [ <i>param1</i> [, <i>param2</i> ...
+] ] ) <i>members</i></p>
+<!-- INDENTATION -->
+<p><i>name</i> must consist only of alphanumeric
+characters.</p>
+<!-- INDENTATION -->
+<p>Inside the parentheses you can specify variables that
+follow the same rules as the variables in the first section
+of the configuration file. Those parameters override the
+global parameters for this specific group. Parameters of
+sub-groups override those set in the enclosing group. An
+exception from this rule is the <i>maxparallel</i>
+parameter, whose value is always taken from the outermost
+group.</p>
+</td>
+</table>
+<!-- INDENTATION -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="2" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="4%"></td>
+<td width="95%">
+<p><b>Group Members</b></p></td>
+</table>
+<!-- INDENTATION -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="2" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="10%"></td>
+<td width="89%">
+<p>A group definition ends with a whitespace-separated list
+of its members. Each item takes the form of:</p>
+</td>
+</table>
+<!-- INDENTATION -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="2" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="20%"></td>
+<td width="79%">
+<p>[ + | @ ] <i>name</i></p></td>
+</table>
+<!-- INDENTATION -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="2" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="10%"></td>
+<td width="89%">
+<p><i>name</i> must consist of alphanumeric characters but
+is additionally allowed to contain dots. Each name is
+prepended by a type designator which specifies the members
+type. Possible types are:</p></td>
+</table>
+<!-- TABS -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="4" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="21%"></td>
+<td width="8%">
+
+<p><b>+</b><i>name</i></p>
+</td>
+<td width="1%"></td>
+<td width="67%">
+
+<p>Host inclusion. <i>name</i> is included and can be an ip
+address or a hostname.</p>
+</td>
+<tr valign="top" align="left">
+<td width="21%"></td>
+<td width="8%">
+
+<p><b>@</b><i>name</i></p>
+</td>
+<td width="1%"></td>
+<td width="67%">
+
+<p>Group inclusion. All members of group <i>name</i> are
+included. Forward declarations are allowed.</p>
+</td>
+</table>
+<!-- INDENTATION -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="2" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="4%"></td>
+<td width="95%">
+<p><b>Configuration File Example</b></p></td>
+</table>
+<!-- INDENTATION -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="2" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="10%"></td>
+<td width="89%">
+<p><tt>set ssh_path=&quot;/usr/bin/ssh&quot;<br>
+group myGroup (method=&quot;ssh&quot;,
+user=&quot;stark&quot;) +localhost @others<br>
+group others () +hostA +hostB +hostC</tt></p>
+<!-- INDENTATION -->
+<p>For more examples please see the example configuration
+file.</p>
+</td>
+</table>
+<a name="PLUGINS"></a>
+<h2>PLUGINS</h2>
+<!-- INDENTATION -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="2" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="10%"></td>
+<td width="89%">
+<p>The set of remote methods tentakel can use to execute
+commands can be extended by means of plugins. A plugin is a
+single Python module and must appear in the
+$HOME/.tentakel/plugins/ directory. Inside a plugin an
+arbitrary number of subclasses of the RemoteCommand class
+may be defined. Each class corresponds to one remote
+method.</p>
+<!-- INDENTATION -->
+<p>By registering a plugin the set of possible choices for
+the <i>method</i> parameter can be extended.</p>
+<!-- INDENTATION -->
+<p>For further information please refer to the PLUGINS
+document which should be contained in your tentakel
+installation.</p>
+</td>
+</table>
+<a name="INTERACTIVE MODE"></a>
+<h2>INTERACTIVE MODE</h2>
+<!-- INDENTATION -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="2" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="10%"></td>
+<td width="89%">
+<p>The interactive mode has several advantages:</p></td>
+</table>
+<!-- TABS -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="4" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="1%">
+
+<p>-</p>
+</td>
+<td width="5%"></td>
+<td width="80%">
+
+<p>it&rsquo;s easier if more than one command needs to be
+executed</p>
+</td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="1%">
+
+<p>-</p>
+</td>
+<td width="5%"></td>
+<td width="80%">
+
+<p>you can leave out some quoting for the command</p>
+</td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="1%">
+
+<p>-</p>
+</td>
+<td width="5%"></td>
+<td width="80%">
+
+<p>the current configuration can be changed
+interactively</p>
+</td>
+</table>
+<!-- INDENTATION -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="2" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="10%"></td>
+<td width="89%">
+<p>The following commands are available in interactive
+sessions:</p>
+</td>
+</table>
+<!-- INDENTATION -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="2" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="10%"></td>
+<td width="89%">
+<p><b>help</b> <i>command</i></p></td>
+</table>
+<!-- INDENTATION -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="2" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="21%"></td>
+<td width="77%">
+<p>Display a brief help message on <i>command.</i></p>
+</td>
+</table>
+<!-- INDENTATION -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="2" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="10%"></td>
+<td width="89%">
+<p><b>listgroups</b></p></td>
+</table>
+<!-- INDENTATION -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="2" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="21%"></td>
+<td width="77%">
+<p>Display a list of available groups.</p>
+</td>
+</table>
+<!-- INDENTATION -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="2" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="10%"></td>
+<td width="89%">
+<p><b>use</b> <i>groupname</i></p></td>
+</table>
+<!-- INDENTATION -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="2" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="21%"></td>
+<td width="77%">
+<p>Set the current group to <i>groupname.</i></p>
+</td>
+</table>
+<!-- TABS -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="5" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+<p><b>hosts</b></p>
+</td>
+<td width="13%"></td>
+<td width="48%">
+
+<p>Display a list of affected hosts.</p>
+</td>
+<td width="19%">
+</td>
+</table>
+<!-- INDENTATION -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="2" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="10%"></td>
+<td width="89%">
+<p><b>exec</b> <i>command</i></p></td>
+</table>
+<!-- INDENTATION -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="2" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="21%"></td>
+<td width="77%">
+<p>Execute <i>command</i> on all affected hosts.</p>
+</td>
+</table>
+<!-- TABS -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="4" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+<p><b>conf</b></p>
+</td>
+<td width="2%"></td>
+<td width="77%">
+
+<p>Change the current configuration interactively. The
+default editor command is /usr/bin/vi but can be overridden
+by setting either of the <i>VISUAL</i> or <i>EDITOR</i>
+environment variables. Using the <i>conf</i> command does
+only affect the configuration of the running interactive
+tentakel process. It does not change any configuration
+file.</p>
+</td>
+<tr valign="top" align="left">
+<td width="11%"></td>
+<td width="7%">
+
+<p><b>quit</b></p>
+</td>
+<td width="2%"></td>
+<td width="77%">
+
+<p>Exit tentakel. The same can be done by pressing
+ctrl-d.</p>
+</td>
+</table>
+<!-- INDENTATION -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="2" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="10%"></td>
+<td width="89%">
+<p>If the <b>readline</b>(3) library is installed on the
+system you can use the tab key for automatic completion of
+partially entered command names.</p>
+</td>
+</table>
+<a name="EXAMPLES"></a>
+<h2>EXAMPLES</h2>
+<!-- INDENTATION -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="2" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="10%"></td>
+<td width="89%">
+<p><tt>$ tentakel -g myGroup uptime</tt></p>
+<!-- INDENTATION -->
+<p>This command executes the <b>uptime</b>(1) command on all
+hosts defined in group <i>myGroup.</i> The whole output
+(even stderr) of each host is printed according to the
+format string.</p>
+</td>
+</table>
+<a name="FILES"></a>
+<h2>FILES</h2>
+<!-- INDENTATION -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="2" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="10%"></td>
+<td width="89%">
+<p><i>/etc/tentakel.conf</i></p></td>
+</table>
+<!-- INDENTATION -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="2" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="21%"></td>
+<td width="77%">
+<p>Site-wide configuration file.</p></td>
+</table>
+<!-- INDENTATION -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="2" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="10%"></td>
+<td width="89%">
+<p><i>$HOME/.tentakel/tentakel.conf</i></p></td>
+</table>
+<!-- INDENTATION -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="2" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="21%"></td>
+<td width="77%">
+<p>User-specific configuration file.</p></td>
+</table>
+<!-- INDENTATION -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="2" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="10%"></td>
+<td width="89%">
+<p><i>$HOME/.tentakel/plugins/</i></p></td>
+</table>
+<!-- INDENTATION -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="2" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="21%"></td>
+<td width="77%">
+<p>User-defined remote method plugins</p>
+</td>
+</table>
+<!-- INDENTATION -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="2" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="10%"></td>
+<td width="89%">
+<p>The user-specific configuration file takes precedence
+over the site-wide one.</p>
+</td>
+</table>
+<a name="BUGS"></a>
+<h2>BUGS</h2>
+<!-- INDENTATION -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="2" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="10%"></td>
+<td width="89%">
+<p><i>tentakel</i> uses threads. This restricts the usage to
+platforms that have a working threads implementation
+supported by Python.</p>
+<!-- INDENTATION -->
+<p>Currently, <b>ssh</b>(1) and <b>rsh</b>(1) are the only
+supported remote methods.</p>
+</td>
+</table>
+<a name="REPORTING BUGS"></a>
+<h2>REPORTING BUGS</h2>
+<!-- INDENTATION -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="2" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="10%"></td>
+<td width="89%">
+<p>Please visit http://tentakel.biskalar.de/. There you will
+find up-to-date information about how to report bugs.</p>
+</td>
+</table>
+<a name="AUTHOR"></a>
+<h2>AUTHOR</h2>
+<!-- INDENTATION -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="2" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="10%"></td>
+<td width="89%">
+<p>Written by Sebastian Stark and Marlon Berlin.</p>
+</td>
+</table>
+<a name="SEE ALSO"></a>
+<h2>SEE ALSO</h2>
+<!-- INDENTATION -->
+<table width="100%" border=0 rules="none" frame="void"
+       cols="2" cellspacing="0" cellpadding="0">
+<tr valign="top" align="left">
+<td width="10%"></td>
+<td width="89%">
+<p><b>ssh</b>(1)<b>, rsh</b>(1)<b>,
+http://tentakel.biskalar.de/</b></p>
+</td>
+</table>
+<hr>
+</body>
+</html>

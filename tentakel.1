@@ -1,0 +1,349 @@
+.\"
+.\" $Id: tentakel.1,v 1.53 2005/03/20 15:54:26 cran Exp $
+.\"
+.\" Copyright (c) 2002, 2003, 2004, 2005 Sebastian Stark
+.\"
+.\" Redistribution and use in source and binary forms, with or without
+.\" modification, are permitted provided that the following conditions
+.\" are met:
+.\" 1. Redistributions of source code must retain the above copyright
+.\"    notice, this list of conditions and the following disclaimer.
+.\" 2. Redistributions in binary form must reproduce the above copyright
+.\"    notice, this list of conditions and the following disclaimer in the
+.\"    documentation and/or other materials provided with the distribution.
+.\"
+.\" THIS SOFTWARE IS PROVIDED BY THE AUTHOR SEBASTIAN STARK
+.\" ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+.\" LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+.\" A PARTICULAR PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR
+.\" OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+.\" SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+.\" LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+.\" DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+.\" THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+.\" (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+.\" OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+.fam P
+.TH TENTAKEL 1 "2003 December 28"
+.SH NAME
+tentakel \- distributed command execution
+.SH SYNOPSIS
+.B tentakel [ -lhv ] [ -c
+.I file
+.B ] [ -g
+.I group
+.B ] [
+.I command
+.B ]
+.SH DESCRIPTION
+.I tentakel
+is a program for executing the same command on many hosts in
+parallel using various remote methods.
+.LP
+It can make use of several sets of hosts that are defined in a
+configuration file as groups.
+.LP
+The command is executed in parallel on all hosts in this group.
+By default, every result is printed to stdout. The output format
+can be defined for each group.
+.LP
+If no command is specified
+.I tentakel
+goes into interactive mode which can be used for repeated commands.
+.LP
+The requirements on the remote hosts depend on the selected remote
+method. The
+.I ssh
+method, for example, needs a running sshd on the remote side.
+.I tentakel
+itself only needs to be installed on the controlling host.
+.SH OPTIONS
+.TP
+.B \-c \fIfile\fP
+Use
+.I file
+as the configuration file if specified, otherwise try
+.I $HOME/.tentakel/tentakel.conf
+and finally
+.I /etc/tentakel.conf.
+.TP
+.B \-g \fIgroupname\fP
+Select the group
+.I groupname
+The group must be defined in the configuration file. If not specified
+.I tentakel
+implicitely assumes the \(lqdefault\(rq group.
+.TP
+.B \-l
+Display a list of possible group choices.
+.TP
+.B \-h
+Display a brief help message.
+.TP
+.B \-v
+Display version information.
+.TP
+.B command
+The command that is to be executed on all hosts in the current group.
+If
+.I command
+is omitted,
+.I tentakel
+starts in interactive mode.
+.SH CONFIGURATION FILE
+Everything appearing after a # character will be ignored to the next newline.
+Leading whitespace will be ignored.
+Host and List objects become members of the last named group declaration.
+Forward declarations are allowed.
+.LP
+In the first section you may set global variables like:
+.LP
+set \fIvar\fP="\fIvalue\fP"
+.LP
+.I value
+must be enclosed in double quotes even if it does not contain spaces.
+To write the double quote characters itself in the value, you have to write
+two successive double quote characters, e. g. var="foo(""bar"")".
+.LP
+.I var
+must be one of the following:
+.TP
+.B ssh_path
+The path where the
+.BR ssh (1)
+binary is located.
+.TP
+.B rsh_path
+The path where the
+.BR rsh (1)
+binary is located.
+.TP
+.B method
+You can choose between "ssh" and "rsh" (ssh is the default).
+A user may define additional methods by creating plugins, as
+explained later.
+.TP
+.B user
+The user that is used to login to the remote host. If no user is
+specified, the effective uid of the
+.I tentakel
+process is used.
+.TP
+.B format
+The format controls how the output of the remote command is formatted.
+Most of the characters in
+.I format
+are output verbatim while some character sequences are treated special:
+.RS
+.TP
+.B \e\e
+prints a literal \\ character.
+.TP
+.B \en
+prints a newline character.
+.TP
+.B \et
+prints a tab character.
+.TP
+.B %c
+Denotes a formatting expression that is expanded dynamically.
+Formatting expressions consist of a % followed by a single character c and are
+expanded depending on the value of c while c can be one of:
+.RS
+.TP
+.B %
+a literal % character.
+.TP
+.B d
+expanded to the name of the destination (ip or hostname).
+.TP
+.B o
+expanded to the output of the remote command.
+.TP
+.B s
+expanded to the exit status of the remote command.
+.TP
+.B t
+expanded to the time (in seconds) that was needed to execute the remote command.
+This includes the time for network overhead etc.
+.LP
+.RE
+The default format is \f(CR"### %d(stat: %s, dur(s): %t):\\n%o\\n"\fP.
+.RE
+.TP
+.B maxparallel
+Run at most
+.I maxparallel
+commands in parallel. This is useful to avoid, for example, a command
+overloading a download server. "0" means no limit (default).
+Setting it to "1" is more or less senseless.
+
+.SS Group Definition
+Definitions of groups make up the second section of the configuration file.
+A new group is defined by a group statement of the form:
+.LP
+group
+.I name
+( [ \fIparam1\fP [, \fIparam2\fP ... ] ] )
+.I members
+.LP
+.I name
+must consist only of alphanumeric characters.
+.LP
+Inside the parentheses you can specify variables that follow the same rules
+as the variables in the first section of the configuration file.
+Those parameters override the global parameters for this specific group.
+Parameters of sub-groups override those set in the enclosing group.
+An exception from this rule is the
+.I maxparallel
+parameter, whose value is always taken from the outermost group.
+.SS Group Members
+A group definition ends with a whitespace-separated list of its members.
+Each item takes the form of:
+.LP
+.RS
+[ + | @ ]
+.I name
+.RE
+.LP
+.I name
+must consist of alphanumeric characters but is additionally allowed to contain
+dots.
+Each name is prepended by a type designator which specifies the members type.
+Possible types are:
+.RS
+.TP
+.B +\fIname\fP
+Host inclusion.
+.I name
+is included and can be an ip address or a hostname.
+.TP
+.B @\fIname\fP
+Group inclusion.
+All members of group
+.I name
+are included. Forward declarations are allowed.
+.RE
+.RE
+.SS Configuration File Example
+.PD 0
+\f(CRset ssh_path="/usr/bin/ssh"\fP
+.LP
+\f(CRgroup myGroup (method="ssh", user="stark") +localhost @others\fP
+.LP
+\f(CRgroup others () +hostA +hostB +hostC\fP
+.PD
+.LP
+For more examples please see the example configuration file.
+
+.SH PLUGINS
+The set of remote methods tentakel can use to execute commands
+can be extended by means of plugins. A plugin is a single
+Python module and must appear in the $HOME/.tentakel/plugins/
+directory. Inside a plugin an arbitrary number of subclasses
+of the RemoteCommand class may be defined. Each class corresponds
+to one remote method.
+.LP
+By registering a plugin the set of possible choices for the
+.I method
+parameter can be extended.
+.LP
+For further information please refer to the PLUGINS document which
+should be contained in your tentakel installation.
+
+.SH INTERACTIVE MODE
+The interactive mode has several advantages:
+.PD 0
+.IP - 2
+it's easier if more than one command needs to be executed
+.IP -
+you can leave out some quoting for the command
+.IP -
+the current configuration can be changed interactively
+.PD
+.LP
+The following commands are available in interactive sessions:
+.TP
+.B help \fIcommand\fP
+Display a brief help message on
+.I command.
+.TP
+.B listgroups
+Display a list of available groups.
+.TP
+.B use \fIgroupname\fP
+Set the current group to
+.I groupname.
+.TP
+.B hosts
+Display a list of affected hosts.
+.TP
+.B exec \fIcommand\fP
+Execute
+.I command
+on all affected hosts.
+.TP
+.B conf
+Change the current configuration interactively.
+The default editor command is /usr/bin/vi but can be overridden
+by setting either of the
+.I VISUAL
+or
+.I EDITOR
+environment variables.
+Using the
+.I conf
+command does only affect the configuration of the running interactive
+tentakel process.
+It does not change any configuration file.
+.TP
+.B quit
+Exit tentakel. The same can be done by pressing ctrl-d.
+.LP
+If the
+.BR readline (3)
+library is installed on the system you can use the tab key
+for automatic completion of partially entered command names.
+.SH EXAMPLES
+\f(CR$ tentakel -g myGroup uptime\fP
+.PP
+This command executes the
+.BR uptime (1)
+command on all hosts defined in group
+.I myGroup.
+The whole output (even stderr) of each host is printed according
+to the format string.
+.SH FILES
+.PD 0
+.TP
+.I /etc/tentakel.conf
+Site-wide configuration file.
+.TP
+.I $HOME/.tentakel/tentakel.conf
+User-specific configuration file.
+.TP
+.I $HOME/.tentakel/plugins/
+User-defined remote method plugins
+.PD
+.LP
+The user-specific configuration file takes precedence over the
+site-wide one.
+.SH BUGS
+.I tentakel
+uses threads. This restricts the usage to platforms that
+have a working threads implementation supported by Python.
+.LP
+Currently,
+.BR ssh (1)
+and
+.BR rsh (1)
+are the only supported remote methods.
+.SH "REPORTING BUGS"
+Please visit http://tentakel.biskalar.de/. There you will find
+up-to-date information about how to report bugs.
+.SH AUTHOR
+Written by Sebastian Stark and Marlon Berlin.
+.SH "SEE ALSO"
+.BR ssh (1) ,
+.BR rsh (1) ,
+.BR http://tentakel.biskalar.de/

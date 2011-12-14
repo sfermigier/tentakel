@@ -1,0 +1,120 @@
+#!/usr/bin/python
+
+# $Id: tentakel,v 1.25 2005/03/17 20:39:14 cran Exp $
+#
+# Copyright (c) 2002, 2003, 2004, 2005 Sebastian Stark
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions
+# are met:
+# 1. Redistributions of source code must retain the above copyright
+#    notice, this list of conditions and the following disclaimer.
+# 2. Redistributions in binary form must reproduce the above copyright
+#    notice, this list of conditions and the following disclaimer in the
+#    documentation and/or other materials provided with the distribution.
+#
+# THIS SOFTWARE IS PROVIDED BY THE AUTHOR SEBASTIAN STARK
+# ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+# LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+# A PARTICULAR PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR
+# OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+# SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+# LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+# DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+# THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+# OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+
+"""Distributed command execution
+
+Usage: tentakel [ options ] [ command ]
+ -c file        Use file as config file
+ -g group       Select group     
+ -l		Print list of available groups
+ -h             Display this help text
+ -v		Display version information
+ command        Remote command. Interactive mode if not specified
+
+See tentakel(1) for more information
+"""
+
+import lekatnet.error as error
+import lekatnet.config as config
+import lekatnet.remote as remote
+import lekatnet.shell as shell
+import os
+import sys
+import getopt
+
+if __name__ == "__main__":
+
+	tentakelVersion = "tentakel-2.2"
+	destinations = None
+	groupName = "default"
+	flag_listgroups = 0
+	override_config = ""
+
+	try:
+		opts, args = getopt.getopt(sys.argv[1:], "g:hlvc:")
+	except getopt.GetoptError:
+		error.err("parameter error")
+	for o, v in opts:
+		if o == "-g":
+			groupName = v
+		if o == "-c":
+			override_config = v
+		if o == "-h":
+			print __doc__
+			sys.exit(0)
+		if o == "-l":
+			flag_listgroups = 1
+		if o == "-v":
+			print tentakelVersion
+			sys.exit(0)
+	command = ' '.join(args)
+
+	# check wether the user has chosen a specific configuration file
+	# on the command line
+	if override_config:
+		if os.path.isfile(override_config):
+			configfile = override_config
+			found_config = True
+		else:
+			error.err("no such file: '%s'" % override_config)
+	else:
+	# look for configuration files from default locations
+		configs = [	os.path.join(config.__user_dir, 'tentakel.conf'),
+				'/etc/tentakel.conf']
+		found_config = False
+		for c in configs:
+			if os.path.isfile(c):
+				configfile = c
+				found_config = True
+				break
+
+	if not found_config: error.err("no configuration file found")
+
+	# load configuration
+	conf = config.ConfigBase()
+	f = open(configfile)
+	conf.load(f)
+	f.close()
+
+	# process -g parameter
+	if flag_listgroups:
+		print "available groups:"
+		for g in conf.getGroups():
+			sys.stdout.write(g + " ")
+		print
+		sys.exit(0)
+	
+	# batch mode: execute command
+	if command:
+		dests = remote.RemoteCollator(conf, groupName)
+		dests.execAll(command)
+		dests.displayAll()
+	else:
+	# interactive mode: open shell
+		sh = shell.tentakelShell(conf, groupName)
+		sh.cmdloop(intro="interactive mode")
