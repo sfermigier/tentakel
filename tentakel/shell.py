@@ -46,14 +46,15 @@ class tentakelShell(cmd.Cmd):
     self.conf = conf
     self.dests = remote.RemoteCollator(conf, groupName)
 
-  def emptyline(self): pass
+  def emptyline(self):
+    pass
 
   def postcmd(self, stop, rest):
     self.prompt = "tentakel(%s)> " % self.groupName
     return stop
 
   def do_exec(self, execString):
-    "exec <cmd>: applies <cmd> to the current group"
+    """exec <cmd>: applies <cmd> to the current group"""
     
     if not execString:
       print "empty command"
@@ -62,30 +63,30 @@ class tentakelShell(cmd.Cmd):
     self.dests.displayAll()
 
   def do_conf(self, rest):
-    "conf: interactively edit current configuration"
+    """conf: interactively edit current configuration"""
     
     self.conf.edit()
     self.dests.useConf(self.conf, self.groupName)
   
   def do_use(self, rest):
-    "use <groupname>: use the specified group"
+    """use <groupname>: use the specified group"""
 
     if rest:
       self.groupName = rest
       self.dests.useConf(self.conf, self.groupName)
 
   def do_listgroups(self, rest):
-    "listgroups: list available groups"
+    """listgroups: list available groups"""
 
     print "\n".join(self.conf.getGroups())
 
   def do_hosts(self, rest):
-    "hosts: show list of affected hosts"
+    """hosts: show list of affected hosts"""
     
     print "\n".join(self.dests.getDestinations())
 
   def do_quit(self, rest):
-    "quit or ctrl-d: quit program"
+    """quit or ctrl-d: quit program"""
     
     return 1
 

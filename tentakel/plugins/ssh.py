@@ -33,12 +33,12 @@ class SSHRemoteCommand(RemoteCommand):
   """SSH remote execution class"""
 
   def __init__(self, destination, params):
-    self.sshpath = params['ssh_path']
+    self.ssh_path = params['ssh_path']
     self.user = params['user']
     RemoteCommand.__init__(self, destination, params)
 
   def _rexec(self, command):
-    s = '%s %s@%s "%s"' % (self.sshpath, self.user, self.destination, command)
+    s = '%s %s@%s "%s"' % (self.ssh_path, self.user, self.destination, command)
     t1 = time.time()
     status, output = commands.getstatusoutput(s)
     self.duration = time.time() - t1

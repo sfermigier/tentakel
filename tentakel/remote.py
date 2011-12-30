@@ -80,7 +80,7 @@ class FormatString(tpg.Parser):
   formatMap = property(getMap, setMap, doc="current format character mapping")
   
   def getEscape(self, e):
-    "Return a dictionary which maps escape strings to literals"
+    """Return a dictionary which maps escape strings to literals"""
     return {
       r"\\": r"\\",
       r"\n": "\n",
@@ -132,16 +132,16 @@ class RemoteCommand(threading.Thread):
     self.start()
 
   def execute(self, command):
-    "Execute a command in this thread"
+    """Execute a command in this thread"""
     self._commandQueue.put_nowait(command)
   
   def putResult(self, result):
-    "Push result onto the result queue"
+    """Push result onto the result queue"""
     self._resultQueue.put(result)
     self.__class__.finishedObjects.put(self)
   
   def getResult(self):
-    "Return result from result queue"
+    """Return result from result queue"""
     return self._resultQueue.get()
   
   def run(self):
@@ -159,7 +159,7 @@ class RemoteCommand(threading.Thread):
       self._stopevent.wait(self._sleepPeriod)
   
   def join(self, timeout=None):
-    "Stop the thread"
+    """Stop the thread"""
     self._stopevent.set()
     threading.Thread.join(self, self._commandTimeout)
     
@@ -174,10 +174,11 @@ def remoteCommandFactory(destination, params):
   except KeyError:
     error.err('Method not implemented: "%s"' % method)
     
+
 class RemoteCollator(object):
   """This class is meant to hold RemoteCommand instances each
   of which implements a specific way too execute a command on
-  a remote host"""
+  a remote host."""
 
   def __init__(self, conf, groupName):
     self.clear()
@@ -185,7 +186,7 @@ class RemoteCollator(object):
     self.formatter = FormatString()
 
   def clear(self):
-    "Empty the list of contained remoteobjects after stopping them"
+    """Empty the list of contained remoteobjects after stopping them."""
     try:
       self.remoteobjects
       for obj in self.remoteobjects:  
@@ -196,7 +197,7 @@ class RemoteCollator(object):
 
   def useConf(self, conf, groupName):
     """Load the specified group from configuration object conf
-    and add RemoteCommand objects for each contained host"""
+    and add RemoteCommand objects for each contained host."""
     save = self
     self.clear()
     try:
@@ -270,6 +271,3 @@ def registerRemoteCommandPlugin(method, cls):
     error.err('%s is not a descendant of RemoteCommand' % cls)
 
 from plugins import *
-
-if __name__ == "__main__":
-  pass

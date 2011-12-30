@@ -1,7 +1,6 @@
-
-# $Id: config.py,v 1.35 2005/03/17 20:25:43 cran Exp $
 #
 # Copyright (c) 2002, 2003, 2004, 2005 Sebastian Stark
+# Copyright (c) 2011 Stefane Fermigier
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions
@@ -55,18 +54,20 @@ import tempfile
 import sys
 import tpg
 
-PARAMS = {  'ssh_path': "/usr/bin/ssh",
+PARAMS = {
+    'ssh_path': "/usr/bin/ssh",
     'rsh_path': "/usr/bin/rsh",
     'method': "ssh",
     'maxparallel': "0",
     'user': pwd.getpwuid(os.geteuid())[0],
     'format': r"### %d(stat: %s, dur(s): %t):\n%o\n"
-  }
+}
 
 METHODS = ['ssh', 'rsh']
 
 __user_dir = os.path.join(os.environ['HOME'], '.tentakel')
 __user_plugin_dir = os.path.join(__user_dir, 'plugins')
+
 
 class TConf(tpg.Parser):
   __doc__ = r"""
@@ -127,6 +128,7 @@ class TConf(tpg.Parser):
   ;
         """ % { "keywords": "|".join(PARAMS.keys()) }
 
+
 class ConfigGroup(dict):
   "Store group info"
 
@@ -145,6 +147,7 @@ class ConfigGroup(dict):
       if self[param]:
         l.append('%s="%s"' % (param, re.sub('"', '""', self[param])))
     return "group %s (%s)" % (self["name"], ', '.join(l))
+
 
 class ConfigBase(dict):
   """Store all configuration parameters
@@ -206,8 +209,8 @@ class ConfigBase(dict):
   def edit(self):
     "Interactively edit configuration"
 
+    tempedit = tempfile.NamedTemporaryFile()
     try:
-      tempedit = tempfile.NamedTemporaryFile()
       self.dump(tempedit)
       tempedit.seek(0,0)
       editor = os.getenv("VISUAL") or os.getenv("EDITOR") or "vi"
@@ -224,7 +227,7 @@ class ConfigBase(dict):
     for s_param, s_value in settings.items():
       if s_value:
         out = "%sset %s=\"%s\"\n" % (out, s_param, s_value)
-    out = out + "\n"
+    out += "\n"
     groups = self["groups"]
     for groupName, groupObj in groups.items():
       out = out + str(groupObj) + "\n"
@@ -232,21 +235,21 @@ class ConfigBase(dict):
         out = out + "\t@" + list + "\n"
       for host in groups[groupName]["hosts"]:
         out = out + "\t+" + host + "\n"
-      out = out + "\n"
+      out += "\n"
     return out
 
   def getGroups(self):
-    "Return list of all group names"
+    """Return list of all group names"""
 
     return self["groups"].keys()
 
   def _getGroup(self, groupName):
-    "Return group specific configuration for groupName"
+    """Return group specific configuration for groupName"""
 
     return self["groups"][groupName]
   
   def getGroupMembers(self, groupName):
-    "Return list of groupName members with sub lists expanded recursively"
+    """Return list of groupName members with sub lists expanded recursively"""
 
     g = self._getGroup(groupName)
     out = [ (x, self.getGroupParams(groupName)) for x in g["hosts"] ]
@@ -283,7 +286,7 @@ class ConfigBase(dict):
         return self["settings"][param]
 
   def getGroupParams(self, groupName):
-    "Return complete configuration for the group groupName"
+    """Return complete configuration for the group groupName"""
 
     return dict([ (k, self.getParam(k, groupName)) for k in PARAMS.keys() ])
 

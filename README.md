@@ -1,5 +1,5 @@
-$Id: README,v 1.22 2005/03/20 15:54:25 cran Exp $
-
+About
+=====
 
 Tentakel is a program for executing the same command on many hosts in parallel
 using various remote methods. It can make use of several sets of hosts that are
@@ -21,10 +21,12 @@ addition to the builtin ones.
 For more information on available options please refer to the manpage
 tentakel(1).
 
+The project homepage is: <https://github.com/sfermigier/tentakel>
 
-The project homepage is: http://tentakel.biskalar.de/
+The current maintainer is:
+  - Stefane Fermigier <sf@fermigier.com>
 
-The Authors are:
+The original authors were:
   - Sebastian Stark <cran@users.sourceforge.net>
   - Marlon Berlin <imaginat@users.sourceforge.net>
 
