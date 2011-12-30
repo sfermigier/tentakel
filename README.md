@@ -24,11 +24,13 @@ tentakel(1).
 The project homepage is: <https://github.com/sfermigier/tentakel>
 
 The current maintainer is:
-  - Stefane Fermigier <sf@fermigier.com>
+
+- Stefane Fermigier <sf@fermigier.com>
 
 The original authors were:
-  - Sebastian Stark <cran@users.sourceforge.net>
-  - Marlon Berlin <imaginat@users.sourceforge.net>
+
+- Sebastian Stark <cran@users.sourceforge.net>
+- Marlon Berlin <imaginat@users.sourceforge.net>
 
 This software contains the Toy Parser Generator (tpg.py)
 written by Christophe Delord.
