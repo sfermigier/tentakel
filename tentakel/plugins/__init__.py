@@ -16,6 +16,7 @@ from tentakel.config import __user_plugin_dir
 # extend the packages scope to the users plugin directory
 __path__.append(__user_plugin_dir)
 
+
 def __importPlugins():
   p = []
   for path in __user_plugin_dir, os.path.dirname(__file__):

@@ -1,9 +1,11 @@
 
 from distutils.core import setup
 
+VERSION = "2.3"
+
 setup(
   name = "tentakel",
-  version = "2.4",
+  version = VERSION,
   description = "distributed command execution",
   url = "https://github.com/sfermigier/tentakel",
   author = "Sebastian Stark, Marlon Berlin",
@@ -18,9 +20,10 @@ setup(
   data_files = [
       ("man/man1", ["doc/tentakel.1"]),
       ("share/doc/tentakel", [
-         "doc/tentakel.conf.example",
-         "README.md",
-         "TODO",
-         "PLUGINS",
-         "doc/tentakel.1.html"])]
+          "README.md",
+          "TODO",
+          "doc/tentakel.conf.example",
+          "doc/tentakel.1.html",
+          "doc/PLUGINS",
+      ])]
 )

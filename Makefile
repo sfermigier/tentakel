@@ -24,7 +24,6 @@ regress:
 	cd py/lekatnet && $(PYTHON) remote.py
 
 clean:
-	rm -f *~
-	rm -f py/{,lekatnet/,lekatnet/plugins/}{*~,*.pyc,*.pyo}
-	rm -rf py/build
-	rm -f $(REL).tgz
+	rm -f {,tentakel/,tentakel/plugins/,tests/}{*~,*.pyc,*.pyo}
+	rm -rf build dist
+	rm -rf .tox
