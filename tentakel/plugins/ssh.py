@@ -1,5 +1,3 @@
-
-# $Id: ssh.py,v 1.4 2005/03/17 21:55:27 cran Exp $
 #
 # Copyright (c) 2002, 2003, 2004 Sebastian Stark
 #
@@ -28,6 +26,7 @@ from tentakel.remote import registerRemoteCommandPlugin
 from tentakel.remote import RemoteCommand
 import time
 import commands
+
 
 class SSHRemoteCommand(RemoteCommand):
   """SSH remote execution class"""

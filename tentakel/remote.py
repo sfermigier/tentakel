@@ -1,6 +1,3 @@
-
-# $Id: remote.py,v 1.38 2005/03/20 15:16:53 cran Exp $
-#
 # Copyright (c) 2002, 2003, 2004, 2005 Sebastian Stark
 #
 # Redistribution and use in source and binary forms, with or without
@@ -42,11 +39,9 @@ Provides the two classes which are most important in tentakel:
 
 import error
 import sys
-import commands
-import threading, Queue
+import threading
+import Queue
 import tpg
-import time
-import os
 
 
 class FormatString(tpg.Parser):
@@ -70,15 +65,15 @@ class FormatString(tpg.Parser):
   def __init__(self):
     super(FormatString, self).__init__()
     self.map = {r"%%": "%"}
-  
+
   def getMap(self):
     return self.map
-  
+
   def setMap(self, userMap):
     self.map.update(userMap)
-  
+
   formatMap = property(getMap, setMap, doc="current format character mapping")
-  
+
   def getEscape(self, e):
     """Return a dictionary which maps escape strings to literals"""
     return {
@@ -87,7 +82,7 @@ class FormatString(tpg.Parser):
       r"\t": "\t"
     }[e]
 
-  def getSpecialChar(self,s):
+  def getSpecialChar(self, s):
     return self.formatMap[s]
 
 
@@ -127,27 +122,27 @@ class RemoteCommand(threading.Thread):
     # and therefore a TODO
     self.__maxparallel = int(params['maxparallel'])
     # Create the semaphore as a class attribute only once and only when needed
-    if not self.__class__.__dict__.has_key('slot') and not self.__maxparallel <= 0:
+    if not 'slot' in self.__class__.__dict__ and not self.__maxparallel <= 0:
       self.__class__.slot = threading.BoundedSemaphore(self.__maxparallel)
     self.start()
 
   def execute(self, command):
     """Execute a command in this thread"""
     self._commandQueue.put_nowait(command)
-  
+
   def putResult(self, result):
     """Push result onto the result queue"""
     self._resultQueue.put(result)
     self.__class__.finishedObjects.put(self)
-  
+
   def getResult(self):
     """Return result from result queue"""
     return self._resultQueue.get()
-  
+
   def run(self):
     while not self._stopevent.isSet():
       try:
-        command = self._commandQueue.get(timeout = self._commandTimeout)
+        command = self._commandQueue.get(timeout=self._commandTimeout)
         if self.__maxparallel > 0:
           self.slot.acquire()
         result = self._rexec(command)
@@ -157,12 +152,12 @@ class RemoteCommand(threading.Thread):
       except Queue.Empty:
         pass
       self._stopevent.wait(self._sleepPeriod)
-  
+
   def join(self, timeout=None):
     """Stop the thread"""
     self._stopevent.set()
     threading.Thread.join(self, self._commandTimeout)
-    
+
 
 def remoteCommandFactory(destination, params):
   """Depending in the method, instantiate a corresponding
@@ -173,7 +168,7 @@ def remoteCommandFactory(destination, params):
     return _remoteCommandPlugins[method](destination, params)
   except KeyError:
     error.err('Method not implemented: "%s"' % method)
-    
+
 
 class RemoteCollator(object):
   """This class is meant to hold RemoteCommand instances each
@@ -189,7 +184,7 @@ class RemoteCollator(object):
     """Empty the list of contained remoteobjects after stopping them."""
     try:
       self.remoteobjects
-      for obj in self.remoteobjects:  
+      for obj in self.remoteobjects:
         obj.join()
     except AttributeError:
       pass
@@ -212,14 +207,14 @@ class RemoteCollator(object):
     """Return expanded list of hosts"""
     return [x.destination for x in self.remoteobjects]
 
-  def add(self,obj):
+  def add(self, obj):
     """Add a RemoteObject"""
-    if isinstance(obj,RemoteCommand):
+    if isinstance(obj, RemoteCommand):
       self.remoteobjects.append(obj)
     else:
       pass
-  
-  def remove(self,obj):
+
+  def remove(self, obj):
     """Remove a RemoteObject"""
     self.remoteobjects.remove(obj)
 
@@ -236,13 +231,13 @@ class RemoteCollator(object):
 
     self.formatter.formatMap = map
     return self.formatter(self.format)
-  
+
   def execAll(self, command):
     """Execute command on all remote objects"""
 
     for obj in self.remoteobjects:
       obj.execute(command)
-  
+
   def displayAll(self):
     """Display the next pending result for every remote object"""
 
@@ -262,6 +257,7 @@ class RemoteCollator(object):
 
 
 _remoteCommandPlugins = {}
+
 
 def registerRemoteCommandPlugin(method, cls):
   """Needs to be imported and executed by remote command plugins"""

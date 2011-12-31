@@ -1,5 +1,3 @@
-
-# $Id: rsh.py,v 1.4 2005/03/17 21:55:27 cran Exp $
 #
 # Copyright (c) 2002, 2003, 2004 Sebastian Stark
 #
@@ -31,6 +29,7 @@ import commands
 import random
 import md5
 
+
 class RSHRemoteCommand(RemoteCommand):
   """RSH remote execution class"""
 
@@ -42,7 +41,7 @@ class RSHRemoteCommand(RemoteCommand):
 
   def _rexec(self, command):
     s = '%s -l %s %s "%s; echo %s \\$?"' % (
-      self.rsh_path, self.user, self.destination, command,self.delim)
+      self.rsh_path, self.user, self.destination, command, self.delim)
     t1 = time.time()
     ol = commands.getoutput(s).split('\n')
     for line_number, line in enumerate(ol):
@@ -53,5 +52,6 @@ class RSHRemoteCommand(RemoteCommand):
         break
     self.duration = time.time() - t1
     return (int(status), '\n'.join(ol))
+
 
 registerRemoteCommandPlugin('rsh', RSHRemoteCommand)

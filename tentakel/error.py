@@ -1,5 +1,3 @@
-
-# $Id: error.py,v 1.7 2005/03/15 08:11:47 cran Exp $
 #
 # Copyright (c) 2002, 2003, 2004, 2005 Sebastian Stark
 #
@@ -29,9 +27,11 @@
 
 import sys
 
+
 def err(errstring):
   sys.stderr.write("tentakel error: %s\n" % errstring)
   sys.exit(1)
+
 
 def warn(warnstring):
   sys.stderr.write("tentakel: %s\n" % warnstring)

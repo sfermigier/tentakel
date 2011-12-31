@@ -140,7 +140,7 @@ class ConfigGroup(dict):
     self.update(p)
     self["hosts"] = []
     self["lists"] = []
-  
+
   def __str__(self):
     l = []
     for param in PARAMS.keys():
@@ -151,7 +151,7 @@ class ConfigGroup(dict):
 
 class ConfigBase(dict):
   """Store all configuration parameters
-  
+
   This class is used to hold a specific configuration state in a special
   tree that's built out of dictionaries and lists. Single parameters can
   be changed or asked for their values. The whole configuration can be
@@ -165,7 +165,7 @@ class ConfigBase(dict):
   def __init__(self):
     super(ConfigBase, self).__init__()
     self.clear()
-  
+
   def clear(self):
     "Make configuration empty"
     self["groups"] = {}
@@ -176,20 +176,20 @@ class ConfigBase(dict):
     the configuration tree"""
     tp = TConf()
     self.update(tp(txt))
-  
+
   def load(self, file):
     "Load configuration from file"
-    
+
     try:
       self.parse("".join(file.readlines()))
     except tpg.SyntacticError, excerr:
       error.warn("in %s: %s" % (file.name, excerr.msg))
     except IOError:
       error.err("could not read from file: '%s'" % file.name)
-  
+
   def dump(self, file):
     "Save configuration to file"
-    
+
     comment = [
     "#\n",
     "# CURRENT CONFIGURATION\n",
@@ -205,14 +205,14 @@ class ConfigBase(dict):
       file.writelines(str(self))
     except IOError:
       error.err("could not write to file: '%s'" % file.name)
-  
+
   def edit(self):
     "Interactively edit configuration"
 
     tempedit = tempfile.NamedTemporaryFile()
     try:
       self.dump(tempedit)
-      tempedit.seek(0,0)
+      tempedit.seek(0, 0)
       editor = os.getenv("VISUAL") or os.getenv("EDITOR") or "vi"
       os.spawnvp(os.P_WAIT, editor, [editor, tempedit.name])
       self.load(tempedit)
@@ -247,7 +247,7 @@ class ConfigBase(dict):
     """Return group specific configuration for groupName"""
 
     return self["groups"][groupName]
-  
+
   def getGroupMembers(self, groupName):
     """Return list of groupName members with sub lists expanded recursively"""
 
@@ -262,14 +262,14 @@ class ConfigBase(dict):
         if sys.exc_type == RuntimeError:
           error.err("runtime error: possible loop in configuration file")
     return out
-  
+
   def getParam(self, param, group=None):
     """Return the value for param
-  
+
     If group is specified, return the groups local value for param.
     If the group has no local value or group=None or group does not
     exist, return the global value for param.
-    
+
     If param is not a valid parameter identifier, return None"""
 
     if param not in PARAMS.keys():
@@ -289,6 +289,3 @@ class ConfigBase(dict):
     """Return complete configuration for the group groupName"""
 
     return dict([ (k, self.getParam(k, groupName)) for k in PARAMS.keys() ])
-
-  
-

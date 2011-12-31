@@ -1,5 +1,3 @@
-
-# $Id: shell.py,v 1.8 2005/03/15 08:11:47 cran Exp $
 #
 # Copyright (c) 2002, 2003, 2004, 2005 Sebastian Stark
 #
@@ -35,6 +33,7 @@ try:
 except ImportError:
   pass
 
+
 class tentakelShell(cmd.Cmd):
 
   def __init__(self, conf, groupName):
@@ -55,7 +54,7 @@ class tentakelShell(cmd.Cmd):
 
   def do_exec(self, execString):
     """exec <cmd>: applies <cmd> to the current group"""
-    
+
     if not execString:
       print "empty command"
       return
@@ -64,10 +63,10 @@ class tentakelShell(cmd.Cmd):
 
   def do_conf(self, rest):
     """conf: interactively edit current configuration"""
-    
+
     self.conf.edit()
     self.dests.useConf(self.conf, self.groupName)
-  
+
   def do_use(self, rest):
     """use <groupname>: use the specified group"""
 
@@ -82,12 +81,12 @@ class tentakelShell(cmd.Cmd):
 
   def do_hosts(self, rest):
     """hosts: show list of affected hosts"""
-    
+
     print "\n".join(self.dests.getDestinations())
 
   def do_quit(self, rest):
     """quit or ctrl-d: quit program"""
-    
+
     return 1
 
   def default(self, rest):

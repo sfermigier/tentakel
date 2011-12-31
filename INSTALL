@@ -9,9 +9,6 @@ New INSTALL
 Old INSTALL (to be rewritten)
 ============================
 
-$Id: INSTALL,v 1.20 2005/03/05 21:23:27 cran Exp $
-
-
 Tentakel requires a working Python installation. It is known to work
 with Python 2.3. Python 2.2 and Python 2.1 are not supported.
 Theoretically, tentakel should work on any platform that is supported by
