@@ -18,7 +18,8 @@ setup(
   packages = ["tentakel", "tentakel.plugins"],
   scripts = ["bin/tentakel"],
   data_files = [
-      ("man/man1", ["doc/tentakel.1"]),
+      ("man/man1",
+          ["doc/tentakel.1"]),
       ("share/doc/tentakel", [
           "README.md",
           "INSTALL.md",
