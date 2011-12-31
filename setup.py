@@ -21,9 +21,10 @@ setup(
       ("man/man1", ["doc/tentakel.1"]),
       ("share/doc/tentakel", [
           "README.md",
-          "TODO",
+          "INSTALL.md",
+          "TODO.md",
           "doc/tentakel.conf.example",
           "doc/tentakel.1.html",
-          "doc/PLUGINS",
+          "doc/PLUGINS.md",
       ])]
 )

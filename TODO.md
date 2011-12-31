@@ -6,15 +6,15 @@ New TODO
 - Clean / update doc
 - Add test suite
 - Make site
-- Test under Python < 2.7
 - Look at old TODO
+
 
 DONE
 ====
 
 - Upgrade TPG to recent version (because it fails under Python 2.7)
 - Change name of library (lekatnet -> tentakel)
-
+- Test under Python < 2.7 (using tox)
 
 
 Old TODO
