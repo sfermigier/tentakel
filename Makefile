@@ -1,4 +1,5 @@
 test: 
+	rm -rf .tox/*/local
 	tox
 
 configure:
