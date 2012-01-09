@@ -26,6 +26,6 @@ setup(
           "TODO.md",
           "doc/tentakel.conf.example",
           "doc/tentakel.1.html",
-          "doc/PLUGINS.md",
+          "doc/plugins.md",
       ])]
 )
