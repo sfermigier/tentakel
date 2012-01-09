@@ -21,6 +21,12 @@ def test_config():
   tmp.seek(0, 0)
   c2.load(tmp)
   tmp.close()
+  assert c1 == c2
+
+  # read parameter
+  user1 = pwd.getpwuid(os.geteuid())[0]
+  user2 = c1.getParam("user")
+  assert user1 == user2
 
   # ugly config syntax
   uglyconfig = [
@@ -38,11 +44,6 @@ def test_config():
   c3 = ConfigBase()
   c3.load(tmp)
   tmp.close()
-
-  # read parameter
-  user1 = pwd.getpwuid(os.geteuid())[0]
-  user2 = c1.getParam("user")
-  assert user1 == user2
 
 
 if __name__ == "__main__":
