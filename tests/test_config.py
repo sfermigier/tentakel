@@ -5,7 +5,7 @@ import pwd
 from tentakel.config import ConfigBase
 
 
-def test_config():
+def test_config_from_doc():
     c1 = ConfigBase()
     assert isinstance(c1, ConfigBase)
 
@@ -28,6 +28,8 @@ def test_config():
     user2 = c1.getParam("user")
     assert user1 == user2
 
+
+def test_ugly_config():
     # ugly config syntax
     uglyconfig = [
         "# all of these should work:\n",
@@ -44,7 +46,3 @@ def test_config():
     c3 = ConfigBase()
     c3.load(tmp)
     tmp.close()
-
-
-if __name__ == "__main__":
-    test_config()

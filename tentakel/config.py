@@ -72,67 +72,67 @@ __user_plugin_dir = os.path.join(__user_dir, "plugins")
 class TConf(tpg.Parser):
     __doc__ = r"""
 
-  set lexer = ContextSensitiveLexer
-
-  token keyword  : '%(keywords)s'  str ;
-  token eq  : '='      str ;
-  token word  : '\w+'      str ;
-  token vchar  : '""|[^"]'    str ;
-  token hitem  : '\+[-\w\.:]+'    str ;
-  token litem  : '@\w+'    str ;
-
-  separator spaces  : '\s+' ;
-
-  START/e ->      $ e = {"groups": {}, "settings": PARAMS}
+    set lexer = ContextSensitiveLexer
+    
+    token keyword  : '%(keywords)s'  str ;
+    token eq  : '='      str ;
+    token word  : '\w+'      str ;
+    token vchar  : '""|[^"]'    str ;
+    token hitem  : '\+[-\w\.:]+'    str ;
+    token litem  : '@\w+'    str ;
+    
+    separator spaces  : '\s+' ;
+    
+    START/e ->      $ e = {"groups": {}, "settings": PARAMS}
     (  SETTING/s  $ e["settings"].update(s)
       | GROUP/g  $ e["groups"][g["name"]] = g
       | COMMENT
     )*
-  ;
-
-  COMMENT ->   @start '\s*#.*' @end
-  ;
-
-  SETTING/s ->  'set'    $ s = {}
+    ;
+    
+    COMMENT ->   @start '\s*#.*' @end
+    ;
+    
+    SETTING/s ->  'set'    $ s = {}
       PARAM/<p,v>  $ s[p] = v
-  ;
-
-  PARAM/<p,v> ->  keyword/p eq
+    ;
+    
+    PARAM/<p,v> ->  keyword/p eq
       '"'
       @start (vchar)* @end  $ t = self.extract(start, end)
       '"'      $ v = re.sub('""', '"', t)
-  ;
-
-  GROUP/g ->      'group'    $ g = ConfigGroup()
+    ;
+    
+    GROUP/g ->      'group'    $ g = ConfigGroup()
       GROUPNAME/n  $ g["name"] = n
       GROUPSPEC/s  $ g.update(s)
       MEMBERS/l  $ g.update(l)
-  ;
-
-  GROUPNAME/n -> word/n ;
-
-  GROUPSPEC/s ->          $ s = {}
+    ;
+    
+    GROUPNAME/n -> word/n ;
+    
+    GROUPSPEC/s ->          $ s = {}
       '\('
         ( PARAM/<p,v>    $ s[p] = v
         )?
         ( ',' PARAM/<p,v>  $ s[p] = v
         )*
       '\)'
-  ;
+    ;
 
-  MEMBERS/l ->      $ l = {"hosts": [], "lists": []}
+    MEMBERS/l ->      $ l = {"hosts": [], "lists": []}
       ( hitem/i  $ l["hosts"].append(i[1:])
       | litem/i  $ l["lists"].append(i[1:])
       | COMMENT
       )*
-  ;
-        """ % {
+    ;
+    """ % {
         "keywords": "|".join(PARAMS.keys())
     }
 
 
 class ConfigGroup(dict):
-    "Store group info"
+    """Store group info"""
 
     def __init__(self):
         super(ConfigGroup, self).__init__()
@@ -154,15 +154,15 @@ class ConfigGroup(dict):
 class ConfigBase(dict):
     """Store all configuration parameters
 
-  This class is used to hold a specific configuration state in a special
-  tree that's built out of dictionaries and lists. Single parameters can
-  be changed or asked for their values. The whole configuration can be
-  changed by using the parse method on a string that contains configuration
-  directives in a format suitable for tentakel. Alternatively the load
-  method can be used directly on a file.
+    This class is used to hold a specific configuration state in a special
+    tree that's built out of dictionaries and lists. Single parameters can
+    be changed or asked for their values. The whole configuration can be
+    changed by using the parse method on a string that contains configuration
+    directives in a format suitable for tentakel. Alternatively the load
+    method can be used directly on a file.
 
-  The configuration can be written to a file with the dump method.
-  """
+    The configuration can be written to a file with the dump method.
+    """
 
     def __init__(self):
         super(ConfigBase, self).__init__()
@@ -268,11 +268,11 @@ class ConfigBase(dict):
     def getParam(self, param, group=None):
         """Return the value for param
 
-    If group is specified, return the groups local value for param.
-    If the group has no local value or group=None or group does not
-    exist, return the global value for param.
+        If group is specified, return the groups local value for param.
+        If the group has no local value or group=None or group does not
+        exist, return the global value for param.
 
-    If param is not a valid parameter identifier, return None"""
+        If param is not a valid parameter identifier, return None"""
 
         if param not in PARAMS.keys():
             error.warn("invalid parameter: '%s'" % param)
