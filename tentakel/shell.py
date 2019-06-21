@@ -1,5 +1,6 @@
 #
 # Copyright (c) 2002, 2003, 2004, 2005 Sebastian Stark
+# Copyright (c) 2019 Stefane Fermigier
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions
@@ -28,73 +29,73 @@
 
 from . import remote
 import cmd
+
 try:
-  import readline
+    import readline
 except ImportError:
-  pass
-
-
-class tentakelShell(cmd.Cmd):
-
-  def __init__(self, conf, groupName):
-    cmd.Cmd.__init__(self)
-    self.doc_header = "commands (type help <topic>):"
-    self.ruler = ""
-    self.groupName = groupName
-    self.prompt = "tentakel(%s)> " % groupName
-    self.conf = conf
-    self.dests = remote.RemoteCollator(conf, groupName)
-
-  def emptyline(self):
     pass
 
-  def postcmd(self, stop, rest):
-    self.prompt = "tentakel(%s)> " % self.groupName
-    return stop
 
-  def do_exec(self, execString):
-    """exec <cmd>: applies <cmd> to the current group"""
+class TentakelShell(cmd.Cmd):
+    def __init__(self, conf, groupName):
+        cmd.Cmd.__init__(self)
+        self.doc_header = "commands (type help <topic>):"
+        self.ruler = ""
+        self.groupName = groupName
+        self.prompt = "tentakel(%s)> " % groupName
+        self.conf = conf
+        self.dests = remote.RemoteCollator(conf, groupName)
 
-    if not execString:
-      print("empty command")
-      return
-    self.dests.execAll(execString)
-    self.dests.displayAll()
+    def emptyline(self):
+        pass
 
-  def do_conf(self, rest):
-    """conf: interactively edit current configuration"""
+    def postcmd(self, stop, rest):
+        self.prompt = "tentakel(%s)> " % self.groupName
+        return stop
 
-    self.conf.edit()
-    self.dests.useConf(self.conf, self.groupName)
+    def do_exec(self, execString):
+        """exec <cmd>: applies <cmd> to the current group"""
 
-  def do_use(self, rest):
-    """use <groupname>: use the specified group"""
+        if not execString:
+            print("empty command")
+            return
+        self.dests.execAll(execString)
+        self.dests.displayAll()
 
-    if rest:
-      self.groupName = rest
-      self.dests.useConf(self.conf, self.groupName)
+    def do_conf(self, rest):
+        """conf: interactively edit current configuration"""
 
-  def do_listgroups(self, rest):
-    """listgroups: list available groups"""
+        self.conf.edit()
+        self.dests.useConf(self.conf, self.groupName)
 
-    print("\n".join(self.conf.getGroups()))
+    def do_use(self, rest):
+        """use <groupname>: use the specified group"""
 
-  def do_hosts(self, rest):
-    """hosts: show list of affected hosts"""
+        if rest:
+            self.groupName = rest
+            self.dests.useConf(self.conf, self.groupName)
 
-    print("\n".join(self.dests.getDestinations()))
+    def do_listgroups(self, rest):
+        """listgroups: list available groups"""
 
-  def do_quit(self, rest):
-    """quit or ctrl-d: quit program"""
+        print("\n".join(self.conf.getGroups()))
 
-    return 1
+    def do_hosts(self, rest):
+        """hosts: show list of affected hosts"""
 
-  def default(self, rest):
-    if rest == "EOF":
-      print()
-      return 1
-    else:
-      print("unknown command")
+        print("\n".join(self.dests.getDestinations()))
 
-  def help_help(self):
-    print("help <something>: show usage of <something>")
+    def do_quit(self, rest):
+        """quit or ctrl-d: quit program"""
+
+        return 1
+
+    def default(self, rest):
+        if rest == "EOF":
+            print()
+            return 1
+        else:
+            print("unknown command")
+
+    def help_help(self):
+        print("help <something>: show usage of <something>")

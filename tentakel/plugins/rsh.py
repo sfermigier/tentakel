@@ -1,5 +1,6 @@
 #
 # Copyright (c) 2002, 2003, 2004 Sebastian Stark
+# Copyright (c) 2019 Stefane Fermigier
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions
@@ -31,27 +32,32 @@ from hashlib import md5
 
 
 class RSHRemoteCommand(RemoteCommand):
-  """RSH remote execution class"""
+    """RSH remote execution class"""
 
-  def __init__(self, destination, params):
-    self.rsh_path = params['rsh_path']
-    self.user = params['user']
-    RemoteCommand.__init__(self, destination, params)
-    self.delim = md5(str(random.random())).hexdigest()
+    def __init__(self, destination, params):
+        self.rsh_path = params["rsh_path"]
+        self.user = params["user"]
+        RemoteCommand.__init__(self, destination, params)
+        self.delim = md5(str(random.random())).hexdigest()
 
-  def _rexec(self, command):
-    s = '%s -l %s %s "%s; echo %s \\$?"' % (
-      self.rsh_path, self.user, self.destination, command, self.delim)
-    t1 = time.time()
-    ol = subprocess.getoutput(s).split('\n')
-    for line_number, line in enumerate(ol):
-      i = line.find(self.delim)
-      if i != -1:
-        status = line.split(' ')[1]
-        ol.pop(line_number)
-        break
-    self.duration = time.time() - t1
-    return (int(status), '\n'.join(ol))
+    def _rexec(self, command):
+        s = '%s -l %s %s "%s; echo %s \\$?"' % (
+            self.rsh_path,
+            self.user,
+            self.destination,
+            command,
+            self.delim,
+        )
+        t1 = time.time()
+        ol = subprocess.getoutput(s).split("\n")
+        for line_number, line in enumerate(ol):
+            i = line.find(self.delim)
+            if i != -1:
+                status = line.split(" ")[1]
+                ol.pop(line_number)
+                break
+        self.duration = time.time() - t1
+        return (int(status), "\n".join(ol))
 
 
-registerRemoteCommandPlugin('rsh', RSHRemoteCommand)
+registerRemoteCommandPlugin("rsh", RSHRemoteCommand)

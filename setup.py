@@ -5,6 +5,7 @@ VERSION = "3.0-dev"
 setup(
     name="tentakel",
     version=VERSION,
+    python_requires='>=3.6',
     description="distributed command execution",
     url="https://github.com/sfermigier/tentakel",
     author="Sebastian Stark, Marlon Berlin",
@@ -15,7 +16,6 @@ setup(
     platforms="All that support threading",
     packages=["tentakel", "tentakel.plugins"],
     scripts=["bin/tentakel"],
-    requires=["future"],
     data_files=[
         ("man/man1", ["doc/tentakel.1"]),
         (

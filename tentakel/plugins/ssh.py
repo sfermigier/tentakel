@@ -1,5 +1,6 @@
 #
 # Copyright (c) 2002, 2003, 2004 Sebastian Stark
+# Copyright (c) 2019 Stefane Fermigier
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions
@@ -29,19 +30,20 @@ import subprocess
 
 
 class SSHRemoteCommand(RemoteCommand):
-  """SSH remote execution class"""
+    """SSH remote execution class"""
 
-  def __init__(self, destination, params):
-    self.ssh_path = params['ssh_path']
-    self.user = params['user']
-    RemoteCommand.__init__(self, destination, params)
+    def __init__(self, destination, params):
+        self.ssh_path = params["ssh_path"]
+        self.user = params["user"]
+        RemoteCommand.__init__(self, destination, params)
 
-  def _rexec(self, command):
-    s = '%s %s@%s "%s"' % (self.ssh_path, self.user, self.destination, command)
-    t1 = time.time()
-    status, output = subprocess.getstatusoutput(s)
-    self.duration = time.time() - t1
-    # shift 8 bits right to strip signal number from status
-    return (status >> 8, output)
+    def _rexec(self, command):
+        s = '%s %s@%s "%s"' % (self.ssh_path, self.user, self.destination, command)
+        t1 = time.time()
+        status, output = subprocess.getstatusoutput(s)
+        self.duration = time.time() - t1
+        # shift 8 bits right to strip signal number from status
+        return (status >> 8, output)
 
-registerRemoteCommandPlugin('ssh', SSHRemoteCommand)
+
+registerRemoteCommandPlugin("ssh", SSHRemoteCommand)

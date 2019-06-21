@@ -1,6 +1,6 @@
 #
 # Copyright (c) 2002, 2003, 2004, 2005 Sebastian Stark
-# Copyright (c) 2011 Stefane Fermigier
+# Copyright (c) 2011, 2019 Stefane Fermigier
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions
@@ -55,22 +55,22 @@ import sys
 from . import tpg
 
 PARAMS = {
-    'ssh_path': "/usr/bin/ssh",
-    'rsh_path': "/usr/bin/rsh",
-    'method': "ssh",
-    'maxparallel': "0",
-    'user': pwd.getpwuid(os.geteuid())[0],
-    'format': r"### %d(stat: %s, dur(s): %t):\n%o\n"
+    "ssh_path": "/usr/bin/ssh",
+    "rsh_path": "/usr/bin/rsh",
+    "method": "ssh",
+    "maxparallel": "0",
+    "user": pwd.getpwuid(os.geteuid())[0],
+    "format": r"### %d(stat: %s, dur(s): %t):\n%o\n",
 }
 
-METHODS = ['ssh', 'rsh']
+METHODS = ["ssh", "rsh"]
 
-__user_dir = os.path.join(os.environ['HOME'], '.tentakel')
-__user_plugin_dir = os.path.join(__user_dir, 'plugins')
+__user_dir = os.path.join(os.environ["HOME"], ".tentakel")
+__user_plugin_dir = os.path.join(__user_dir, "plugins")
 
 
 class TConf(tpg.Parser):
-  __doc__ = r"""
+    __doc__ = r"""
 
   set lexer = ContextSensitiveLexer
 
@@ -126,31 +126,33 @@ class TConf(tpg.Parser):
       | COMMENT
       )*
   ;
-        """ % { "keywords": "|".join(list(PARAMS.keys())) }
+        """ % {
+        "keywords": "|".join(list(PARAMS.keys()))
+    }
 
 
 class ConfigGroup(dict):
-  "Store group info"
+    "Store group info"
 
-  def __init__(self):
-    super(ConfigGroup, self).__init__()
-    self["name"] = ""
-    # create keys that are also available globally, but with default values stripped
-    p = dict(list(zip(list(PARAMS.keys()), [""]*len(PARAMS))))
-    self.update(p)
-    self["hosts"] = []
-    self["lists"] = []
+    def __init__(self):
+        super(ConfigGroup, self).__init__()
+        self["name"] = ""
+        # create keys that are also available globally, but with default values stripped
+        p = dict(list(zip(list(PARAMS.keys()), [""] * len(PARAMS))))
+        self.update(p)
+        self["hosts"] = []
+        self["lists"] = []
 
-  def __str__(self):
-    l = []
-    for param in list(PARAMS.keys()):
-      if self[param]:
-        l.append('%s="%s"' % (param, re.sub('"', '""', self[param])))
-    return "group %s (%s)" % (self["name"], ', '.join(l))
+    def __str__(self):
+        l = []
+        for param in list(PARAMS.keys()):
+            if self[param]:
+                l.append('%s="%s"' % (param, re.sub('"', '""', self[param])))
+        return "group %s (%s)" % (self["name"], ", ".join(l))
 
 
 class ConfigBase(dict):
-  """Store all configuration parameters
+    """Store all configuration parameters
 
   This class is used to hold a specific configuration state in a special
   tree that's built out of dictionaries and lists. Single parameters can
@@ -162,109 +164,109 @@ class ConfigBase(dict):
   The configuration can be written to a file with the dump method.
   """
 
-  def __init__(self):
-    super(ConfigBase, self).__init__()
-    self.clear()
+    def __init__(self):
+        super(ConfigBase, self).__init__()
+        self.clear()
 
-  def clear(self):
-    "Make configuration empty"
-    self["groups"] = {}
-    self["settings"] = PARAMS
+    def clear(self):
+        "Make configuration empty"
+        self["groups"] = {}
+        self["settings"] = PARAMS
 
-  def parse(self, txt):
-    """Parse a string containing configuration directives into
+    def parse(self, txt):
+        """Parse a string containing configuration directives into
     the configuration tree"""
-    tp = TConf()
-    self.update(tp(txt))
+        tp = TConf()
+        self.update(tp(txt))
 
-  def load(self, file):
-    "Load configuration from file"
+    def load(self, file):
+        "Load configuration from file"
 
-    try:
-      self.parse("".join(file.readlines()))
-    except tpg.SyntacticError as excerr:
-      error.warn("in %s: %s" % (file.name, excerr.msg))
-    except IOError:
-      error.err("could not read from file: '%s'" % file.name)
+        try:
+            self.parse("".join(file.readlines()))
+        except tpg.SyntacticError as excerr:
+            error.warn("in %s: %s" % (file.name, excerr.msg))
+        except IOError:
+            error.err("could not read from file: '%s'" % file.name)
 
-  def dump(self, file):
-    "Save configuration to file"
+    def dump(self, file):
+        "Save configuration to file"
 
-    comment = [
-    "#\n",
-    "# CURRENT CONFIGURATION\n",
-    "#\n",
-    "# You can change the configuration for the current session here.\n",
-    "# Those changes will be lost after you quit tentakel.\n",
-    "# No configuration file will be changed.\n",
-    "#\n"
-    ]
+        comment = [
+            "#\n",
+            "# CURRENT CONFIGURATION\n",
+            "#\n",
+            "# You can change the configuration for the current session here.\n",
+            "# Those changes will be lost after you quit tentakel.\n",
+            "# No configuration file will be changed.\n",
+            "#\n",
+        ]
 
-    try:
-      file.writelines(comment)
-      file.writelines(str(self))
-    except IOError:
-      error.err("could not write to file: '%s'" % file.name)
+        try:
+            file.writelines(comment)
+            file.writelines(str(self))
+        except IOError:
+            error.err("could not write to file: '%s'" % file.name)
 
-  def edit(self):
-    "Interactively edit configuration"
+    def edit(self):
+        "Interactively edit configuration"
 
-    tempedit = tempfile.NamedTemporaryFile()
-    try:
-      self.dump(tempedit)
-      tempedit.seek(0, 0)
-      editor = os.getenv("VISUAL") or os.getenv("EDITOR") or "vi"
-      os.spawnvp(os.P_WAIT, editor, [editor, tempedit.name])
-      self.load(tempedit)
-    finally:
-      tempedit.close()
+        tempedit = tempfile.NamedTemporaryFile()
+        try:
+            self.dump(tempedit)
+            tempedit.seek(0, 0)
+            editor = os.getenv("VISUAL") or os.getenv("EDITOR") or "vi"
+            os.spawnvp(os.P_WAIT, editor, [editor, tempedit.name])
+            self.load(tempedit)
+        finally:
+            tempedit.close()
 
-  def __str__(self):
-    "Pretty print configuration"
+    def __str__(self):
+        "Pretty print configuration"
 
-    out = ""
-    settings = self["settings"]
-    for s_param, s_value in list(settings.items()):
-      if s_value:
-        out = "%sset %s=\"%s\"\n" % (out, s_param, s_value)
-    out += "\n"
-    groups = self["groups"]
-    for groupName, groupObj in list(groups.items()):
-      out = out + str(groupObj) + "\n"
-      for list in groups[groupName]["lists"]:
-        out = out + "\t@" + list + "\n"
-      for host in groups[groupName]["hosts"]:
-        out = out + "\t+" + host + "\n"
-      out += "\n"
-    return out
+        out = ""
+        settings = self["settings"]
+        for s_param, s_value in list(settings.items()):
+            if s_value:
+                out = '%sset %s="%s"\n' % (out, s_param, s_value)
+        out += "\n"
+        groups = self["groups"]
+        for groupName, groupObj in list(groups.items()):
+            out = out + str(groupObj) + "\n"
+            for list in groups[groupName]["lists"]:
+                out = out + "\t@" + list + "\n"
+            for host in groups[groupName]["hosts"]:
+                out = out + "\t+" + host + "\n"
+            out += "\n"
+        return out
 
-  def getGroups(self):
-    """Return list of all group names"""
+    def getGroups(self):
+        """Return list of all group names"""
 
-    return list(self["groups"].keys())
+        return list(self["groups"].keys())
 
-  def _getGroup(self, groupName):
-    """Return group specific configuration for groupName"""
+    def _getGroup(self, groupName):
+        """Return group specific configuration for groupName"""
 
-    return self["groups"][groupName]
+        return self["groups"][groupName]
 
-  def getGroupMembers(self, groupName):
-    """Return list of groupName members with sub lists expanded recursively"""
+    def getGroupMembers(self, groupName):
+        """Return list of groupName members with sub lists expanded recursively"""
 
-    g = self._getGroup(groupName)
-    out = [ (x, self.getGroupParams(groupName)) for x in g["hosts"] ]
-    for list in g["lists"]:
-      try:
-        out += self.getGroupMembers(list)
-      except (KeyError, RuntimeError):
-        if sys.exc_info()[0] == KeyError:
-          error.warn("in group '%s': no such group '%s'" % (groupName, list))
-        if sys.exc_info()[0] == RuntimeError:
-          error.err("runtime error: possible loop in configuration file")
-    return out
+        g = self._getGroup(groupName)
+        out = [(x, self.getGroupParams(groupName)) for x in g["hosts"]]
+        for list in g["lists"]:
+            try:
+                out += self.getGroupMembers(list)
+            except (KeyError, RuntimeError):
+                if sys.exc_info()[0] == KeyError:
+                    error.warn("in group '%s': no such group '%s'" % (groupName, list))
+                if sys.exc_info()[0] == RuntimeError:
+                    error.err("runtime error: possible loop in configuration file")
+        return out
 
-  def getParam(self, param, group=None):
-    """Return the value for param
+    def getParam(self, param, group=None):
+        """Return the value for param
 
     If group is specified, return the groups local value for param.
     If the group has no local value or group=None or group does not
@@ -272,20 +274,20 @@ class ConfigBase(dict):
 
     If param is not a valid parameter identifier, return None"""
 
-    if param not in list(PARAMS.keys()):
-      error.warn("invalid parameter: '%s'" % param)
-      return None
-    else:
-      try:
-        val = self._getGroup(group)[param]
-        if val == '':
-          return self["settings"][param]
+        if param not in list(PARAMS.keys()):
+            error.warn("invalid parameter: '%s'" % param)
+            return None
         else:
-          return val
-      except KeyError:
-        return self["settings"][param]
+            try:
+                val = self._getGroup(group)[param]
+                if val == "":
+                    return self["settings"][param]
+                else:
+                    return val
+            except KeyError:
+                return self["settings"][param]
 
-  def getGroupParams(self, groupName):
-    """Return complete configuration for the group groupName"""
+    def getGroupParams(self, groupName):
+        """Return complete configuration for the group groupName"""
 
-    return dict([ (k, self.getParam(k, groupName)) for k in list(PARAMS.keys()) ])
+        return dict([(k, self.getParam(k, groupName)) for k in list(PARAMS.keys())])

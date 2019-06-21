@@ -1,5 +1,6 @@
 #
 # Copyright (c) 2002, 2003, 2004, 2005 Sebastian Stark
+# Copyright (c) 2019 Stefane Fermigier
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions
@@ -29,9 +30,9 @@ import sys
 
 
 def err(errstring):
-  sys.stderr.write("tentakel error: %s\n" % errstring)
-  sys.exit(1)
+    sys.stderr.write("tentakel error: %s\n" % errstring)
+    sys.exit(1)
 
 
 def warn(warnstring):
-  sys.stderr.write("tentakel: %s\n" % warnstring)
+    sys.stderr.write("tentakel: %s\n" % warnstring)
