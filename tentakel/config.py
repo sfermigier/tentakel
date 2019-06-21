@@ -46,13 +46,13 @@ parameters, taken from its nearest enclosing group.
 
 """
 
-import error
+from . import error
 import re
 import os
 import pwd
 import tempfile
 import sys
-import tpg
+from . import tpg
 
 PARAMS = {
     'ssh_path': "/usr/bin/ssh",
@@ -126,7 +126,7 @@ class TConf(tpg.Parser):
       | COMMENT
       )*
   ;
-        """ % { "keywords": "|".join(PARAMS.keys()) }
+        """ % { "keywords": "|".join(list(PARAMS.keys())) }
 
 
 class ConfigGroup(dict):
@@ -136,14 +136,14 @@ class ConfigGroup(dict):
     super(ConfigGroup, self).__init__()
     self["name"] = ""
     # create keys that are also available globally, but with default values stripped
-    p = dict(zip(PARAMS.keys(), [""]*len(PARAMS)))
+    p = dict(list(zip(list(PARAMS.keys()), [""]*len(PARAMS))))
     self.update(p)
     self["hosts"] = []
     self["lists"] = []
 
   def __str__(self):
     l = []
-    for param in PARAMS.keys():
+    for param in list(PARAMS.keys()):
       if self[param]:
         l.append('%s="%s"' % (param, re.sub('"', '""', self[param])))
     return "group %s (%s)" % (self["name"], ', '.join(l))
@@ -182,7 +182,7 @@ class ConfigBase(dict):
 
     try:
       self.parse("".join(file.readlines()))
-    except tpg.SyntacticError, excerr:
+    except tpg.SyntacticError as excerr:
       error.warn("in %s: %s" % (file.name, excerr.msg))
     except IOError:
       error.err("could not read from file: '%s'" % file.name)
@@ -224,12 +224,12 @@ class ConfigBase(dict):
 
     out = ""
     settings = self["settings"]
-    for s_param, s_value in settings.items():
+    for s_param, s_value in list(settings.items()):
       if s_value:
         out = "%sset %s=\"%s\"\n" % (out, s_param, s_value)
     out += "\n"
     groups = self["groups"]
-    for groupName, groupObj in groups.items():
+    for groupName, groupObj in list(groups.items()):
       out = out + str(groupObj) + "\n"
       for list in groups[groupName]["lists"]:
         out = out + "\t@" + list + "\n"
@@ -241,7 +241,7 @@ class ConfigBase(dict):
   def getGroups(self):
     """Return list of all group names"""
 
-    return self["groups"].keys()
+    return list(self["groups"].keys())
 
   def _getGroup(self, groupName):
     """Return group specific configuration for groupName"""
@@ -257,9 +257,9 @@ class ConfigBase(dict):
       try:
         out += self.getGroupMembers(list)
       except (KeyError, RuntimeError):
-        if sys.exc_type == KeyError:
+        if sys.exc_info()[0] == KeyError:
           error.warn("in group '%s': no such group '%s'" % (groupName, list))
-        if sys.exc_type == RuntimeError:
+        if sys.exc_info()[0] == RuntimeError:
           error.err("runtime error: possible loop in configuration file")
     return out
 
@@ -272,7 +272,7 @@ class ConfigBase(dict):
 
     If param is not a valid parameter identifier, return None"""
 
-    if param not in PARAMS.keys():
+    if param not in list(PARAMS.keys()):
       error.warn("invalid parameter: '%s'" % param)
       return None
     else:
@@ -288,4 +288,4 @@ class ConfigBase(dict):
   def getGroupParams(self, groupName):
     """Return complete configuration for the group groupName"""
 
-    return dict([ (k, self.getParam(k, groupName)) for k in PARAMS.keys() ])
+    return dict([ (k, self.getParam(k, groupName)) for k in list(PARAMS.keys()) ])

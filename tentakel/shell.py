@@ -26,7 +26,7 @@
 """Interactive mode for tentakel
 """
 
-import remote
+from . import remote
 import cmd
 try:
   import readline
@@ -56,7 +56,7 @@ class tentakelShell(cmd.Cmd):
     """exec <cmd>: applies <cmd> to the current group"""
 
     if not execString:
-      print "empty command"
+      print("empty command")
       return
     self.dests.execAll(execString)
     self.dests.displayAll()
@@ -77,12 +77,12 @@ class tentakelShell(cmd.Cmd):
   def do_listgroups(self, rest):
     """listgroups: list available groups"""
 
-    print "\n".join(self.conf.getGroups())
+    print("\n".join(self.conf.getGroups()))
 
   def do_hosts(self, rest):
     """hosts: show list of affected hosts"""
 
-    print "\n".join(self.dests.getDestinations())
+    print("\n".join(self.dests.getDestinations()))
 
   def do_quit(self, rest):
     """quit or ctrl-d: quit program"""
@@ -91,10 +91,10 @@ class tentakelShell(cmd.Cmd):
 
   def default(self, rest):
     if rest == "EOF":
-      print
+      print()
       return 1
     else:
-      print "unknown command"
+      print("unknown command")
 
   def help_help(self):
-    print "help <something>: show usage of <something>"
+    print("help <something>: show usage of <something>")

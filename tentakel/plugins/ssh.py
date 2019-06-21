@@ -25,7 +25,7 @@
 from tentakel.remote import registerRemoteCommandPlugin
 from tentakel.remote import RemoteCommand
 import time
-import commands
+import subprocess
 
 
 class SSHRemoteCommand(RemoteCommand):
@@ -39,7 +39,7 @@ class SSHRemoteCommand(RemoteCommand):
   def _rexec(self, command):
     s = '%s %s@%s "%s"' % (self.ssh_path, self.user, self.destination, command)
     t1 = time.time()
-    status, output = commands.getstatusoutput(s)
+    status, output = subprocess.getstatusoutput(s)
     self.duration = time.time() - t1
     # shift 8 bits right to strip signal number from status
     return (status >> 8, output)

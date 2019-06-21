@@ -37,11 +37,11 @@ Provides the two classes which are most important in tentakel:
     Container used to create and control RemoteCommand instances.
     It is also responsible for outputting the results.'''
 
-import error
+from . import error
 import sys
 import threading
-import Queue
-import tpg
+import queue
+from . import tpg
 
 
 class FormatString(tpg.Parser):
@@ -104,14 +104,14 @@ class RemoteCommand(threading.Thread):
 
   # auxiliary queue that holds references to objects that
   # have results ready
-  finishedObjects = Queue.Queue()
+  finishedObjects = queue.Queue()
 
   def __init__(self, destination, params):
     threading.Thread.__init__(self)
     self.duration = 0.0
     self.destination = destination
-    self._commandQueue = Queue.Queue()
-    self._resultQueue = Queue.Queue()
+    self._commandQueue = queue.Queue()
+    self._resultQueue = queue.Queue()
     self._commandTimeout = 0.3
     self._sleepPeriod = 0.8
     self._stopevent = threading.Event()
@@ -149,7 +149,7 @@ class RemoteCommand(threading.Thread):
         if self.__maxparallel > 0:
           self.slot.release()
         self.putResult(result)
-      except Queue.Empty:
+      except queue.Empty:
         pass
       self._stopevent.wait(self._sleepPeriod)
 
@@ -266,4 +266,4 @@ def registerRemoteCommandPlugin(method, cls):
   else:
     error.err('%s is not a descendant of RemoteCommand' % cls)
 
-from plugins import *
+from .plugins import *

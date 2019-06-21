@@ -63,12 +63,12 @@ if __name__ == "__main__":
     if o == "-c":
       override_config = v
     if o == "-h":
-      print __doc__
+      print(__doc__)
       sys.exit(0)
     if o == "-l":
       flag_listgroups = 1
     if o == "-v":
-      print tentakelVersion
+      print(tentakelVersion)
       sys.exit(0)
   command = ' '.join(args)
 
@@ -102,10 +102,10 @@ if __name__ == "__main__":
 
   # process -g parameter
   if flag_listgroups:
-    print "available groups:"
+    print("available groups:")
     for g in conf.getGroups():
       sys.stdout.write(g + " ")
-    print
+    print()
     sys.exit(0)
   
   # batch mode: execute command

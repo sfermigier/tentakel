@@ -25,9 +25,9 @@
 from tentakel.remote import registerRemoteCommandPlugin
 from tentakel.remote import RemoteCommand
 import time
-import commands
+import subprocess
 import random
-import md5
+from hashlib import md5
 
 
 class RSHRemoteCommand(RemoteCommand):
@@ -37,13 +37,13 @@ class RSHRemoteCommand(RemoteCommand):
     self.rsh_path = params['rsh_path']
     self.user = params['user']
     RemoteCommand.__init__(self, destination, params)
-    self.delim = md5.md5(str(random.random())).hexdigest()
+    self.delim = md5(str(random.random())).hexdigest()
 
   def _rexec(self, command):
     s = '%s -l %s %s "%s; echo %s \\$?"' % (
       self.rsh_path, self.user, self.destination, command, self.delim)
     t1 = time.time()
-    ol = commands.getoutput(s).split('\n')
+    ol = subprocess.getoutput(s).split('\n')
     for line_number, line in enumerate(ol):
       i = line.find(self.delim)
       if i != -1:
