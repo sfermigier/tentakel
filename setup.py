@@ -5,7 +5,7 @@ VERSION = "3.0-dev"
 setup(
     name="tentakel",
     version=VERSION,
-    python_requires='>=3.6',
+    python_requires=">=3.6",
     description="distributed command execution",
     url="https://github.com/sfermigier/tentakel",
     author="Sebastian Stark, Marlon Berlin",

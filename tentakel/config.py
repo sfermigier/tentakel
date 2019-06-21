@@ -127,7 +127,7 @@ class TConf(tpg.Parser):
       )*
   ;
         """ % {
-        "keywords": "|".join(list(PARAMS.keys()))
+        "keywords": "|".join(PARAMS.keys())
     }
 
 
@@ -145,7 +145,7 @@ class ConfigGroup(dict):
 
     def __str__(self):
         l = []
-        for param in list(PARAMS.keys()):
+        for param in PARAMS.keys():
             if self[param]:
                 l.append('%s="%s"' % (param, re.sub('"', '""', self[param])))
         return "group %s (%s)" % (self["name"], ", ".join(l))
@@ -209,7 +209,7 @@ class ConfigBase(dict):
             error.err("could not write to file: '%s'" % file.name)
 
     def edit(self):
-        "Interactively edit configuration"
+        """Interactively edit configuration"""
 
         tempedit = tempfile.NamedTemporaryFile()
         try:
@@ -222,16 +222,16 @@ class ConfigBase(dict):
             tempedit.close()
 
     def __str__(self):
-        "Pretty print configuration"
+        """Pretty print configuration"""
 
         out = ""
         settings = self["settings"]
-        for s_param, s_value in list(settings.items()):
+        for s_param, s_value in settings.items():
             if s_value:
                 out = '%sset %s="%s"\n' % (out, s_param, s_value)
         out += "\n"
         groups = self["groups"]
-        for groupName, groupObj in list(groups.items()):
+        for groupName, groupObj in groups.items():
             out = out + str(groupObj) + "\n"
             for list in groups[groupName]["lists"]:
                 out = out + "\t@" + list + "\n"
@@ -274,7 +274,7 @@ class ConfigBase(dict):
 
     If param is not a valid parameter identifier, return None"""
 
-        if param not in list(PARAMS.keys()):
+        if param not in PARAMS.keys():
             error.warn("invalid parameter: '%s'" % param)
             return None
         else:
@@ -290,4 +290,4 @@ class ConfigBase(dict):
     def getGroupParams(self, groupName):
         """Return complete configuration for the group groupName"""
 
-        return dict([(k, self.getParam(k, groupName)) for k in list(PARAMS.keys())])
+        return dict([(k, self.getParam(k, groupName)) for k in PARAMS.keys()])
