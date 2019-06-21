@@ -1,6 +1,6 @@
-import tempfile
 import os
 import pwd
+import tempfile
 
 from tentakel.config import ConfigBase
 

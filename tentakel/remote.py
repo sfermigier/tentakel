@@ -38,11 +38,11 @@ Provides the two classes which are most important in tentakel:
     Container used to create and control RemoteCommand instances.
     It is also responsible for outputting the results."""
 
-from . import error
+import queue
 import sys
 import threading
-import queue
-from . import tpg
+
+from . import error, tpg
 
 
 class FormatString(tpg.Parser):
@@ -264,4 +264,5 @@ def registerRemoteCommandPlugin(method, cls):
         error.err("%s is not a descendant of RemoteCommand" % cls)
 
 
+# Don't remove
 from .plugins import *

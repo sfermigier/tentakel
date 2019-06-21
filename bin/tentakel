@@ -38,13 +38,14 @@ Usage: tentakel [ options ] [ command ]
 See tentakel(1) for more information
 """
 
-import tentakel.error as error
-import tentakel.config as config
-import tentakel.remote as remote
-import tentakel.shell as shell
+import getopt
 import os
 import sys
-import getopt
+
+import tentakel.config as config
+import tentakel.error as error
+import tentakel.remote as remote
+import tentakel.shell as shell
 
 if __name__ == "__main__":
     tentakelVersion = "tentakel-3.0"

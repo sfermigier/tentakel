@@ -46,13 +46,13 @@ parameters, taken from its nearest enclosing group.
 
 """
 
-from . import error
-import re
 import os
 import pwd
-import tempfile
+import re
 import sys
-from . import tpg
+import tempfile
+
+from . import error, tpg
 
 PARAMS = {
     "ssh_path": "/usr/bin/ssh",

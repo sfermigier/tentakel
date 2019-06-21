@@ -2208,4 +2208,3 @@ class TPGParser(tpg.Parser):
         rules.links_symbols_to_tokens(tokens_from_name)
         for name, code in rules.gen_code():
             yield self.make_code(name, *code)
-

@@ -10,6 +10,7 @@ it also loads modules from the users plugin directory."""
 
 
 import os
+
 from tentakel.config import __user_plugin_dir
 
 # extend the packages scope to the users plugin directory

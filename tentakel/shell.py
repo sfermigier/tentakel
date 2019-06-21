@@ -27,8 +27,9 @@
 """Interactive mode for tentakel
 """
 
-from . import remote
 import cmd
+
+from . import remote
 
 try:
     import readline

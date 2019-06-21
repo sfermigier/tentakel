@@ -23,12 +23,12 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from tentakel.remote import registerRemoteCommandPlugin
-from tentakel.remote import RemoteCommand
-import time
-import subprocess
 import random
+import subprocess
+import time
 from hashlib import md5
+
+from tentakel.remote import RemoteCommand, registerRemoteCommandPlugin
 
 
 class RSHRemoteCommand(RemoteCommand):
