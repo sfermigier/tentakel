@@ -1,0 +1,9 @@
+
+Version 3.0 - Unreleased
+------------------------
+
+- Python 3 compatibility
+- Doesn't work with Python 2 (use release < 3 for that)
+- Cleanup / format code
+
+
