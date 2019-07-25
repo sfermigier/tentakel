@@ -175,7 +175,7 @@ class ConfigBase(dict):
 
     def parse(self, txt):
         """Parse a string containing configuration directives into
-    the configuration tree"""
+        the configuration tree"""
         tp = TConf()
         self.update(tp(txt))
 
@@ -190,7 +190,7 @@ class ConfigBase(dict):
             error.err("could not read from file: '%s'" % file.name)
 
     def dump(self, file):
-        "Save configuration to file"
+        """Save configuration to file"""
 
         comment = [
             "#\n",

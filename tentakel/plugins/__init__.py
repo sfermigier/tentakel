@@ -6,7 +6,8 @@ Plugins must import the register* methods from the remote module in
 order to be able to register classes and parameters.
 
 In addition to the modules physically contained in this packages
-it also loads modules from the users plugin directory."""
+it also loads modules from the users plugin directory.
+"""
 
 
 import os

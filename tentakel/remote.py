@@ -48,20 +48,20 @@ from . import error, tpg
 class FormatString(tpg.Parser):
     r"""
 
-  token escape  : '\\[\\nt]'  str ;
-  token fmtchar  : '%[%dost]'  str ;
-  token char  : '.'    str ;
+    token escape  : '\\[\\nt]'  str ;
+    token fmtchar  : '%[%dost]'  str ;
+    token char  : '.'    str ;
 
-  START/e -> FORMAT/e ;
+    START/e -> FORMAT/e ;
 
-  FORMAT/f ->
+    FORMAT/f ->
           $ f = ""
       ( escape/e  $ f = f + self.getEscape(e)
       | fmtchar/fc  $ f = f + self.getSpecialChar(fc)
       | char/c  $ f = f + c
       )*
-  ;
-  """
+    ;
+    """
 
     def __init__(self):
         super(FormatString, self).__init__()
@@ -158,7 +158,7 @@ class RemoteCommand(threading.Thread):
 
 def remoteCommandFactory(destination, params):
     """Depending in the method, instantiate a corresponding
-  RemoteCommand derived object and return it"""
+    RemoteCommand derived object and return it"""
 
     method = params["method"]
     try:
@@ -169,8 +169,8 @@ def remoteCommandFactory(destination, params):
 
 class RemoteCollator(object):
     """This class is meant to hold RemoteCommand instances each
-  of which implements a specific way too execute a command on
-  a remote host."""
+    of which implements a specific way too execute a command on
+    a remote host."""
 
     def __init__(self, conf, group_name):
         self.clear()
@@ -258,7 +258,7 @@ _remoteCommandPlugins = {}
 
 def registerRemoteCommandPlugin(method, cls):
     """Needs to be imported and executed by remote command plugins"""
-    if RemoteCommand in cls.__bases__:
+    if issubclass(cls, RemoteCommand):
         _remoteCommandPlugins[method] = cls
     else:
         error.err("%s is not a descendant of RemoteCommand" % cls)
