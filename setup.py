@@ -1,6 +1,6 @@
 from distutils.core import setup
 
-VERSION = "3.0-dev"
+VERSION = "3.0"
 
 setup(
     name="tentakel",
