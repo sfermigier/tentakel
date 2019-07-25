@@ -1,12 +1,17 @@
 from distutils.core import setup
 
-VERSION = "3.0"
+VERSION = "3.0.1"
+
+with open("README.md", "r") as fh:
+    long_description = fh.read()
 
 setup(
     name="tentakel",
     version=VERSION,
     python_requires=">=3.6",
     description="distributed command execution",
+    long_description=long_description,
+    long_description_content_type="text/markdown",
     url="https://github.com/sfermigier/tentakel",
     author="Sebastian Stark, Marlon Berlin",
     author_email="cran@users.sourceforge.net, imaginat@users.sourceforge.net",
