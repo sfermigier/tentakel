@@ -42,11 +42,7 @@ class RSHRemoteCommand(RemoteCommand):
 
     def _rexec(self, command):
         s = '{} -l {} {} "{}; echo {} \\$?"'.format(
-            self.rsh_path,
-            self.user,
-            self.destination,
-            command,
-            self.delim,
+            self.rsh_path, self.user, self.destination, command, self.delim
         )
         t1 = time.time()
         ol = subprocess.getoutput(s).split("\n")

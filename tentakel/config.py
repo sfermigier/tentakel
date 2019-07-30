@@ -245,28 +245,28 @@ class ConfigBase(dict):
 
         return list(self["groups"].keys())
 
-    def _getGroup(self, groupName):
+    def _getGroup(self, group_name):
         """Return group specific configuration for groupName"""
 
-        return self["groups"][groupName]
+        return self["groups"][group_name]
 
-    def getGroupMembers(self, groupName):
+    def getGroupMembers(self, group_name):
         """Return list of groupName members with sub lists expanded recursively"""
 
-        g = self._getGroup(groupName)
-        out = [(x, self.getGroupParams(groupName)) for x in g["hosts"]]
+        g = self._getGroup(group_name)
+        out = [(x, self.getGroupParams(group_name)) for x in g["hosts"]]
         for list in g["lists"]:
             try:
                 out += self.getGroupMembers(list)
             except (KeyError, RuntimeError):
                 if sys.exc_info()[0] == KeyError:
-                    error.warn(f"in group '{groupName}': no such group '{list}'")
+                    error.warn(f"in group '{group_name}': no such group '{list}'")
                 if sys.exc_info()[0] == RuntimeError:
                     error.err("runtime error: possible loop in configuration file")
         return out
 
     def getParam(self, param, group=None):
-        """Return the value for param
+        """Return the value for param.
 
         If group is specified, return the groups local value for param.
         If the group has no local value or group=None or group does not
@@ -287,7 +287,7 @@ class ConfigBase(dict):
             except KeyError:
                 return self["settings"][param]
 
-    def getGroupParams(self, groupName):
+    def getGroupParams(self, group_name):
         """Return complete configuration for the group groupName"""
 
-        return {k: self.getParam(k, groupName) for k in PARAMS.keys()}
+        return {k: self.getParam(k, group_name) for k in PARAMS.keys()}
