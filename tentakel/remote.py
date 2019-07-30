@@ -187,18 +187,18 @@ class RemoteCollator:
             pass
         self.remoteobjects = []
 
-    def useConf(self, conf, groupName):
+    def useConf(self, conf, group_name):
         """Load the specified group from configuration object conf
         and add RemoteCommand objects for each contained host."""
         save = self
         self.clear()
         try:
-            for destination, params in conf.getGroupMembers(groupName):
+            for destination, params in conf.getGroupMembers(group_name):
                 self.add(remoteCommandFactory(destination, params))
-                self.format = conf.getParam("format", group=groupName)
+                self.format = conf.getParam("format", group=group_name)
         except KeyError:
             self = save
-            error.warn(f"unknown group: '{groupName}'")
+            error.warn(f"unknown group: '{group_name}'")
 
     def getDestinations(self):
         """Return expanded list of hosts"""

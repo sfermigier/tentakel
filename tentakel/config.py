@@ -231,11 +231,11 @@ class ConfigBase(dict):
                 out = f'{out}set {s_param}="{s_value}"\n'
         out += "\n"
         groups = self["groups"]
-        for groupName, groupObj in groups.items():
-            out = out + str(groupObj) + "\n"
-            for list in groups[groupName]["lists"]:
+        for group_name, group_obj in groups.items():
+            out = out + str(group_obj) + "\n"
+            for list in groups[group_name]["lists"]:
                 out = out + "\t@" + list + "\n"
-            for host in groups[groupName]["hosts"]:
+            for host in groups[group_name]["hosts"]:
                 out = out + "\t+" + host + "\n"
             out += "\n"
         return out
@@ -246,12 +246,12 @@ class ConfigBase(dict):
         return list(self["groups"].keys())
 
     def _getGroup(self, group_name):
-        """Return group specific configuration for groupName"""
+        """Return group specific configuration for group_name"""
 
         return self["groups"][group_name]
 
     def getGroupMembers(self, group_name):
-        """Return list of groupName members with sub lists expanded recursively"""
+        """Return list of group_name members with sub lists expanded recursively"""
 
         g = self._getGroup(group_name)
         out = [(x, self.getGroupParams(group_name)) for x in g["hosts"]]
@@ -288,6 +288,6 @@ class ConfigBase(dict):
                 return self["settings"][param]
 
     def getGroupParams(self, group_name):
-        """Return complete configuration for the group groupName"""
+        """Return complete configuration for the group group_name"""
 
         return {k: self.getParam(k, group_name) for k in PARAMS.keys()}

@@ -10,9 +10,9 @@ tox:
 	tox -p auto
 
 format:
-	black tentakel
-	isort -rc tentakel
-	git checkout tentakel/tpg.py tentakel/remote.py
+	black --exclude tentakel/tpg.py tentakel
+	# isort -rc tentakel
+	# git checkout tentakel/tpg.py tentakel/remote.py
 
 release:
 	rm -rf dist

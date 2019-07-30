@@ -38,43 +38,43 @@ except ImportError:
 
 
 class TentakelShell(cmd.Cmd):
-    def __init__(self, conf, groupName):
-        cmd.Cmd.__init__(self)
+    def __init__(self, conf, group_name):
+        super().__init__(self)
         self.doc_header = "commands (type help <topic>):"
         self.ruler = ""
-        self.groupName = groupName
-        self.prompt = f"tentakel({groupName})> "
+        self.group_name = group_name
+        self.prompt = f"tentakel({group_name})> "
         self.conf = conf
-        self.dests = remote.RemoteCollator(conf, groupName)
+        self.dests = remote.RemoteCollator(conf, group_name)
 
     def emptyline(self):
         pass
 
     def postcmd(self, stop, rest):
-        self.prompt = f"tentakel({self.groupName})> "
+        self.prompt = f"tentakel({self.group_name})> "
         return stop
 
-    def do_exec(self, execString):
+    def do_exec(self, cmd):
         """exec <cmd>: applies <cmd> to the current group"""
 
-        if not execString:
+        if not cmd:
             print("empty command")
             return
-        self.dests.execAll(execString)
+        self.dests.execAll(cmd)
         self.dests.displayAll()
 
     def do_conf(self, rest):
         """conf: interactively edit current configuration"""
 
         self.conf.edit()
-        self.dests.useConf(self.conf, self.groupName)
+        self.dests.useConf(self.conf, self.group_name)
 
     def do_use(self, rest):
         """use <groupname>: use the specified group"""
 
         if rest:
-            self.groupName = rest
-            self.dests.useConf(self.conf, self.groupName)
+            self.group_name = rest
+            self.dests.useConf(self.conf, self.group_name)
 
     def do_groups(self, rest):
         """groups: list available groups"""
