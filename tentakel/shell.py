@@ -76,13 +76,16 @@ class TentakelShell(cmd.Cmd):
             self.groupName = rest
             self.dests.useConf(self.conf, self.groupName)
 
-    def do_listgroups(self, rest):
-        """listgroups: list available groups"""
+    def do_groups(self, rest):
+        """groups: list available groups"""
 
         print("\n".join(self.conf.getGroups()))
 
+    # Deprecated, remove in 3.1
+    do_listgroups = do_groups
+
     def do_hosts(self, rest):
-        """hosts: show list of affected hosts"""
+        """hosts: list of affected hosts"""
 
         print("\n".join(self.dests.getDestinations()))
 

@@ -64,7 +64,7 @@ class FormatString(tpg.Parser):
     """
 
     def __init__(self):
-        super(FormatString, self).__init__()
+        super().__init__()
         self.map = {r"%%": "%"}
 
     def getMap(self):
@@ -167,7 +167,7 @@ def remoteCommandFactory(destination, params):
         error.err('Method not implemented: "%s"' % method)
 
 
-class RemoteCollator(object):
+class RemoteCollator:
     """This class is meant to hold RemoteCommand instances each
     of which implements a specific way too execute a command on
     a remote host."""

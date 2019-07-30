@@ -41,7 +41,7 @@ class RSHRemoteCommand(RemoteCommand):
         self.delim = md5(str(random.random())).hexdigest()
 
     def _rexec(self, command):
-        s = '%s -l %s %s "%s; echo %s \\$?"' % (
+        s = '{} -l {} {} "{}; echo {} \\$?"'.format(
             self.rsh_path,
             self.user,
             self.destination,

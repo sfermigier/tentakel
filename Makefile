@@ -1,6 +1,5 @@
 test: 
-	rm -rf .tox/*/local
-	tox
+	tox -p auto
 
 configure:
 	cd py && $(PYTHON) setup.py config

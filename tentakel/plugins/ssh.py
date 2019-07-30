@@ -38,7 +38,7 @@ class SSHRemoteCommand(RemoteCommand):
         RemoteCommand.__init__(self, destination, params)
 
     def _rexec(self, command):
-        s = '%s %s@%s "%s"' % (self.ssh_path, self.user, self.destination, command)
+        s = f'{self.ssh_path} {self.user}@{self.destination} "{command}"'
         t1 = time.time()
         status, output = subprocess.getstatusoutput(s)
         self.duration = time.time() - t1

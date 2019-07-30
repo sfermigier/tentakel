@@ -862,7 +862,7 @@ class ParserMetaClass(type):
     """
 
     def __init__(cls, name, bases, dict):
-        super(ParserMetaClass, cls).__init__(name, bases, dict)
+        super().__init__(name, bases, dict)
         try:
             grammar = dict['__doc__']
         except KeyError:
@@ -1145,8 +1145,8 @@ class VerboseParser(Parser):
         found = "(%d,%d) %s %s"%(token.line, token.column, token.name, token.text)
         return "[%3d][%2d]%s: %s %s %s"%(eatcnt, stackdepth, callernames, found, op, expected)
 
-blank_line_re = re.compile("^\s*$")
-indent_re = re.compile("^\s*")
+blank_line_re = re.compile(r"^\s*$")
+indent_re = re.compile(r"^\s*")
 
 class tpg:
     """ This class contains some TPG classes to make the parsers usable inside and outside the tpg module
@@ -1847,8 +1847,7 @@ class TPGParser(tpg.Parser):
     class Rules(list):
         def get_inline_tokens(self):
             for rule in self:
-                for token in rule.get_inline_tokens():
-                    yield token
+                yield from rule.get_inline_tokens()
         def links_symbols_to_tokens(self, tokens):
             for rule in self:
                 rule.links_symbols_to_tokens(tokens)
@@ -1866,8 +1865,7 @@ class TPGParser(tpg.Parser):
             self.head = head
             self.body = body
         def get_inline_tokens(self):
-            for token in self.body.get_inline_tokens():
-                yield token
+            yield from self.body.get_inline_tokens()
         def links_symbols_to_tokens(self, tokens):
             if self.head.name in tokens:
                 raise SemanticError("%s is both a token and a symbol"%self.head.name)
@@ -1972,8 +1970,7 @@ class TPGParser(tpg.Parser):
             return True
         def get_inline_tokens(self):
             for a in self:
-                for token in a.get_inline_tokens():
-                    yield token
+                yield from a.get_inline_tokens()
         def links_symbols_to_tokens(self, tokens):
             for a in self:
                 a.links_symbols_to_tokens(tokens)
@@ -1995,10 +1992,8 @@ class TPGParser(tpg.Parser):
             self.a = a
             self.b = b
         def get_inline_tokens(self):
-            for token in self.a.get_inline_tokens():
-                yield token
-            for token in self.b.get_inline_tokens():
-                yield token
+            yield from self.a.get_inline_tokens()
+            yield from self.b.get_inline_tokens()
         def links_symbols_to_tokens(self, tokens):
             self.a.links_symbols_to_tokens(tokens)
             self.b.links_symbols_to_tokens(tokens)
@@ -2031,8 +2026,7 @@ class TPGParser(tpg.Parser):
             self.min = min
             self.max = max
         def get_inline_tokens(self):
-            for token in self.a.get_inline_tokens():
-                yield token
+            yield from self.a.get_inline_tokens()
         def links_symbols_to_tokens(self, tokens):
             self.a.links_symbols_to_tokens(tokens)
         def gen_code(self, indent, counters, pos):
@@ -2159,8 +2153,7 @@ class TPGParser(tpg.Parser):
     def flatten_nl(self, *lines):
         for sublines in lines:
             if isinstance(sublines, (list, tuple)):
-                for line in self.flatten_nl(*sublines):
-                    yield line
+                yield from self.flatten_nl(*sublines)
             else:
                 yield sublines + "\n"
 

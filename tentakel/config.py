@@ -135,7 +135,7 @@ class ConfigGroup(dict):
     """Store group info"""
 
     def __init__(self):
-        super(ConfigGroup, self).__init__()
+        super().__init__()
         self["name"] = ""
         # create keys that are also available globally, but with default values stripped
         p = dict(list(zip(list(PARAMS.keys()), [""] * len(PARAMS))))
@@ -147,8 +147,8 @@ class ConfigGroup(dict):
         l = []
         for param in PARAMS.keys():
             if self[param]:
-                l.append('%s="%s"' % (param, re.sub('"', '""', self[param])))
-        return "group %s (%s)" % (self["name"], ", ".join(l))
+                l.append('{}="{}"'.format(param, re.sub('"', '""', self[param])))
+        return "group {} ({})".format(self["name"], ", ".join(l))
 
 
 class ConfigBase(dict):
@@ -165,7 +165,7 @@ class ConfigBase(dict):
     """
 
     def __init__(self):
-        super(ConfigBase, self).__init__()
+        super().__init__()
         self.clear()
 
     def clear(self):
@@ -185,8 +185,8 @@ class ConfigBase(dict):
         try:
             self.parse("".join(file.readlines()))
         except tpg.SyntacticError as excerr:
-            error.warn("in %s: %s" % (file.name, excerr.msg))
-        except IOError:
+            error.warn(f"in {file.name}: {excerr.msg}")
+        except OSError:
             error.err("could not read from file: '%s'" % file.name)
 
     def dump(self, file):
@@ -205,7 +205,7 @@ class ConfigBase(dict):
         try:
             file.writelines(comment)
             file.writelines(str(self))
-        except IOError:
+        except OSError:
             error.err("could not write to file: '%s'" % file.name)
 
     def edit(self):
@@ -228,7 +228,7 @@ class ConfigBase(dict):
         settings = self["settings"]
         for s_param, s_value in settings.items():
             if s_value:
-                out = '%sset %s="%s"\n' % (out, s_param, s_value)
+                out = f'{out}set {s_param}="{s_value}"\n'
         out += "\n"
         groups = self["groups"]
         for groupName, groupObj in groups.items():
@@ -260,7 +260,7 @@ class ConfigBase(dict):
                 out += self.getGroupMembers(list)
             except (KeyError, RuntimeError):
                 if sys.exc_info()[0] == KeyError:
-                    error.warn("in group '%s': no such group '%s'" % (groupName, list))
+                    error.warn(f"in group '{groupName}': no such group '{list}'")
                 if sys.exc_info()[0] == RuntimeError:
                     error.err("runtime error: possible loop in configuration file")
         return out
@@ -290,4 +290,4 @@ class ConfigBase(dict):
     def getGroupParams(self, groupName):
         """Return complete configuration for the group groupName"""
 
-        return dict([(k, self.getParam(k, groupName)) for k in PARAMS.keys()])
+        return {k: self.getParam(k, groupName) for k in PARAMS.keys()}
