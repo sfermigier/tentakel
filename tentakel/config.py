@@ -75,17 +75,17 @@ class TConf(tpg.Parser):
     set lexer = ContextSensitiveLexer
 
     token keyword  : '%(keywords)s'  str ;
-    token eq  : '='      str ;
-    token word  : '\w+'      str ;
-    token vchar  : '""|[^"]'    str ;
-    token hitem  : '\+[-\w\.:]+'    str ;
-    token litem  : '@\w+'    str ;
+    token eq       : '='      str ;
+    token word     : '\w+'      str ;
+    token vchar    : '""|[^"]'    str ;
+    token hitem    : '\+[-\w\.:]+'    str ;
+    token litem    : '@\w+'    str ;
 
     separator spaces  : '\s+' ;
 
     START/e ->      $ e = {"groups": {}, "settings": PARAMS}
-    (  SETTING/s  $ e["settings"].update(s)
-      | GROUP/g  $ e["groups"][g["name"]] = g
+    (  SETTING/s    $ e["settings"].update(s)
+      | GROUP/g     $ e["groups"][g["name"]] = g
       | COMMENT
     )*
     ;
@@ -103,26 +103,26 @@ class TConf(tpg.Parser):
       '"'      $ v = re.sub('""', '"', t)
     ;
 
-    GROUP/g ->      'group'    $ g = ConfigGroup()
-      GROUPNAME/n  $ g["name"] = n
-      GROUPSPEC/s  $ g.update(s)
-      MEMBERS/l  $ g.update(l)
+    GROUP/g -> 'group'  $ g = ConfigGroup()
+      GROUPNAME/n       $ g["name"] = n
+      GROUPSPEC/s       $ g.update(s)
+      MEMBERS/l         $ g.update(l)
     ;
 
     GROUPNAME/n -> word/n ;
 
-    GROUPSPEC/s ->          $ s = {}
+    GROUPSPEC/s ->        $ s = {}
       '\('
-        ( PARAM/<p,v>    $ s[p] = v
+        ( PARAM/<p,v>     $ s[p] = v
         )?
-        ( ',' PARAM/<p,v>  $ s[p] = v
+        ( ',' PARAM/<p,v> $ s[p] = v
         )*
       '\)'
     ;
 
-    MEMBERS/l ->      $ l = {"hosts": [], "lists": []}
-      ( hitem/i  $ l["hosts"].append(i[1:])
-      | litem/i  $ l["lists"].append(i[1:])
+    MEMBERS/l ->  $ l = {"hosts": [], "lists": []}
+      ( hitem/i   $ l["hosts"].append(i[1:])
+      | litem/i   $ l["lists"].append(i[1:])
       | COMMENT
       )*
     ;
@@ -180,13 +180,13 @@ class ConfigBase(dict):
         self.update(tp(txt))
 
     def load(self, file):
-        "Load configuration from file"
+        """Load configuration from file"""
 
         try:
             self.parse("".join(file.readlines()))
-        except tpg.SyntacticError as excerr:
+        except tpg.SyntacticError as excerr:  # pragma: nocover
             error.warn(f"in {file.name}: {excerr.msg}")
-        except OSError:
+        except OSError:  # pragma: nocover
             error.err(f"could not read from file: '{file.name}'")
 
     def dump(self, file):
@@ -205,7 +205,7 @@ class ConfigBase(dict):
         try:
             file.writelines(comment)
             file.writelines(str(self))
-        except OSError:
+        except OSError:  # pragma: nocover
             error.err(f"could not write to file: '{file.name}'")
 
     def edit(self):
@@ -253,12 +253,12 @@ class ConfigBase(dict):
     def getGroupMembers(self, group_name):
         """Return list of group_name members with sub lists expanded recursively"""
 
-        g = self._getGroup(group_name)
-        out = [(x, self.getGroupParams(group_name)) for x in g["hosts"]]
-        for list in g["lists"]:
+        group = self._getGroup(group_name)
+        out = [(x, self.getGroupParams(group_name)) for x in group["hosts"]]
+        for list in group["lists"]:
             try:
                 out += self.getGroupMembers(list)
-            except (KeyError, RuntimeError):
+            except (KeyError, RuntimeError):  # pragma: nocover
                 if sys.exc_info()[0] == KeyError:
                     error.warn(f"in group '{group_name}': no such group '{list}'")
                 if sys.exc_info()[0] == RuntimeError:
@@ -274,7 +274,7 @@ class ConfigBase(dict):
 
         If param is not a valid parameter identifier, return None"""
 
-        if param not in PARAMS.keys():
+        if param not in PARAMS.keys():  # pragma: nocover
             error.warn(f"invalid parameter: '{param}'")
             return None
         else:
