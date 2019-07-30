@@ -187,7 +187,7 @@ class ConfigBase(dict):
         except tpg.SyntacticError as excerr:
             error.warn(f"in {file.name}: {excerr.msg}")
         except OSError:
-            error.err("could not read from file: '%s'" % file.name)
+            error.err(f"could not read from file: '{file.name}'")
 
     def dump(self, file):
         """Save configuration to file"""
@@ -206,7 +206,7 @@ class ConfigBase(dict):
             file.writelines(comment)
             file.writelines(str(self))
         except OSError:
-            error.err("could not write to file: '%s'" % file.name)
+            error.err(f"could not write to file: '{file.name}'")
 
     def edit(self):
         """Interactively edit configuration"""
@@ -275,7 +275,7 @@ class ConfigBase(dict):
         If param is not a valid parameter identifier, return None"""
 
         if param not in PARAMS.keys():
-            error.warn("invalid parameter: '%s'" % param)
+            error.warn(f"invalid parameter: '{param}'")
             return None
         else:
             try:

@@ -30,9 +30,9 @@ import sys
 
 
 def err(errstring):
-    sys.stderr.write("tentakel error: %s\n" % errstring)
+    sys.stderr.write(f"tentakel error: {errstring}\n")
     sys.exit(1)
 
 
 def warn(warnstring):
-    sys.stderr.write("tentakel: %s\n" % warnstring)
+    sys.stderr.write(f"tentakel: {warnstring}\n")

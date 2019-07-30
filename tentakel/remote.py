@@ -164,7 +164,7 @@ def remoteCommandFactory(destination, params):
     try:
         return _remoteCommandPlugins[method](destination, params)
     except KeyError:
-        error.err('Method not implemented: "%s"' % method)
+        error.err(f'Method not implemented: "{method}"')
 
 
 class RemoteCollator:
@@ -198,7 +198,7 @@ class RemoteCollator:
                 self.format = conf.getParam("format", group=groupName)
         except KeyError:
             self = save
-            error.warn("unknown group: '%s'" % groupName)
+            error.warn(f"unknown group: '{groupName}'")
 
     def getDestinations(self):
         """Return expanded list of hosts"""
@@ -261,7 +261,7 @@ def registerRemoteCommandPlugin(method, cls):
     if issubclass(cls, RemoteCommand):
         _remoteCommandPlugins[method] = cls
     else:
-        error.err("%s is not a descendant of RemoteCommand" % cls)
+        error.err(f"{cls} is not a descendant of RemoteCommand")
 
 
 # Don't remove

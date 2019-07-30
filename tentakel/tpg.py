@@ -84,7 +84,7 @@ class Error(Exception):
         self.line, self.column = line_column
         self.msg = msg
     def __str__(self):
-        return "%s at line %s, column %s: %s"%(self.__class__.__name__, self.line, self.column, self.msg)
+        return f"{self.__class__.__name__} at line {self.line}, column {self.column}: {self.msg}"
 
 class WrongToken(Error):
     """ WrongToken()
@@ -130,7 +130,7 @@ class SemanticError(Error):
         Exception.__init__(self)
         self.msg = msg
     def __str__(self):
-        return "%s: %s"%(self.__class__.__name__, self.msg)
+        return f"{self.__class__.__name__}: {self.msg}"
 
 class LexerOptions:
     """ LexerOptions(word_bounded, compile_options)
@@ -208,10 +208,10 @@ class NamedGroupLexer(LexerOptions):
         if not callable(value):
             value = lambda _, value=value: value
         if name not in self.tokens:
-            self.token_re.append("(?P<%s>%s)"%(name, self.word_bounded(expr)))
+            self.token_re.append(f"(?P<{name}>{self.word_bounded(expr)})")
             self.tokens[name] = value, True
         else:
-            raise SemanticError("Duplicate token definition (%s)"%name)
+            raise SemanticError(f"Duplicate token definition ({name})")
 
     def def_separator(self, name, expr, value=_id):
         """ add a new separator to the lexer
@@ -228,10 +228,10 @@ class NamedGroupLexer(LexerOptions):
         if not callable(value):
             value = lambda _, value=value: value
         if name not in self.tokens:
-            self.token_re.append("(?P<%s>%s)"%(name, self.word_bounded(expr)))
+            self.token_re.append(f"(?P<{name}>{self.word_bounded(expr)})")
             self.tokens[name] = value, False
         else:
-            raise SemanticError("Duplicate token definition (%s)"%name)
+            raise SemanticError(f"Duplicate token definition ({name})")
 
     def build(self):
         """ build the token_re attribute from the tokens and separators
@@ -290,7 +290,7 @@ class NamedGroupLexer(LexerOptions):
                 try:
                     value = value(text)
                 except WrongToken:
-                    raise LexicalError((self.line, self.column), "Lexical error in %s"%text)
+                    raise LexicalError((self.line, self.column), f"Lexical error in {text}")
                 start, stop = tok.span()
                 self.pos = stop
                 tok_line, tok_column = self.line, self.column
@@ -312,7 +312,7 @@ class NamedGroupLexer(LexerOptions):
                     err = self.input[self.pos:nl]
                 else:
                     err = self.input[self.pos:self.pos+w]
-                raise LexicalError((self.line, self.column), "Lexical error near %s"%err)
+                raise LexicalError((self.line, self.column), f"Lexical error near {err}")
 
     def token(self):
         """ return the current token
@@ -372,7 +372,7 @@ class Lexer(NamedGroupLexer):
         if name not in self.tokens:
             self.tokens.append((name, self.re_compile(self.word_bounded(expr)), value, True))
         else:
-            raise SemanticError("Duplicate token definition (%s)"%name)
+            raise SemanticError(f"Duplicate token definition ({name})")
 
     def def_separator(self, name, expr, value=_id):
         """ add a new separator to the lexer
@@ -391,7 +391,7 @@ class Lexer(NamedGroupLexer):
         if name not in self.tokens:
             self.tokens.append((name, self.re_compile(self.word_bounded(expr)), value, False))
         else:
-            raise SemanticError("Duplicate token definition (%s)"%name)
+            raise SemanticError(f"Duplicate token definition ({name})")
 
     def start(self, input):
         """ start a lexical analysis
@@ -434,7 +434,7 @@ class Lexer(NamedGroupLexer):
                 try:
                     value = value(text)
                 except WrongToken:
-                    raise LexicalError((self.line, self.column), "Lexical error in %s"%text)
+                    raise LexicalError((self.line, self.column), f"Lexical error in {text}")
                 start, stop = tok.span()
                 self.pos = stop
                 tok_line, tok_column = self.line, self.column
@@ -456,7 +456,7 @@ class Lexer(NamedGroupLexer):
                     err = self.input[self.pos:nl]
                 else:
                     err = self.input[self.pos:self.pos+w]
-                raise LexicalError((self.line, self.column), "Lexical error near %s"%err)
+                raise LexicalError((self.line, self.column), f"Lexical error near {err}")
 
 class CacheNamedGroupLexer(NamedGroupLexer):
     r""" CacheNamedGroupLexer(word_bounded, compile_options)
@@ -644,7 +644,7 @@ class ContextSensitiveLexer(LexerOptions):
         if name not in self.tokens and name not in self.separators:
             self.tokens[name] = self.re_compile(self.word_bounded(expr)), value
         else:
-            raise SemanticError("Duplicate token definition (%s)"%name)
+            raise SemanticError(f"Duplicate token definition ({name})")
 
     def def_separator(self, name, expr, value=_id):
         """ add a new separator to the lexer
@@ -663,7 +663,7 @@ class ContextSensitiveLexer(LexerOptions):
         if name not in self.tokens and name not in self.separators:
             self.separators.append((name, self.re_compile(self.word_bounded(expr)), value))
         else:
-            raise SemanticError("Duplicate token definition (%s)"%name)
+            raise SemanticError(f"Duplicate token definition ({name})")
 
     def start(self, input):
         """ start a lexical analysis
@@ -797,7 +797,7 @@ class Token:
         return name == self.name
 
     def __str__(self):
-        return "line %s, column %s: %s %s %s"%(self.line, self.column, self.name, self.text, self.value)
+        return f"line {self.line}, column {self.column}: {self.name} {self.text} {self.value}"
 
 class EOFToken(Token):
     """ EOFToken(line, column, pos, prev_stop)
@@ -966,7 +966,7 @@ class Parser(_Parser):
             else:
                 last_token = self.lexer.last_token.text
                 line, column = self.lexer.last_token.line, self.lexer.last_token.column
-            raise SyntacticError((line, column), "Syntax error near %s"%last_token)
+            raise SyntacticError((line, column), f"Syntax error near {last_token}")
         return value
 
     def line(self, token=None):
@@ -1142,7 +1142,7 @@ class VerboseParser(Parser):
             if len(callernames) < 10:
                 callernames.insert(0, name)
         callernames = '.'.join(callernames)
-        found = "(%d,%d) %s %s"%(token.line, token.column, token.name, token.text)
+        found = f"({token.line:d},{token.column:d}) {token.name} {token.text}"
         return "[%3d][%2d]%s: %s %s %s"%(eatcnt, stackdepth, callernames, found, op, expected)
 
 blank_line_re = re.compile(r"^\s*$")
@@ -1729,14 +1729,14 @@ class TPGParser(tpg.Parser):
         try:
             sre_parse.parse(eval(self.string_prefix+expr))
         except Exception:
-            raise LexicalError((tok.line, tok.column), "Invalid regular expression: %s (%s)"%(expr, exc()))
+            raise LexicalError((tok.line, tok.column), f"Invalid regular expression: {expr} ({exc()})")
 
     def code_check(self, code, tok):
         try:
             parser.suite(code.code)
         except Exception:
             erroneous_code = "\n".join([ "%2d: %s"%(i+1, l) for (i, l) in enumerate(code.code.splitlines()) ])
-            raise LexicalError((tok.line, tok.column), "Invalid Python code (%s): \n%s"%(exc, erroneous_code))
+            raise LexicalError((tok.line, tok.column), f"Invalid Python code ({exc}): \n{erroneous_code}")
 
     class Options:
         option_dict = {
@@ -1836,10 +1836,10 @@ class TPGParser(tpg.Parser):
         def gen_def(self):
             expr = self.expr
             if self.code is None:
-                return "lexer.%s('%s', %s%s)"%(self.def_method, self.name, self.string_prefix, expr)
+                return f"lexer.{self.def_method}('{self.name}', {self.string_prefix}{expr})"
             else:
                 code = self.code.gen_code().strip()
-                return "lexer.%s('%s', %s%s, %s)"%(self.def_method, self.name, self.string_prefix, expr, code)
+                return f"lexer.{self.def_method}('{self.name}', {self.string_prefix}{expr}, {code})"
 
     class DefSeparator(DefToken):
         def_method = "def_separator"
@@ -1860,7 +1860,7 @@ class TPGParser(tpg.Parser):
             def __call__(self, name):
                 n = self.get(name, 1)
                 self[name] = n+1
-                return "_%s%s"%(name, n)
+                return f"_{name}{n}"
         def __init__(self, head, body):
             self.head = head
             self.body = body
@@ -1868,14 +1868,14 @@ class TPGParser(tpg.Parser):
             yield from self.body.get_inline_tokens()
         def links_symbols_to_tokens(self, tokens):
             if self.head.name in tokens:
-                raise SemanticError("%s is both a token and a symbol"%self.head.name)
+                raise SemanticError(f"{self.head.name} is both a token and a symbol")
             else:
                 self.body.links_symbols_to_tokens(tokens)
         def gen_code(self):
             counters = self.Counters()
             return self.head.name, [
                 self.head.gen_def(),
-                tab + 'r""" ``%s -> %s ;`` """'%(self.head.gen_doc(self), self.body.gen_doc(self)),
+                tab + f'r""\" ``{self.head.gen_doc(self)} -> {self.body.gen_doc(self)} ;`` """',
                 self.head.gen_init_ret(tab),
                 self.body.gen_code(tab, counters, None),
                 self.head.gen_ret(tab),
@@ -1892,24 +1892,24 @@ class TPGParser(tpg.Parser):
         def links_symbols_to_tokens(self, tokens):
             self.token = tokens.get(self.name, None)
             if self.token is not None and self.args:
-                raise SemanticError("Token %s can not have arguments"%self.name)
+                raise SemanticError(f"Token {self.name} can not have arguments")
         def gen_def(self):
-            return "def %s(self, %s):"%(self.name, self.args.gen_code())
+            return f"def {self.name}(self, {self.args.gen_code()}):"
         def gen_init_ret(self, indent):
-            return self.ret.gen_code() == self.name and indent + "%s = None"%(self.name) or ()
+            return self.ret.gen_code() == self.name and indent + f"{self.name} = None" or ()
         def gen_ret(self, indent):
             return self.ret and indent + "return %s"%self.ret.gen_code() or ()
         def gen_code(self, indent, counters, pos):
             if self.token is not None:
                 if self.ret is not None:
-                    return indent + "%s = self.eat('%s')"%(self.ret.gen_code(), self.token.name)
+                    return indent + f"{self.ret.gen_code()} = self.eat('{self.token.name}')"
                 else:
-                    return indent + "self.eat('%s')"%(self.token.name)
+                    return indent + f"self.eat('{self.token.name}')"
             else:
                 if self.ret is not None:
-                    return indent + "%s = self.%s(%s)"%(self.ret.gen_code(), self.name, self.args.gen_code())
+                    return indent + f"{self.ret.gen_code()} = self.{self.name}({self.args.gen_code()})"
                 else:
-                    return indent + "self.%s(%s)"%(self.name, self.args.gen_code())
+                    return indent + f"self.{self.name}({self.args.gen_code()})"
         def gen_doc(self, parent):
             return self.name
 
@@ -1927,9 +1927,9 @@ class TPGParser(tpg.Parser):
             pass
         def gen_code(self, indent, counters, pos):
             if self.ret is not None:
-                return indent + "%s = self.eat('%s') # %s"%(self.ret.gen_code(), self.explicit_token.name, self.expr)
+                return indent + f"{self.ret.gen_code()} = self.eat('{self.explicit_token.name}') # {self.expr}"
             else:
-                return indent + "self.eat('%s') # %s"%(self.explicit_token.name, self.expr)
+                return indent + f"self.eat('{self.explicit_token.name}') # {self.expr}"
         def gen_doc(self, parent):
             return self.expr
 
@@ -1948,19 +1948,19 @@ class TPGParser(tpg.Parser):
             self.name = name
             self.arg = arg
         def gen_code(self):
-            return "%s=%s"%(self.name, self.arg.gen_code())
+            return f"{self.name}={self.arg.gen_code()}"
 
     class PY_PositionArgumentList:
         def __init__(self, name):
             self.name = name
         def gen_code(self):
-            return "*%s"%self.name
+            return f"*{self.name}"
 
     class PY_KeywordArgumentList:
         def __init__(self, name):
             self.name = name
         def gen_code(self):
-            return "**%s"%self.name
+            return f"**{self.name}"
 
     class And(list):
         def empty(self):
@@ -2000,17 +2000,17 @@ class TPGParser(tpg.Parser):
         def gen_code(self, indent, counters, pos):
             p = pos or counters("p")
             return [
-                pos is None and indent + "%s = self.lexer.token()"%p or (),
+                pos is None and indent + f"{p} = self.lexer.token()" or (),
                 indent + "try:",
                 self.a.gen_code(indent+tab, counters, p),
                 indent + "except tpg.WrongToken:",
-                indent + tab + "self.lexer.back(%s)"%p,
+                indent + tab + f"self.lexer.back({p})",
                 self.b.gen_code(indent+tab, counters, p),
             ]
         def gen_doc(self, parent):
-            doc = "%s | %s"%(self.a.gen_doc(self), self.b.gen_doc(self))
+            doc = f"{self.a.gen_doc(self)} | {self.b.gen_doc(self)}"
             if isinstance(parent, TPGParser.And) and len(parent) > 1:
-                doc = "(%s)"%doc
+                doc = f"({doc})"
             return doc
 
     def balance(self, xs):
@@ -2034,22 +2034,22 @@ class TPGParser(tpg.Parser):
             if (self.min, self.max) == (0, 1):
                 p = pos or counters("p")
                 return [
-                    pos is None and indent + "%s = self.lexer.token()"%p or (),
+                    pos is None and indent + f"{p} = self.lexer.token()" or (),
                     indent + "try:",
                     self.a.gen_code(indent+tab, counters, p),
                     indent + "except tpg.WrongToken:",
-                    indent + tab + "self.lexer.back(%s)"%p,
+                    indent + tab + f"self.lexer.back({p})",
                 ]
             # A*
             elif (self.min, self.max) == (0, None):
                 p = pos or counters("p")
                 return [
                     indent + "while True:",
-                    indent + tab + "%s = self.lexer.token()"%p,
+                    indent + tab + f"{p} = self.lexer.token()",
                     indent + tab + "try:",
                     self.a.gen_code(indent+tab+tab, counters, p),
                     indent + tab + "except tpg.WrongToken:",
-                    indent + tab + tab + "self.lexer.back(%s)"%p,
+                    indent + tab + tab + f"self.lexer.back({p})",
                     indent + tab + tab + "break",
                 ]
             # A+
@@ -2057,15 +2057,15 @@ class TPGParser(tpg.Parser):
                 p = pos or counters("p")
                 n = counters("n")
                 return [
-                    indent + "%s = 0"%n,
+                    indent + f"{n} = 0",
                     indent + "while True:",
-                    indent + tab + "%s = self.lexer.token()"%p,
+                    indent + tab + f"{p} = self.lexer.token()",
                     indent + tab + "try:",
                     self.a.gen_code(indent+tab+tab, counters, p),
-                    indent + tab + tab + "%s += 1"%n,
+                    indent + tab + tab + f"{n} += 1",
                     indent + tab + "except tpg.WrongToken:",
-                    indent + tab + tab + "if %s < 1: raise"%n,
-                    indent + tab + tab + "self.lexer.back(%s)"%p,
+                    indent + tab + tab + f"if {n} < 1: raise",
+                    indent + tab + tab + f"self.lexer.back({p})",
                     indent + tab + tab + "break",
                 ]
             # A{min, max}
@@ -2075,21 +2075,21 @@ class TPGParser(tpg.Parser):
                 min = self.min.gen_code()
                 max = self.max.gen_code()
                 return [
-                    indent + "%s = 0"%n,
-                    indent + "while %s:"%(max=="None" and "True" or "%s < %s"%(n, max)),
-                    indent + tab + "%s = self.lexer.token()"%p,
+                    indent + f"{n} = 0",
+                    indent + "while %s:"%(max=="None" and "True" or f"{n} < {max}"),
+                    indent + tab + f"{p} = self.lexer.token()",
                     indent + tab + "try:",
                     self.a.gen_code(indent+tab+tab, counters, p),
-                    indent + tab + tab + "%s += 1"%n,
+                    indent + tab + tab + f"{n} += 1",
                     indent + tab + "except tpg.WrongToken:",
-                    indent + tab + tab + "if %s < %s: raise"%(n, min),
-                    indent + tab + tab + "self.lexer.back(%s)"%p,
+                    indent + tab + tab + f"if {n} < {min}: raise",
+                    indent + tab + tab + f"self.lexer.back({p})",
                     indent + tab + tab + "break",
                 ]
         def gen_doc(self, parent):
             doc = self.a.gen_doc(self)
             if isinstance(self.a, (TPGParser.And, TPGParser.Or)):
-                doc = "(%s)"%doc
+                doc = f"({doc})"
             if (self.min, self.max) == (0, 1):
                 rep = "?"
             elif (self.min, self.max) == (0, None):
@@ -2105,7 +2105,7 @@ class TPGParser(tpg.Parser):
                     if min == "0": min = ""
                     if max == "None": max = ""
                     rep = "{%s,%s}"%(min, max)
-            return "%s%s"%(doc, rep)
+            return f"{doc}{rep}"
 
     class Check(NotEmpty):
         def __init__(self, cond):
@@ -2181,13 +2181,13 @@ class TPGParser(tpg.Parser):
             except KeyError:
                 # Otherwise create an explicit definition for the new inline token
                 token_number += 1
-                token.set_explicit_token(self.DefToken("_tok_%s"%token_number, self.string_prefix, token.expr))
+                token.set_explicit_token(self.DefToken(f"_tok_{token_number}", self.string_prefix, token.expr))
                 explicit_tokens[token.expr[1:-1]] = token.explicit_token
                 inline_tokens.append(token)
         yield self.make_code("init_lexer",
             "def init_lexer(self):",
             lexer is ContextSensitiveLexer and [tab + "self.eat = self.eatCSL"] or (),
-            tab + "lexer = tpg.%s(%s, %s)"%(lexer.__name__, word_bounded, lexer_options),
+            tab + f"lexer = tpg.{lexer.__name__}({word_bounded}, {lexer_options})",
             [ tab + tok.gen_def() for tok in inline_tokens ],
             [ tab + tok.gen_def() for tok in tokens ],
             tab + "return lexer",

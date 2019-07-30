@@ -43,7 +43,7 @@ class TentakelShell(cmd.Cmd):
         self.doc_header = "commands (type help <topic>):"
         self.ruler = ""
         self.groupName = groupName
-        self.prompt = "tentakel(%s)> " % groupName
+        self.prompt = f"tentakel({groupName})> "
         self.conf = conf
         self.dests = remote.RemoteCollator(conf, groupName)
 
@@ -51,7 +51,7 @@ class TentakelShell(cmd.Cmd):
         pass
 
     def postcmd(self, stop, rest):
-        self.prompt = "tentakel(%s)> " % self.groupName
+        self.prompt = f"tentakel({self.groupName})> "
         return stop
 
     def do_exec(self, execString):
