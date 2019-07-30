@@ -1,0 +1,18 @@
+dist: xenial
+language: python
+
+cache:
+  pip: true
+
+matrix:
+  include:
+    - python: 3.6
+    - python: 3.7
+    - python: 3.6
+      env: TOXENV=lint
+
+install:
+  - pip install -U pip setuptools wheel tox tox-travis
+
+script:
+  - tox

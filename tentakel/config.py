@@ -73,44 +73,44 @@ class TConf(tpg.Parser):
     __doc__ = r"""
 
     set lexer = ContextSensitiveLexer
-    
+
     token keyword  : '%(keywords)s'  str ;
     token eq  : '='      str ;
     token word  : '\w+'      str ;
     token vchar  : '""|[^"]'    str ;
     token hitem  : '\+[-\w\.:]+'    str ;
     token litem  : '@\w+'    str ;
-    
+
     separator spaces  : '\s+' ;
-    
+
     START/e ->      $ e = {"groups": {}, "settings": PARAMS}
     (  SETTING/s  $ e["settings"].update(s)
       | GROUP/g  $ e["groups"][g["name"]] = g
       | COMMENT
     )*
     ;
-    
+
     COMMENT ->   @start '\s*#.*' @end
     ;
-    
+
     SETTING/s ->  'set'    $ s = {}
       PARAM/<p,v>  $ s[p] = v
     ;
-    
+
     PARAM/<p,v> ->  keyword/p eq
       '"'
       @start (vchar)* @end  $ t = self.extract(start, end)
       '"'      $ v = re.sub('""', '"', t)
     ;
-    
+
     GROUP/g ->      'group'    $ g = ConfigGroup()
       GROUPNAME/n  $ g["name"] = n
       GROUPSPEC/s  $ g.update(s)
       MEMBERS/l  $ g.update(l)
     ;
-    
+
     GROUPNAME/n -> word/n ;
-    
+
     GROUPSPEC/s ->          $ s = {}
       '\('
         ( PARAM/<p,v>    $ s[p] = v
@@ -144,11 +144,11 @@ class ConfigGroup(dict):
         self["lists"] = []
 
     def __str__(self):
-        l = []
+        groups = []
         for param in PARAMS.keys():
             if self[param]:
-                l.append('{}="{}"'.format(param, re.sub('"', '""', self[param])))
-        return "group {} ({})".format(self["name"], ", ".join(l))
+                groups.append('{}="{}"'.format(param, re.sub('"', '""', self[param])))
+        return "group {} ({})".format(self["name"], ", ".join(groups))
 
 
 class ConfigBase(dict):

@@ -32,7 +32,7 @@ import cmd
 from . import remote
 
 try:
-    import readline
+    import readline  # noqa
 except ImportError:
     pass
 

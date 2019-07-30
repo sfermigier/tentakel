@@ -119,7 +119,7 @@ class RemoteCommand(threading.Thread):
         # and therefore a TODO
         self.__maxparallel = int(params["maxparallel"])
         # Create the semaphore as a class attribute only once and only when needed
-        if not "slot" in self.__class__.__dict__ and not self.__maxparallel <= 0:
+        if "slot" not in self.__class__.__dict__ and not self.__maxparallel <= 0:
             self.__class__.slot = threading.BoundedSemaphore(self.__maxparallel)
         self.start()
 
@@ -265,4 +265,4 @@ def registerRemoteCommandPlugin(method, cls):
 
 
 # Don't remove
-from .plugins import *
+from .plugins import *  # noqa
