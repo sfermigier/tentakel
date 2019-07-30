@@ -1,6 +1,19 @@
 test: 
 	tox -p auto
 
+release:
+	rm -rf dist
+	python setup.py sdist
+	twine upload dist/*
+
+clean:
+	rm -rf **/__pycache__
+	rm -rf build dist
+	rm -rf .tox
+
+#
+# OLD (TODO: remove)
+#
 configure:
 	cd py && $(PYTHON) setup.py config
 	cd py && $(PYTHON) setup.py build
@@ -12,18 +25,7 @@ htmldoc:
 install: configure
 	cd py && $(PYTHON) setup.py install --prefix=$(PREFIX)
 
-release:
-	rm -rf $(REL)
-	mkdir $(REL)
-	tar cf - $(RELEASEFILES) | ( cd $(REL) && tar xf - )
-	tar czf $(REL).tgz $(REL)
-	rm -rf $(REL)
-
 regress:
 	cd py/lekatnet && $(PYTHON) config.py
 	cd py/lekatnet && $(PYTHON) remote.py
 
-clean:
-	rm -f {,tentakel/,tentakel/plugins/,tests/}{*~,*.pyc,*.pyo}
-	rm -rf build dist
-	rm -rf .tox

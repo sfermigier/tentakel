@@ -1,6 +1,8 @@
+/build
+/dist
+/MANIFEST
+/.idea
+/.tox
+/.venv
+
 *.pyc
-build
-dist
-MANIFEST
-.idea
-.tox
