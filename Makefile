@@ -1,5 +1,18 @@
-test: 
+all: test lint
+
+test:
+	pytest
+
+lint:
+	flake8 tentakel
+
+tox:
 	tox -p auto
+
+format:
+	black tentakel
+	isort -rc tentakel
+	git checkout tentakel/tpg.py tentakel/remote.py
 
 release:
 	rm -rf dist
@@ -10,6 +23,11 @@ clean:
 	rm -rf **/__pycache__
 	rm -rf build dist
 	rm -rf .tox
+
+
+develop:
+	pip install -e .
+	pip install pytest pylint flake8 coverage
 
 #
 # OLD (TODO: remove)
