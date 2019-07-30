@@ -95,14 +95,14 @@ class TConf(tpg.Parser):
     COMMENT ->   @start '\s*#.*' @end
     ;
 
-    SETTING/s ->  'set'    $ s = {}
-      PARAM/<p,v>  $ s[p] = v
+    SETTING/s ->  'set'  $ s = {}
+      PARAM/<p,v>        $ s[p] = v
     ;
 
     PARAM/<p,v> ->  keyword/p eq
       '"'
       @start (vchar)* @end  $ t = self.extract(start, end)
-      '"'      $ v = re.sub('""', '"', t)
+      '"'                   $ v = re.sub('""', '"', t)
     ;
 
     GROUP/g -> 'group'  $ g = ConfigGroup()
@@ -263,7 +263,7 @@ class ConfigBase(dict):
                     error.err("runtime error: possible loop in configuration file")
         return out
 
-    def get_param(self, param, group=None):
+    def get_param(self, param: str, group=None):
         """Return the value for param.
 
         If group is specified, return the groups local value for param.

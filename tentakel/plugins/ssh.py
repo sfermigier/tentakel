@@ -26,6 +26,8 @@
 import subprocess
 import time
 
+from typing import Tuple
+
 from tentakel.remote import RemoteCommand, register_remote_command_plugin
 
 
@@ -37,7 +39,7 @@ class SSHRemoteCommand(RemoteCommand):
         self.user = params["user"]
         super().__init__(destination, params)
 
-    def _rexec(self, command):
+    def _rexec(self, command: str) -> Tuple[int, str]:
         s = f'{self.ssh_path} {self.user}@{self.destination} "{command}"'
         t1 = time.time()
         status, output = subprocess.getstatusoutput(s)

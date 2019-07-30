@@ -41,7 +41,9 @@ Provides the two classes which are most important in tentakel:
 import queue
 import sys
 import threading
-from abc import ABCMeta
+from abc import ABCMeta, abstractmethod
+
+from typing import Type
 
 from . import error, tpg
 
@@ -108,6 +110,7 @@ class RemoteCommand(threading.Thread, metaclass=ABCMeta):
         super().__init__()
         self.duration = 0.0
         self.destination = destination
+
         self._command_queue = queue.Queue()
         self._result_queue = queue.Queue()
         self._command_timeout = 0.3
@@ -119,10 +122,16 @@ class RemoteCommand(threading.Thread, metaclass=ABCMeta):
         # hosts in a group before it returns the subgroups hosts) it is not nice
         # and therefore a TODO
         self.__maxparallel = int(params["maxparallel"])
+
         # Create the semaphore as a class attribute only once and only when needed
         if "slot" not in self.__class__.__dict__ and not self.__maxparallel <= 0:
             self.__class__.slot = threading.BoundedSemaphore(self.__maxparallel)
+
         self.start()
+
+    @abstractmethod
+    def _rexec(self, command):
+        pass
 
     def execute(self, command):
         """Execute a command in this thread"""
@@ -251,7 +260,7 @@ class RemoteCollator:
 _remote_command_plugins = {}
 
 
-def register_remote_command_plugin(method, cls):
+def register_remote_command_plugin(method: str, cls: Type[RemoteCommand]):
     """Needs to be imported and executed by remote command plugins"""
     assert issubclass(cls, RemoteCommand)
     _remote_command_plugins[method] = cls
