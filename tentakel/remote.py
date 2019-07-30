@@ -173,18 +173,14 @@ class RemoteCollator:
     a remote host."""
 
     def __init__(self, conf, group_name):
-        self.clear()
+        self.remoteobjects = []
         self.useConf(conf, group_name)
         self.formatter = FormatString()
 
     def clear(self):
         """Empty the list of contained remoteobjects after stopping them."""
-        try:
-            self.remoteobjects
-            for obj in self.remoteobjects:
-                obj.join()
-        except AttributeError:
-            pass
+        for obj in self.remoteobjects:
+            obj.join()
         self.remoteobjects = []
 
     def useConf(self, conf, group_name):
@@ -206,10 +202,8 @@ class RemoteCollator:
 
     def add(self, obj):
         """Add a RemoteObject"""
-        if isinstance(obj, RemoteCommand):
-            self.remoteobjects.append(obj)
-        else:
-            pass
+        assert isinstance(obj, RemoteCommand)
+        self.remoteobjects.append(obj)
 
     def remove(self, obj):
         """Remove a RemoteObject"""
@@ -238,31 +232,29 @@ class RemoteCollator:
     def displayAll(self):
         """Display the next pending result for every remote object"""
 
-        displayCount = len(self.remoteobjects)
-        while displayCount > 0:
+        display_count = len(self.remoteobjects)
+        while display_count > 0:
             obj = RemoteCommand.finishedObjects.get()
-            displayCount -= 1
+            display_count -= 1
             status, output = obj.getResult()
-            resultMap = {
+            result_map = {
                 r"%d": obj.destination,
                 r"%t": str(round(obj.duration, 2)),
                 r"%o": output,
                 r"%s": str(status),
             }
-            sys.stdout.write(self.expandFormat(resultMap))
+            sys.stdout.write(self.expandFormat(result_map))
         assert RemoteCommand.finishedObjects.qsize() == 0
 
 
 _remoteCommandPlugins = {}
 
 
-def registerRemoteCommandPlugin(method, cls):
+def register_remote_command_plugin(method, cls):
     """Needs to be imported and executed by remote command plugins"""
-    if issubclass(cls, RemoteCommand):
-        _remoteCommandPlugins[method] = cls
-    else:
-        error.err(f"{cls} is not a descendant of RemoteCommand")
+    assert issubclass(cls, RemoteCommand)
+    _remoteCommandPlugins[method] = cls
 
 
-# Don't remove
+# Don't remove / don't move
 from .plugins import *  # noqa

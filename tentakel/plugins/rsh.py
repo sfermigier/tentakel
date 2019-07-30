@@ -28,7 +28,7 @@ import subprocess
 import time
 from hashlib import md5
 
-from tentakel.remote import RemoteCommand, registerRemoteCommandPlugin
+from tentakel.remote import RemoteCommand, register_remote_command_plugin
 
 
 class RSHRemoteCommand(RemoteCommand):
@@ -56,4 +56,4 @@ class RSHRemoteCommand(RemoteCommand):
         return (int(status), "\n".join(ol))
 
 
-registerRemoteCommandPlugin("rsh", RSHRemoteCommand)
+register_remote_command_plugin("rsh", RSHRemoteCommand)

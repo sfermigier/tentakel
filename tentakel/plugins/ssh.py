@@ -26,7 +26,7 @@
 import subprocess
 import time
 
-from tentakel.remote import RemoteCommand, registerRemoteCommandPlugin
+from tentakel.remote import RemoteCommand, register_remote_command_plugin
 
 
 class SSHRemoteCommand(RemoteCommand):
@@ -46,4 +46,4 @@ class SSHRemoteCommand(RemoteCommand):
         return (status >> 8, output)
 
 
-registerRemoteCommandPlugin("ssh", SSHRemoteCommand)
+register_remote_command_plugin("ssh", SSHRemoteCommand)
