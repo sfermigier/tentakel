@@ -25,7 +25,7 @@ def test_config_from_doc():
 
     # read parameter
     user1 = pwd.getpwuid(os.geteuid())[0]
-    user2 = c1.getParam("user")
+    user2 = c1.get_param("user")
     assert user1 == user2
 
 

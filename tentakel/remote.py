@@ -41,6 +41,7 @@ Provides the two classes which are most important in tentakel:
 import queue
 import sys
 import threading
+from abc import ABCMeta
 
 from . import error, tpg
 
@@ -83,7 +84,7 @@ class FormatString(tpg.Parser):
         return self.formatMap[s]
 
 
-class RemoteCommand(threading.Thread):
+class RemoteCommand(threading.Thread, metaclass=ABCMeta):
     """Generic remote execution class
 
     Specific remote command classes should inherit from this class
@@ -101,16 +102,16 @@ class RemoteCommand(threading.Thread):
 
     # auxiliary queue that holds references to objects that
     # have results ready
-    finishedObjects = queue.Queue()
+    finished_objects = queue.Queue()
 
     def __init__(self, destination, params):
         super().__init__()
         self.duration = 0.0
         self.destination = destination
-        self._commandQueue = queue.Queue()
-        self._resultQueue = queue.Queue()
-        self._commandTimeout = 0.3
-        self._sleepPeriod = 0.8
+        self._command_queue = queue.Queue()
+        self._result_queue = queue.Queue()
+        self._command_timeout = 0.3
+        self._sleep_period = 0.8
         self._stopevent = threading.Event()
         # In the end this will be the maxparallel value of the _outermost_ group
         # instead of the innermost, unlike all other parameters. Although
@@ -125,21 +126,21 @@ class RemoteCommand(threading.Thread):
 
     def execute(self, command):
         """Execute a command in this thread"""
-        self._commandQueue.put_nowait(command)
+        self._command_queue.put_nowait(command)
 
     def putResult(self, result):
         """Push result onto the result queue"""
-        self._resultQueue.put(result)
-        self.__class__.finishedObjects.put(self)
+        self._result_queue.put(result)
+        self.__class__.finished_objects.put(self)
 
     def getResult(self):
         """Return result from result queue"""
-        return self._resultQueue.get()
+        return self._result_queue.get()
 
     def run(self):
         while not self._stopevent.isSet():
             try:
-                command = self._commandQueue.get(timeout=self._commandTimeout)
+                command = self._command_queue.get(timeout=self._command_timeout)
                 if self.__maxparallel > 0:
                     self.slot.acquire()
                 result = self._rexec(command)
@@ -148,21 +149,21 @@ class RemoteCommand(threading.Thread):
                 self.putResult(result)
             except queue.Empty:
                 pass
-            self._stopevent.wait(self._sleepPeriod)
+            self._stopevent.wait(self._sleep_period)
 
     def join(self, timeout=None):
         """Stop the thread"""
         self._stopevent.set()
-        threading.Thread.join(self, self._commandTimeout)
+        threading.Thread.join(self, self._command_timeout)
 
 
-def remoteCommandFactory(destination, params):
+def remote_command_factory(destination, params):
     """Depending in the method, instantiate a corresponding
     RemoteCommand derived object and return it"""
 
     method = params["method"]
     try:
-        return _remoteCommandPlugins[method](destination, params)
+        return _remote_command_plugins[method](destination, params)
     except KeyError:
         error.err(f'Method not implemented: "{method}"')
 
@@ -173,43 +174,43 @@ class RemoteCollator:
     a remote host."""
 
     def __init__(self, conf, group_name):
-        self.remoteobjects = []
-        self.useConf(conf, group_name)
+        self.remote_objects = []
+        self.use_conf(conf, group_name)
         self.formatter = FormatString()
 
     def clear(self):
         """Empty the list of contained remoteobjects after stopping them."""
-        for obj in self.remoteobjects:
+        for obj in self.remote_objects:
             obj.join()
-        self.remoteobjects = []
+        self.remote_objects = []
 
-    def useConf(self, conf, group_name):
+    def use_conf(self, conf, group_name):
         """Load the specified group from configuration object conf
         and add RemoteCommand objects for each contained host."""
         save = self
         self.clear()
         try:
-            for destination, params in conf.getGroupMembers(group_name):
-                self.add(remoteCommandFactory(destination, params))
-                self.format = conf.getParam("format", group=group_name)
+            for destination, params in conf.get_group_members(group_name):
+                self.add(remote_command_factory(destination, params))
+                self.format = conf.get_param("format", group=group_name)
         except KeyError:
             self = save
             error.warn(f"unknown group: '{group_name}'")
 
     def getDestinations(self):
         """Return expanded list of hosts"""
-        return [x.destination for x in self.remoteobjects]
+        return [x.destination for x in self.remote_objects]
 
     def add(self, obj):
         """Add a RemoteObject"""
         assert isinstance(obj, RemoteCommand)
-        self.remoteobjects.append(obj)
+        self.remote_objects.append(obj)
 
     def remove(self, obj):
         """Remove a RemoteObject"""
-        self.remoteobjects.remove(obj)
+        self.remote_objects.remove(obj)
 
-    def expandFormat(self, map=None):
+    def expand_format(self, map=None):
         """Apply a format mapping to the format string
 
         Outputs the format with formatting expressions replaced by
@@ -223,18 +224,18 @@ class RemoteCollator:
         self.formatter.formatMap = map
         return self.formatter(self.format)
 
-    def execAll(self, command):
+    def exec_all(self, command):
         """Execute command on all remote objects"""
 
-        for obj in self.remoteobjects:
+        for obj in self.remote_objects:
             obj.execute(command)
 
-    def displayAll(self):
+    def display_all(self):
         """Display the next pending result for every remote object"""
 
-        display_count = len(self.remoteobjects)
+        display_count = len(self.remote_objects)
         while display_count > 0:
-            obj = RemoteCommand.finishedObjects.get()
+            obj = RemoteCommand.finished_objects.get()
             display_count -= 1
             status, output = obj.getResult()
             result_map = {
@@ -243,17 +244,17 @@ class RemoteCollator:
                 r"%o": output,
                 r"%s": str(status),
             }
-            sys.stdout.write(self.expandFormat(result_map))
-        assert RemoteCommand.finishedObjects.qsize() == 0
+            sys.stdout.write(self.expand_format(result_map))
+        assert RemoteCommand.finished_objects.qsize() == 0
 
 
-_remoteCommandPlugins = {}
+_remote_command_plugins = {}
 
 
 def register_remote_command_plugin(method, cls):
     """Needs to be imported and executed by remote command plugins"""
     assert issubclass(cls, RemoteCommand)
-    _remoteCommandPlugins[method] = cls
+    _remote_command_plugins[method] = cls
 
 
 # Don't remove / don't move

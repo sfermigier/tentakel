@@ -66,7 +66,7 @@ def get_config():
 def test_listgroups():
     conf = get_config()
 
-    for g in conf.getGroups():
+    for g in conf.get_groups():
         sys.stdout.write(g + " ")
 
 

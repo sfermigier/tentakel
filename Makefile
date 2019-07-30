@@ -27,7 +27,7 @@ clean:
 
 develop:
 	pip install -e .
-	pip install pytest pylint flake8 coverage
+	pip install pytest pylint flake8 flake8-mypy coverage
 
 #
 # OLD (TODO: remove)

@@ -60,26 +60,26 @@ class TentakelShell(cmd.Cmd):
         if not cmd:
             print("empty command")
             return
-        self.dests.execAll(cmd)
-        self.dests.displayAll()
+        self.dests.exec_all(cmd)
+        self.dests.display_all()
 
     def do_conf(self, rest):
         """conf: interactively edit current configuration"""
 
         self.conf.edit()
-        self.dests.useConf(self.conf, self.group_name)
+        self.dests.use_conf(self.conf, self.group_name)
 
     def do_use(self, rest):
         """use <groupname>: use the specified group"""
 
         if rest:
             self.group_name = rest
-            self.dests.useConf(self.conf, self.group_name)
+            self.dests.use_conf(self.conf, self.group_name)
 
     def do_groups(self, rest):
         """groups: list available groups"""
 
-        print("\n".join(self.conf.getGroups()))
+        print("\n".join(self.conf.get_groups()))
 
     # Deprecated, remove in 3.1
     do_listgroups = do_groups

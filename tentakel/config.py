@@ -52,6 +52,8 @@ import re
 import sys
 import tempfile
 
+from typing import List
+
 from . import error, tpg
 
 PARAMS = {
@@ -166,10 +168,6 @@ class ConfigBase(dict):
 
     def __init__(self):
         super().__init__()
-        self.clear()
-
-    def clear(self):
-        """Make configuration empty"""
         self["groups"] = {}
         self["settings"] = PARAMS
 
@@ -240,24 +238,24 @@ class ConfigBase(dict):
             out += "\n"
         return out
 
-    def getGroups(self):
+    def get_groups(self) -> List[str]:
         """Return list of all group names"""
 
         return list(self["groups"].keys())
 
-    def _getGroup(self, group_name):
+    def _get_group(self, group_name):
         """Return group specific configuration for group_name"""
 
         return self["groups"][group_name]
 
-    def getGroupMembers(self, group_name):
+    def get_group_members(self, group_name):
         """Return list of group_name members with sub lists expanded recursively"""
 
-        group = self._getGroup(group_name)
-        out = [(x, self.getGroupParams(group_name)) for x in group["hosts"]]
+        group = self._get_group(group_name)
+        out = [(x, self.get_group_params(group_name)) for x in group["hosts"]]
         for list in group["lists"]:
             try:
-                out += self.getGroupMembers(list)
+                out += self.get_group_members(list)
             except (KeyError, RuntimeError):  # pragma: nocover
                 if sys.exc_info()[0] == KeyError:
                     error.warn(f"in group '{group_name}': no such group '{list}'")
@@ -265,7 +263,7 @@ class ConfigBase(dict):
                     error.err("runtime error: possible loop in configuration file")
         return out
 
-    def getParam(self, param, group=None):
+    def get_param(self, param, group=None):
         """Return the value for param.
 
         If group is specified, return the groups local value for param.
@@ -279,7 +277,7 @@ class ConfigBase(dict):
             return None
         else:
             try:
-                val = self._getGroup(group)[param]
+                val = self._get_group(group)[param]
                 if val == "":
                     return self["settings"][param]
                 else:
@@ -287,7 +285,7 @@ class ConfigBase(dict):
             except KeyError:
                 return self["settings"][param]
 
-    def getGroupParams(self, group_name):
+    def get_group_params(self, group_name):
         """Return complete configuration for the group group_name"""
 
-        return {k: self.getParam(k, group_name) for k in PARAMS.keys()}
+        return {k: self.get_param(k, group_name) for k in PARAMS.keys()}

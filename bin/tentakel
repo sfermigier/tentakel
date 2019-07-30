@@ -107,7 +107,7 @@ if __name__ == "__main__":
     # process -g parameter
     if flag_listgroups:
         print("available groups:")
-        for g in conf.getGroups():
+        for g in conf.get_groups():
             sys.stdout.write(g + " ")
         print()
         sys.exit(0)
@@ -115,8 +115,8 @@ if __name__ == "__main__":
     # batch mode: execute command
     if command:
         dests = remote.RemoteCollator(conf, groupName)
-        dests.execAll(command)
-        dests.displayAll()
+        dests.exec_all(command)
+        dests.display_all()
     else:
         # interactive mode: open shell
         sh = shell.TentakelShell(conf, groupName)
