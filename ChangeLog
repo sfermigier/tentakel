@@ -1,9 +1,37 @@
+Changelog
+=========
 
-Version 3.0 - Unreleased
-------------------------
 
-- Python 3 compatibility
-- Doesn't work with Python 2 (use release < 3 for that)
-- Cleanup / format code
+v3.0.2 (2019-07-30)
+-------------------
+- Lint + fixes. [Stefane Fermigier]
+- Modernize code. [Stefane Fermigier]
+
+
+v3.0.1 (2019-07-25)
+-------------------
+- Update description + release again. [Stefane Fermigier]
+
+
+v3.0.0 (2019-07-25)
+-------------------
+- Release 3.0. [Stefane Fermigier]
+- Update Changes. [Stefane Fermigier]
+- Use pytest for CI. [Stefane Fermigier]
+- Fix futurization. [Stefane Fermigier]
+- Add credits. [Stefane Fermigier]
+- WIP Py3k compat. [Stefane Fermigier]
+- Upgrade tpg. [Stefane Fermigier]
+- Case matters if you're not on a Mac. [Stefane Fermigier]
+- Fix build. [Stefane Fermigier]
+- Make tests pass on ubuntu. [sfermigier]
+- Fix test. [Stefane Fermigier]
+- Python 2.6. [Stefane Fermigier]
+- Rename lekatnet -> tentakel. [Stefane Fermigier]
+- Make it work under Python 2.7. [Stefane Fermigier]
+
+  - Update TPG to 3.1.3
+  - Move stuff around.
+- Import old code base. [Stefane Fermigier]
 
 
