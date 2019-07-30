@@ -39,7 +39,7 @@ except ImportError:
 
 class TentakelShell(cmd.Cmd):
     def __init__(self, conf, group_name):
-        super().__init__(self)
+        super().__init__()
         self.doc_header = "commands (type help <topic>):"
         self.ruler = ""
         self.group_name = group_name

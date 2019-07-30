@@ -35,7 +35,7 @@ class SSHRemoteCommand(RemoteCommand):
     def __init__(self, destination, params):
         self.ssh_path = params["ssh_path"]
         self.user = params["user"]
-        RemoteCommand.__init__(self, destination, params)
+        super().__init__(destination, params)
 
     def _rexec(self, command):
         s = f'{self.ssh_path} {self.user}@{self.destination} "{command}"'

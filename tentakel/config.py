@@ -169,7 +169,7 @@ class ConfigBase(dict):
         self.clear()
 
     def clear(self):
-        "Make configuration empty"
+        """Make configuration empty"""
         self["groups"] = {}
         self["settings"] = PARAMS
 

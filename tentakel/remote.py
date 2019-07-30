@@ -104,7 +104,7 @@ class RemoteCommand(threading.Thread):
     finishedObjects = queue.Queue()
 
     def __init__(self, destination, params):
-        threading.Thread.__init__(self)
+        super().__init__()
         self.duration = 0.0
         self.destination = destination
         self._commandQueue = queue.Queue()

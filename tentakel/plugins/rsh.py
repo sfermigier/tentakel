@@ -37,7 +37,7 @@ class RSHRemoteCommand(RemoteCommand):
     def __init__(self, destination, params):
         self.rsh_path = params["rsh_path"]
         self.user = params["user"]
-        RemoteCommand.__init__(self, destination, params)
+        super().__init__(destination, params)
         self.delim = md5(str(random.random())).hexdigest()
 
     def _rexec(self, command):
