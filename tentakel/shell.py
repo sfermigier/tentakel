@@ -24,8 +24,7 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-"""Interactive mode for tentakel
-"""
+"""Interactive mode for tentakel."""
 
 import cmd
 
@@ -55,7 +54,7 @@ class TentakelShell(cmd.Cmd):
         return stop
 
     def do_exec(self, cmd):
-        """exec <cmd>: applies <cmd> to the current group"""
+        """exec <cmd>: applies <cmd> to the current group."""
 
         if not cmd:
             print("empty command")
@@ -70,7 +69,7 @@ class TentakelShell(cmd.Cmd):
         self.dests.use_conf(self.conf, self.group_name)
 
     def do_use(self, rest):
-        """use <groupname>: use the specified group"""
+        """use <groupname>: use the specified group."""
 
         if rest:
             self.group_name = rest
@@ -90,7 +89,7 @@ class TentakelShell(cmd.Cmd):
         print("\n".join(self.dests.getDestinations()))
 
     def do_quit(self, rest):
-        """quit or ctrl-d: quit program"""
+        """quit or ctrl-d: quit program."""
 
         return 1
 

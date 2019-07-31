@@ -1,4 +1,4 @@
-"""Plugin package
+"""Plugin package.
 
 This package must be imported with the 'from ... import *' syntax.
 

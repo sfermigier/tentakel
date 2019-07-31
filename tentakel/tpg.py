@@ -1,20 +1,19 @@
 #!/usr/bin/env python
 
-"""Toy Parser Generator is a lexical and syntactic parser generator
-for Python. This generator was born from a simple statement: YACC
-is too complex to use in simple cases (calculators, configuration
-files, small programming languages, ...).
+"""Toy Parser Generator is a lexical and syntactic parser generator for Python.
+This generator was born from a simple statement: YACC is too complex to use in
+simple cases (calculators, configuration files, small programming languages,
+...).
 
-TPG can very simply write parsers that are usefull for most every
-day needs (even if it can't make your coffee). With a very clear
-and simple syntax, you can write an attributed grammar that is
-translated into a recursive descendant parser. TPG generated code
-is very closed to the original grammar. This means that the parser
-works "like" the grammar. A grammar rule can be seen as a method
-of the parser class, symbols as method calls, attributes as method
-parameters and semantic values as return values. You can also add
-Python code directly into grammar rules and build abstract syntax
-trees while parsing.
+TPG can very simply write parsers that are usefull for most every day
+needs (even if it can't make your coffee). With a very clear and simple
+syntax, you can write an attributed grammar that is translated into a
+recursive descendant parser. TPG generated code is very closed to the
+original grammar. This means that the parser works "like" the grammar. A
+grammar rule can be seen as a method of the parser class, symbols as
+method calls, attributes as method parameters and semantic values as
+return values. You can also add Python code directly into grammar rules
+and build abstract syntax trees while parsing.
 """
 
 # Toy Parser Generator: A Python parser generator
@@ -71,7 +70,7 @@ _id = lambda x: x
 tab = " "*4
 
 class Error(Exception):
-    """ Error((line, column), msg)
+    """Error((line, column), msg)
 
     Error is the base class for TPG exceptions.
 
@@ -87,15 +86,16 @@ class Error(Exception):
         return f"{self.__class__.__name__} at line {self.line}, column {self.column}: {self.msg}"
 
 class WrongToken(Error):
-    """ WrongToken()
+    """WrongToken()
 
-    WrongToken is raised when the parser can not continue in order to backtrack.
+    WrongToken is raised when the parser can not continue in order to
+    backtrack.
     """
     def __init__(self):
         Exception.__init__(self)
 
 class LexicalError(Error):
-    """ LexicalError((line, column), msg)
+    """LexicalError((line, column), msg)
 
     LexicalError is raised by lexers when a lexical error is encountered.
 
@@ -107,7 +107,7 @@ class LexicalError(Error):
     pass
 
 class SyntacticError(Error):
-    """ SyntacticError((line, column), msg)
+    """SyntacticError((line, column), msg)
 
     SyntacticError is raised by parsers when they fail.
 
@@ -119,7 +119,7 @@ class SyntacticError(Error):
     pass
 
 class SemanticError(Error):
-    """ SemanticError(msg)
+    """SemanticError(msg)
 
     SemanticError is raised by user actions when an error is detected.
 
@@ -133,7 +133,7 @@ class SemanticError(Error):
         return f"{self.__class__.__name__}: {self.msg}"
 
 class LexerOptions:
-    """ LexerOptions(word_bounded, compile_options)
+    """LexerOptions(word_bounded, compile_options)
 
     LexerOptions is a base class for lexers holding lexers' options.
 
@@ -150,20 +150,20 @@ class LexerOptions:
         self.compile_options = compile_options
 
     def re_compile(self, expr):
-        """ compile expr using self.compile_options as re.compile options
-        """
+        """compile expr using self.compile_options as re.compile options."""
         return re.compile(expr, self.compile_options)
 
     def word_bounded(self, expr):
-        """ add word boundaries (\\b) to expr if it looks like an identifier
-        """
+        """add word boundaries (\\b) to expr if it looks like an identifier."""
         if self.word_re.match(expr):
             return r"\b%s\b"%expr
         else:
             return expr
 
     def not_word_bounded(self, expr):
-        """ return expr without change. Used to replace word_bounded when wb is False
+        """return expr without change.
+
+        Used to replace word_bounded when wb is False
         """
         return expr
 
@@ -195,7 +195,7 @@ class NamedGroupLexer(LexerOptions):
         self.tokens = {}                # name -> value, is_real_token
 
     def def_token(self, name, expr, value=_id):
-        """ add a new token to the lexer
+        """add a new token to the lexer.
 
         Parameters:
             name : name of the token
@@ -214,7 +214,7 @@ class NamedGroupLexer(LexerOptions):
             raise SemanticError(f"Duplicate token definition ({name})")
 
     def def_separator(self, name, expr, value=_id):
-        """ add a new separator to the lexer
+        """add a new separator to the lexer.
 
         Parameters:
             name : name of the separator
@@ -234,13 +234,12 @@ class NamedGroupLexer(LexerOptions):
             raise SemanticError(f"Duplicate token definition ({name})")
 
     def build(self):
-        """ build the token_re attribute from the tokens and separators
-        """
+        """build the token_re attribute from the tokens and separators."""
         if isinstance(self.token_re, list):
             self.token_re = self.re_compile("|".join(self.token_re))
 
     def start(self, input):
-        """ start a lexical analysis
+        """start a lexical analysis.
 
         Parameters:
             input : input string to be parsed
@@ -253,13 +252,12 @@ class NamedGroupLexer(LexerOptions):
         self.next_token()
 
     def eof(self):
-        """ True if the current position of the lexer is the end of the input string
-        """
+        """True if the current position of the lexer is the end of the input
+        string."""
         return self.pos >= len(self.input) and isinstance(self.cur_token, EOFToken)
 
     def back(self, token):
-        """ change the current token to token (used for backtracking)
-        """
+        """change the current token to token (used for backtracking)"""
         if token is None:
             self.pos = 0
             self.line, self.column = 1, 1
@@ -270,7 +268,7 @@ class NamedGroupLexer(LexerOptions):
             self.cur_token = token
 
     def next_token(self):
-        """ return the next token
+        """return the next token.
 
         Tokens are Token instances. Separators are ignored.
         """
@@ -315,12 +313,11 @@ class NamedGroupLexer(LexerOptions):
                 raise LexicalError((self.line, self.column), f"Lexical error near {err}")
 
     def token(self):
-        """ return the current token
-        """
+        """return the current token."""
         return self.cur_token
 
     def extract(self, start, stop):
-        """ extract text from the input string
+        """extract text from the input string.
 
         Parameters:
            start : token from which the extraction starts
@@ -357,7 +354,7 @@ class Lexer(NamedGroupLexer):
         self.tokens = []        # [(name, regexp, value, is_real_token)]
 
     def def_token(self, name, expr, value=_id):
-        """ adds a new token to the lexer
+        """adds a new token to the lexer.
 
         Parameters:
             name : name of the token
@@ -375,7 +372,7 @@ class Lexer(NamedGroupLexer):
             raise SemanticError(f"Duplicate token definition ({name})")
 
     def def_separator(self, name, expr, value=_id):
-        """ add a new separator to the lexer
+        """add a new separator to the lexer.
 
         Parameters:
             name : name of the separator
@@ -394,7 +391,7 @@ class Lexer(NamedGroupLexer):
             raise SemanticError(f"Duplicate token definition ({name})")
 
     def start(self, input):
-        """ start a lexical analysis
+        """start a lexical analysis.
 
         Parameters:
             input : input string to be parsed
@@ -406,7 +403,7 @@ class Lexer(NamedGroupLexer):
         self.next_token()
 
     def next_token(self):
-        """ return the next token
+        """return the next token.
 
         Tokens are Token instances. Separators are ignored.
         """
@@ -487,7 +484,7 @@ class CacheNamedGroupLexer(NamedGroupLexer):
         NamedGroupLexer.__init__(self, wb, compile_options)
 
     def start(self, input):
-        """ start a lexical analysis
+        """start a lexical analysis.
 
         Parameters:
             input : input string to be parsed
@@ -510,7 +507,7 @@ class CacheNamedGroupLexer(NamedGroupLexer):
         self.next_token()
 
     def next_token(self):
-        """ return the next token
+        """return the next token.
 
         Tokens are Token instances. Separators are ignored.
         """
@@ -558,7 +555,7 @@ class CacheLexer(Lexer):
         Lexer.__init__(self, wb, compile_options)
 
     def start(self, input):
-        """ start a lexical analysis
+        """start a lexical analysis.
 
         Parameters:
             input : input string to be parsed
@@ -580,7 +577,7 @@ class CacheLexer(Lexer):
         self.next_token()
 
     def next_token(self):
-        """ return the next token
+        """return the next token.
 
         Tokens are Token instances. Separators are ignored.
         """
@@ -629,7 +626,7 @@ class ContextSensitiveLexer(LexerOptions):
         self.separators = []            # [(name, regexp, value)]
 
     def def_token(self, name, expr, value=_id):
-        """ add a new token to the lexer
+        """add a new token to the lexer.
 
         Parameters:
             name : name of the token
@@ -647,7 +644,7 @@ class ContextSensitiveLexer(LexerOptions):
             raise SemanticError(f"Duplicate token definition ({name})")
 
     def def_separator(self, name, expr, value=_id):
-        """ add a new separator to the lexer
+        """add a new separator to the lexer.
 
         Parameters:
             name : name of the separator
@@ -666,7 +663,7 @@ class ContextSensitiveLexer(LexerOptions):
             raise SemanticError(f"Duplicate token definition ({name})")
 
     def start(self, input):
-        """ start a lexical analysis
+        """start a lexical analysis.
 
         Parameters:
             input : input string to be parsed
@@ -677,13 +674,12 @@ class ContextSensitiveLexer(LexerOptions):
         self.back(None)
 
     def eof(self):
-        """ True if the current position of the lexer is the end of the input string
-        """
+        """True if the current position of the lexer is the end of the input
+        string."""
         return self.pos >= len(self.input)
 
     def back(self, token):
-        """ change the current token to token (used for backtracking)
-        """
+        """change the current token to token (used for backtracking)"""
         if token is None:
             self.pos = 0
             self.line, self.column = 1, 1
@@ -696,8 +692,7 @@ class ContextSensitiveLexer(LexerOptions):
         self.cur_token.next_start = self.pos
 
     def eat_separators(self):
-        """ skip separators in the input string from the current position
-        """
+        """skip separators in the input string from the current position."""
         done = False
         while not done:
             done = True
@@ -716,8 +711,8 @@ class ContextSensitiveLexer(LexerOptions):
                     done = False
 
     def eat(self, name):
-        """ return the next token value if it matches the expected token name
-        """
+        """return the next token value if it matches the expected token
+        name."""
         regexp, value = self.tokens[name]
         tok = regexp.match(self.input, self.pos)
         if tok is None:
@@ -746,12 +741,11 @@ class ContextSensitiveLexer(LexerOptions):
             return self.cur_token
 
     def token(self):
-        """ return the current token
-        """
+        """return the current token."""
         return self.cur_token
 
     def extract(self, start, stop):
-        """ extract text from the input string
+        """extract text from the input string.
 
         Parameters:
            start : the token from which the extraction starts
@@ -762,7 +756,8 @@ class ContextSensitiveLexer(LexerOptions):
         return self.input[start:stop]
 
 class Token:
-    """ Token(name, text, value, line, column, end_line, end_column, start, stop, prev_stop)
+    """Token(name, text, value, line, column, end_line, end_column, start,
+    stop, prev_stop)
 
     Token object used by lexers
 
@@ -789,7 +784,7 @@ class Token:
         self.prev_stop = prev_stop
 
     def match(self, name):
-        """ return True is the token name is the name of the expected token
+        """return True is the token name is the name of the expected token.
 
         Parameters:
             name : name of the expected token
@@ -800,7 +795,7 @@ class Token:
         return f"line {self.line}, column {self.column}: {self.name} {self.text} {self.value}"
 
 class EOFToken(Token):
-    """ EOFToken(line, column, pos, prev_stop)
+    """EOFToken(line, column, pos, prev_stop)
 
     Token for the end of file (end of the input string).
     EOFToken is a Token object.
@@ -822,7 +817,7 @@ class EOFToken(Token):
         Token.__init__(self, "EOF", "EOF", None, line, column, line, column, pos, pos, prev_stop)
 
 class SOFToken(Token):
-    """ SOFToken()
+    """SOFToken()
 
     Token for the start of file (start of the input string).
     SOFToken is a Token object.
@@ -853,12 +848,12 @@ class Py:
 
 
 class ParserMetaClass(type):
-    """ ParserMetaClass is the metaclass of Parser objects.
+    """ParserMetaClass is the metaclass of Parser objects.
 
-    When a ParserMetaClass class is defined, its doc string should contain
-    a grammar. This grammar is parsed by TPGParser and the generated code
-    is added to the class.
-    If the class doesn't have a doc string, nothing is generated
+    When a ParserMetaClass class is defined, its doc string should
+    contain a grammar. This grammar is parsed by TPGParser and the
+    generated code is added to the class. If the class doesn't have a
+    doc string, nothing is generated
     """
 
     def __init__(cls, name, bases, dict):
@@ -891,7 +886,7 @@ class Parser(_Parser):
     #   <rule>           : each rule is translated into a method with the same name
 
     def __init__(self):
-        """ Parser is the base class for parsers.
+        """Parser is the base class for parsers.
 
         This class can not have a doc string otherwise it would be considered as a grammar.
         The metaclass of this class is ParserMetaClass.
@@ -906,7 +901,7 @@ class Parser(_Parser):
         self.lexer = self.init_lexer()
 
     def eat(self, name):
-        """ eat the current token if it matches the expected token
+        """eat the current token if it matches the expected token.
 
         Parameters:
             name : name of the expected token
@@ -919,7 +914,7 @@ class Parser(_Parser):
             raise WrongToken
 
     def eatCSL(self, name):
-        """ eat the current token if it matches the expected token
+        """eat the current token if it matches the expected token.
 
         This method replaces eat for context sensitive lexers.
 
@@ -930,7 +925,7 @@ class Parser(_Parser):
         return token.value
 
     def __call__(self, input, *args, **kws):
-        """ parse a string starting from the default axiom
+        """parse a string starting from the default axiom.
 
         The default axiom is START.
 
@@ -942,7 +937,7 @@ class Parser(_Parser):
         return self.parse('START', input, *args, **kws)
 
     def parse(self, axiom, input, *args, **kws):
-        """ parse a string starting from a given axiom
+        """parse a string starting from a given axiom.
 
         Parameters:
             axiom : rule name where the parser starts
@@ -970,7 +965,7 @@ class Parser(_Parser):
         return value
 
     def line(self, token=None):
-        """ return the line number of a token
+        """return the line number of a token.
 
         Parameters:
             token : token object. If None, the current token line is returned.
@@ -982,7 +977,7 @@ class Parser(_Parser):
         return token.line
 
     def column(self, token=None):
-        """ return the column number of a token
+        """return the column number of a token.
 
         Parameters:
             token : token object. If None, the current token column is returned.
@@ -994,15 +989,15 @@ class Parser(_Parser):
         return token.column
 
     def mark(self):
-        """ return the current token
+        """return the current token.
 
-        This can be used to get the line or column number of a token
-        or to extract text between two tokens.
+        This can be used to get the line or column number of a token or
+        to extract text between two tokens.
         """
         return self.lexer.token()
 
     def extract(self, start, stop):
-        """ return the text found between two tokens
+        """return the text found between two tokens.
 
         Parameters :
             start : token object as returned by mark
@@ -1011,7 +1006,7 @@ class Parser(_Parser):
         return self.lexer.extract(start, stop)
 
     def check(self, cond):
-        """ check a condition and backtrack when it is False
+        """check a condition and backtrack when it is False.
 
         Parameters:
             cond : condition to be checked
@@ -1021,7 +1016,7 @@ class Parser(_Parser):
         return cond
 
     def error(self, msg):
-        """ stop the parser and raise a SemanticError exception
+        """stop the parser and raise a SemanticError exception.
 
         Parameters:
             msg : error message to raise
@@ -1049,7 +1044,7 @@ class VerboseParser(Parser):
     verbose = 1
 
     def __init__(self):
-        """ VerboseParser is the base class for debugging parsers.
+        """VerboseParser is the base class for debugging parsers.
 
         This class can not have a doc string otherwise it would be considered as a grammar.
         The metaclass of this class is ParserMetaClass.
@@ -1070,7 +1065,7 @@ class VerboseParser(Parser):
         self.eatcnt = 0
 
     def eat(self, name):
-        """ eat the current token if it matches the expected token
+        """eat the current token if it matches the expected token.
 
         Parameters:
             name : name of the expected token
@@ -1090,7 +1085,7 @@ class VerboseParser(Parser):
             raise
 
     def eatCSL(self, name):
-        """ eat the current token if it matches the expected token
+        """eat the current token if it matches the expected token.
 
         This method replaces eat for context sensitive lexers.
 
@@ -1113,7 +1108,7 @@ class VerboseParser(Parser):
             raise
 
     def parse(self, axiom, input, *args, **kws):
-        """ parse a string starting from a given axiom
+        """parse a string starting from a given axiom.
 
         Parameters:
             axiom : rule name where the parser starts
@@ -1125,7 +1120,7 @@ class VerboseParser(Parser):
         return Parser.parse(self, axiom, input, *args, **kws)
 
     def token_info(self, token, op, expected):
-        """ return information about a token
+        """return information about a token.
 
         Parameters:
             token    : token read by the lexer
@@ -1149,8 +1144,8 @@ blank_line_re = re.compile(r"^\s*$")
 indent_re = re.compile(r"^\s*")
 
 class tpg:
-    """ This class contains some TPG classes to make the parsers usable inside and outside the tpg module
-    """
+    """This class contains some TPG classes to make the parsers usable inside
+    and outside the tpg module."""
     NamedGroupLexer = NamedGroupLexer
     Lexer = Lexer
     CacheNamedGroupLexer = CacheNamedGroupLexer
@@ -1708,7 +1703,7 @@ class TPGParser(tpg.Parser):
             self.env = {}
 
     def __call__(self, input, *args, **kws):
-        """ parse a string starting from the default axiom
+        """parse a string starting from the default axiom.
 
         The default axiom is START.
 

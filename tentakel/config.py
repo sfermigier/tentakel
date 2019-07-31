@@ -24,7 +24,7 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-"""Configuration tree for tentakel
+"""Configuration tree for tentakel.
 
 Provides a ConfigBase class that is initialized from a configuration file.
 
@@ -43,7 +43,6 @@ or, if you want all hosts and their parameters with expanded sublists:
 In the latter case, only "host" objects are returned in a list of tuples,
 where each tuple contains the name of the host and a complete set of
 parameters, taken from its nearest enclosing group.
-
 """
 
 import os
@@ -134,7 +133,7 @@ class TConf(tpg.Parser):
 
 
 class ConfigGroup(dict):
-    """Store group info"""
+    """Store group info."""
 
     def __init__(self):
         super().__init__()
@@ -154,7 +153,7 @@ class ConfigGroup(dict):
 
 
 class ConfigBase(dict):
-    """Store all configuration parameters
+    """Store all configuration parameters.
 
     This class is used to hold a specific configuration state in a special
     tree that's built out of dictionaries and lists. Single parameters can
@@ -172,13 +171,13 @@ class ConfigBase(dict):
         self["settings"] = PARAMS
 
     def parse(self, txt):
-        """Parse a string containing configuration directives into
-        the configuration tree"""
+        """Parse a string containing configuration directives into the
+        configuration tree."""
         tp = TConf()
         self.update(tp(txt))
 
     def load(self, file):
-        """Load configuration from file"""
+        """Load configuration from file."""
 
         try:
             self.parse("".join(file.readlines()))
@@ -188,7 +187,7 @@ class ConfigBase(dict):
             error.err(f"could not read from file: '{file.name}'")
 
     def dump(self, file):
-        """Save configuration to file"""
+        """Save configuration to file."""
 
         comment = [
             "#\n",
@@ -207,7 +206,7 @@ class ConfigBase(dict):
             error.err(f"could not write to file: '{file.name}'")
 
     def edit(self):
-        """Interactively edit configuration"""
+        """Interactively edit configuration."""
 
         tempedit = tempfile.NamedTemporaryFile()
         try:
@@ -220,7 +219,7 @@ class ConfigBase(dict):
             tempedit.close()
 
     def __str__(self):
-        """Pretty print configuration"""
+        """Pretty print configuration."""
 
         out = ""
         settings = self["settings"]
@@ -239,17 +238,18 @@ class ConfigBase(dict):
         return out
 
     def get_groups(self) -> List[str]:
-        """Return list of all group names"""
+        """Return list of all group names."""
 
         return list(self["groups"].keys())
 
     def _get_group(self, group_name):
-        """Return group specific configuration for group_name"""
+        """Return group specific configuration for group_name."""
 
         return self["groups"][group_name]
 
     def get_group_members(self, group_name):
-        """Return list of group_name members with sub lists expanded recursively"""
+        """Return list of group_name members with sub lists expanded
+        recursively."""
 
         group = self._get_group(group_name)
         out = [(x, self.get_group_params(group_name)) for x in group["hosts"]]
@@ -270,7 +270,8 @@ class ConfigBase(dict):
         If the group has no local value or group=None or group does not
         exist, return the global value for param.
 
-        If param is not a valid parameter identifier, return None"""
+        If param is not a valid parameter identifier, return None
+        """
 
         if param not in PARAMS.keys():  # pragma: nocover
             error.warn(f"invalid parameter: '{param}'")
@@ -286,6 +287,6 @@ class ConfigBase(dict):
                 return self["settings"][param]
 
     def get_group_params(self, group_name):
-        """Return complete configuration for the group group_name"""
+        """Return complete configuration for the group group_name."""
 
         return {k: self.get_param(k, group_name) for k in PARAMS.keys()}

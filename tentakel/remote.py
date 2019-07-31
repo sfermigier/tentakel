@@ -22,7 +22,7 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-"""Remote command handling module
+"""Remote command handling module.
 
 Provides the two classes which are most important in tentakel:
 
@@ -36,7 +36,8 @@ Provides the two classes which are most important in tentakel:
 
   - RemoteCollator
     Container used to create and control RemoteCommand instances.
-    It is also responsible for outputting the results."""
+    It is also responsible for outputting the results.
+"""
 
 import queue
 import sys
@@ -79,7 +80,7 @@ class FormatString(tpg.Parser):
     formatMap = property(getMap, setMap, doc="current format character mapping")
 
     def getEscape(self, e):
-        """Return a dictionary which maps escape strings to literals"""
+        """Return a dictionary which maps escape strings to literals."""
         return {r"\\": r"\\", r"\n": "\n", r"\t": "\t"}[e]
 
     def getSpecialChar(self, s):
@@ -87,7 +88,7 @@ class FormatString(tpg.Parser):
 
 
 class RemoteCommand(threading.Thread, metaclass=ABCMeta):
-    """Generic remote execution class
+    """Generic remote execution class.
 
     Specific remote command classes should inherit from this class
     and define a _rexec() method that executes the command and
@@ -134,16 +135,16 @@ class RemoteCommand(threading.Thread, metaclass=ABCMeta):
         pass
 
     def execute(self, command):
-        """Execute a command in this thread"""
+        """Execute a command in this thread."""
         self._command_queue.put_nowait(command)
 
     def putResult(self, result):
-        """Push result onto the result queue"""
+        """Push result onto the result queue."""
         self._result_queue.put(result)
         self.__class__.finished_objects.put(self)
 
     def getResult(self):
-        """Return result from result queue"""
+        """Return result from result queue."""
         return self._result_queue.get()
 
     def run(self):
@@ -161,14 +162,14 @@ class RemoteCommand(threading.Thread, metaclass=ABCMeta):
             self._stopevent.wait(self._sleep_period)
 
     def join(self, timeout=None):
-        """Stop the thread"""
+        """Stop the thread."""
         self._stopevent.set()
         threading.Thread.join(self, self._command_timeout)
 
 
 def remote_command_factory(destination, params):
-    """Depending in the method, instantiate a corresponding
-    RemoteCommand derived object and return it"""
+    """Depending in the method, instantiate a corresponding RemoteCommand
+    derived object and return it."""
 
     method = params["method"]
     try:
@@ -178,9 +179,8 @@ def remote_command_factory(destination, params):
 
 
 class RemoteCollator:
-    """This class is meant to hold RemoteCommand instances each
-    of which implements a specific way too execute a command on
-    a remote host."""
+    """This class is meant to hold RemoteCommand instances each of which
+    implements a specific way too execute a command on a remote host."""
 
     def __init__(self, conf, group_name):
         self.remote_objects = []
@@ -194,8 +194,8 @@ class RemoteCollator:
         self.remote_objects = []
 
     def use_conf(self, conf, group_name):
-        """Load the specified group from configuration object conf
-        and add RemoteCommand objects for each contained host."""
+        """Load the specified group from configuration object conf and add
+        RemoteCommand objects for each contained host."""
         save = self
         self.clear()
         try:
@@ -207,40 +207,39 @@ class RemoteCollator:
             error.warn(f"unknown group: '{group_name}'")
 
     def getDestinations(self):
-        """Return expanded list of hosts"""
+        """Return expanded list of hosts."""
         return [x.destination for x in self.remote_objects]
 
     def add(self, obj):
-        """Add a RemoteObject"""
+        """Add a RemoteObject."""
         assert isinstance(obj, RemoteCommand)
         self.remote_objects.append(obj)
 
     def remove(self, obj):
-        """Remove a RemoteObject"""
+        """Remove a RemoteObject."""
         self.remote_objects.remove(obj)
 
     def expand_format(self, map=None):
-        """Apply a format mapping to the format string
+        """Apply a format mapping to the format string.
 
         Outputs the format with formatting expressions replaced by
         values taken from map. The map must contain translations for
         the formatting expressions. For example:
 
           map = { r"%d": "something" }
-
         """
 
         self.formatter.formatMap = map
         return self.formatter(self.format)
 
     def exec_all(self, command):
-        """Execute command on all remote objects"""
+        """Execute command on all remote objects."""
 
         for obj in self.remote_objects:
             obj.execute(command)
 
     def display_all(self):
-        """Display the next pending result for every remote object"""
+        """Display the next pending result for every remote object."""
 
         display_count = len(self.remote_objects)
         while display_count > 0:
@@ -261,7 +260,7 @@ _remote_command_plugins = {}
 
 
 def register_remote_command_plugin(method: str, cls: Type[RemoteCommand]):
-    """Needs to be imported and executed by remote command plugins"""
+    """Needs to be imported and executed by remote command plugins."""
     assert issubclass(cls, RemoteCommand)
     _remote_command_plugins[method] = cls
 
