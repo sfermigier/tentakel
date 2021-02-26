@@ -173,7 +173,8 @@ def remote_command_factory(destination, params):
 
     method = params["method"]
     try:
-        return _remote_command_plugins[method](destination, params)
+        cls = _remote_command_plugins[method]
+        return cls(destination, params)
     except KeyError:
         error.err(f'Method not implemented: "{method}"')
 
@@ -239,6 +240,12 @@ class RemoteCollator:
         for obj in self.remote_objects:
             obj.execute(command)
 
+    def join_all(self):
+        """Join the running threads for all remote objects."""
+
+        for obj in self.remote_objects:
+            obj.join()
+
     def display_all(self):
         """Display the next pending result for every remote object."""
 
@@ -256,6 +263,8 @@ class RemoteCollator:
             sys.stdout.write(self.expand_format(result_map))
 
         assert RemoteCommand.finished_objects.qsize() == 0
+
+        self.join_all()
 
 
 _remote_command_plugins = {}
