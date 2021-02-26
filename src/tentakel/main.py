@@ -110,9 +110,8 @@ def main():
 
     # load configuration
     conf = config.ConfigBase()
-    f = open(config_file)
-    conf.load(f)
-    f.close()
+    with open(config_file) as f:
+        conf.load(f)
 
     # process -g parameter
     if flag_listgroups:
@@ -124,10 +123,10 @@ def main():
 
     # batch mode: execute command
     if command:
-        dests = remote.RemoteCollator(conf, group_name)
-        dests.exec_all(command)
-        dests.display_all()
-        dests.join_all()
+        collator = remote.RemoteCollator(conf, group_name)
+        collator.exec_all(command)
+        collator.display_all()
+        collator.join_all()
     else:
         # interactive mode: open shell
         sh = shell.TentakelShell(conf, group_name)

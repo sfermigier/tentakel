@@ -1,7 +1,5 @@
-#!/usr/bin/env python
-
 # Copyright (c) 2002, 2003, 2004, 2005 Sebastian Stark
-# Copyright (c) 2011, 2019 Stefane Fermigier
+# Copyright (c) 2011, 2019-2021 Stefane Fermigier
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions
@@ -28,22 +26,23 @@
 import os
 import sys
 
-from pytest import mark
+from pytest import fixture, mark
 
-import tentakel.config as config
-import tentakel.error as error
-import tentakel.shell as shell
+import tentakel
+from tentakel.config import ConfigBase
+from tentakel.shell import TentakelShell
 
 CI = bool(os.environ.get("CI") or os.environ.get("TOX_ENV_NAME"))
 
 pytestmark = mark.skipif(CI, reason="Don't run on travis")
 
 
-def get_config():
+@fixture
+def config():
     # look for configuration files from default locations
     config_file = None
     configs = [
-        os.path.join(config.__user_dir, "tentakel.conf"),
+        os.path.join(tentakel.config.__user_dir, "tentakel.conf"),
         "/etc/tentakel.conf",
     ]
     for c in configs:
@@ -51,41 +50,35 @@ def get_config():
             config_file = c
             break
 
-    if config_file is None:
-        error.err("no configuration file found")
-        sys.exit()
+    assert config_file
 
     # load configuration
-    conf = config.ConfigBase()
-    f = open(config_file)
-    conf.load(f)
-    f.close()
+    conf = ConfigBase()
+    with open(config_file) as f:
+        conf.load(f)
     return conf
 
 
-def test_listgroups():
-    conf = get_config()
+@fixture
+def shell(config):
+    return TentakelShell(config, "default")
 
-    for g in conf.get_groups():
+
+def test_listgroups(config):
+    for g in config.get_groups():
         sys.stdout.write(g + " ")
 
 
-def test_shell_groups():
-    conf = get_config()
-    sh = shell.TentakelShell(conf, "default")
-    sh.do_groups([])
+def test_shell_groups(shell):
+    shell.do_groups([])
 
 
-def test_shell_hosts():
-    conf = get_config()
-    sh = shell.TentakelShell(conf, "default")
-    sh.do_hosts([])
+def test_shell_hosts(shell):
+    shell.do_hosts([])
 
 
-def test_shell_uptime():
-    conf = get_config()
-    sh = shell.TentakelShell(conf, "default")
-    sh.do_exec("uptime")
+def test_shell_uptime(shell):
+    shell.do_exec("uptime")
 
 
 # def test_
