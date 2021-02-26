@@ -22,7 +22,7 @@ release:
 clean:
 	rm -rf **/__pycache__
 	rm -rf build dist
-	rm -rf .tox
+	rm -rf .tox .mypy_cache .pytest_cache
 
 
 develop:

@@ -12,7 +12,7 @@ workstations or ask and set parameters on a linux compute cluster.  With the
 power of format strings tentakel can also be used for monitoring purposes.
 
 Supported remote methods are ssh(1) and rsh(1).  Both must be configured to
-allow for password-less logins.  Password-protected keyfiles for ssh can be
+allow for password-less logins. Password-protected keyfiles for ssh can be
 used with ssh-agent(1).
 
 A plugin mechanism allows users to implement their own remote methods in

@@ -58,9 +58,11 @@ import sys
 # Python 2/3 compatibility
 __python__ = sys.version_info[0]
 
+from typing import Callable
+
 if __python__ == 3:
     import collections
-    callable = lambda value: isinstance(value, collections.Callable)
+    callable = lambda value: isinstance(value, Callable)
     exc = lambda: sys.exc_info()[1]
 
 if __python__ == 2:
@@ -1567,7 +1569,7 @@ class TPGParser(tpg.Parser):
                         min = self.PY_EXPR()
                     except tpg.WrongToken:
                         self.lexer.back(_p2)
-                        min = self.PY_Ident("0") 
+                        min = self.PY_Ident("0")
                     _p3 = self.lexer.token()
                     try:
                         self.eat('_tok_16') # ','
@@ -1576,10 +1578,10 @@ class TPGParser(tpg.Parser):
                             max = self.PY_EXPR()
                         except tpg.WrongToken:
                             self.lexer.back(_p4)
-                            max = self.PY_Ident("None") 
+                            max = self.PY_Ident("None")
                     except tpg.WrongToken:
                         self.lexer.back(_p3)
-                        max = min 
+                        max = min
                     self.eat('rcbra') # '\}'
                     a = self.Rep(a, min, max)
         except tpg.WrongToken:
@@ -1608,7 +1610,7 @@ class TPGParser(tpg.Parser):
             args = self.ARGS()
         except tpg.WrongToken:
             self.lexer.back(_p1)
-            args = self.Args() 
+            args = self.Args()
         return args
 
     def ARGS(self, ):
