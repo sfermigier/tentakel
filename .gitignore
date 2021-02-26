@@ -1,8 +1,7 @@
 /build
 /dist
-/MANIFEST
 /.idea
 /.tox
 /.venv
+/sandbox
 
-*.pyc
