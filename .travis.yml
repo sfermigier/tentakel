@@ -1,18 +1,30 @@
-dist: xenial
 language: python
+
+python:
+  - 3.9
+  - 3.8
+  - 3.7
 
 cache:
   pip: true
+  directories:
+    - .tox
 
 matrix:
   include:
-    - python: 3.6
-    - python: 3.7
-    - python: 3.6
+    - python: 3.9
       env: TOXENV=lint
 
 install:
-  - pip install -U pip setuptools wheel tox tox-travis
+  - pip install -U pip setuptools wheel tox tox-travis poetry
 
 script:
   - tox
+
+# This includes the key to our Slack channel. Delete or use yours.
+notifications:
+  slack:
+    rooms:
+      - abilian:dTtRD7DHS4Dw3jfRrqytQWU6#code
+    on_success: change
+    on_failure: always

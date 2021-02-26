@@ -1,6 +1,6 @@
 #
-# Copyright (c) 2002, 2003, 2004 Sebastian Stark
-# Copyright (c) 2019 Stefane Fermigier
+# Copyright (c) 2002, 2003, 2004, 2005 Sebastian Stark
+# Copyright (c) 2019-2021 Stefane Fermigier
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions
@@ -23,37 +23,16 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-import random
-import subprocess
-import time
-from hashlib import md5
 
-from tentakel.remote import RemoteCommand, register_remote_command_plugin
+"""Error and user notification for tentakel."""
+
+import sys
 
 
-class RSHRemoteCommand(RemoteCommand):
-    """RSH remote execution class."""
-
-    def __init__(self, destination, params):
-        self.rsh_path = params["rsh_path"]
-        self.user = params["user"]
-        super().__init__(destination, params)
-        self.delim = md5(str(random.random())).hexdigest()
-
-    def _rexec(self, command):
-        s = '{} -l {} {} "{}; echo {} \\$?"'.format(
-            self.rsh_path, self.user, self.destination, command, self.delim
-        )
-        t1 = time.time()
-        ol = subprocess.getoutput(s).split("\n")
-        for line_number, line in enumerate(ol):
-            i = line.find(self.delim)
-            if i != -1:
-                status = line.split(" ")[1]
-                ol.pop(line_number)
-                break
-        self.duration = time.time() - t1
-        return (int(status), "\n".join(ol))
+def err(errstring):
+    sys.stderr.write(f"tentakel error: {errstring}\n")
+    sys.exit(1)
 
 
-register_remote_command_plugin("rsh", RSHRemoteCommand)
+def warn(warnstring):
+    sys.stderr.write(f"tentakel: {warnstring}\n")

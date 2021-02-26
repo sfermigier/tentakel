@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 # Copyright (c) 2002, 2003, 2004, 2005 Sebastian Stark
-# Copyright (c) 2011, 2019 Stefane Fermigier
+# Copyright (c) 2011, 2019-2021 Stefane Fermigier
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions
@@ -30,9 +30,9 @@
 Usage: tentakel [ options ] [ command ]
  -c file        Use file as config file
  -g group       Select group
- -l    Print list of available groups
+ -l             Print list of available groups
  -h             Display this help text
- -v    Display version information
+ -v             Display version information
  command        Remote command. Interactive mode if not specified
 
 See tentakel(1) for more information
@@ -47,10 +47,11 @@ import tentakel.error as error
 import tentakel.remote as remote
 import tentakel.shell as shell
 
-if __name__ == "__main__":
-    tentakelVersion = "tentakel-3.0"
+
+def main():
+    tentakel_version = "tentakel-3.0"
     destinations = None
-    groupName = "default"
+    group_name = "default"
     flag_listgroups = 0
     override_config = ""
 
@@ -62,7 +63,7 @@ if __name__ == "__main__":
 
     for o, v in opts:
         if o == "-g":
-            groupName = v
+            group_name = v
         if o == "-c":
             override_config = v
         if o == "-h":
@@ -71,7 +72,7 @@ if __name__ == "__main__":
         if o == "-l":
             flag_listgroups = 1
         if o == "-v":
-            print(tentakelVersion)
+            print(tentakel_version)
             sys.exit(0)
     command = " ".join(args)
 
@@ -114,10 +115,14 @@ if __name__ == "__main__":
 
     # batch mode: execute command
     if command:
-        dests = remote.RemoteCollator(conf, groupName)
+        dests = remote.RemoteCollator(conf, group_name)
         dests.exec_all(command)
         dests.display_all()
     else:
         # interactive mode: open shell
-        sh = shell.TentakelShell(conf, groupName)
+        sh = shell.TentakelShell(conf, group_name)
         sh.cmdloop(intro="interactive mode")
+
+
+if __name__ == "__main__":
+    main()

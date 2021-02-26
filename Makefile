@@ -4,15 +4,15 @@ test:
 	pytest
 
 lint:
-	flake8 tentakel
+	flake8 src tests
+	mypy src tests
 
 tox:
 	tox -p auto
 
 format:
-	black --exclude tentakel/tpg.py tentakel
-	# isort -rc tentakel
-	# git checkout tentakel/tpg.py tentakel/remote.py
+	black --exclude src/tentakel/tpg.py tentakel
+	isort tentakel
 
 release:
 	rm -rf dist
@@ -26,7 +26,7 @@ clean:
 
 
 develop:
-	pip install -e .
+	poetry install
 	pip install pytest pylint flake8 flake8-mypy coverage
 
 #
