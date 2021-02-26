@@ -1,20 +1,28 @@
 Changelog
 =========
 
+v3.1.0 (2021-02-26)
+-------------------
+
+- Fix hangup at the end of process.
+- Modernize code, use Poetry
 
 v3.0.2 (2019-07-30)
 -------------------
+
 - Lint + fixes. [Stefane Fermigier]
 - Modernize code. [Stefane Fermigier]
 
 
 v3.0.1 (2019-07-25)
 -------------------
+
 - Update description + release again. [Stefane Fermigier]
 
 
 v3.0.0 (2019-07-25)
 -------------------
+
 - Release 3.0. [Stefane Fermigier]
 - Update Changes. [Stefane Fermigier]
 - Use pytest for CI. [Stefane Fermigier]
