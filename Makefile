@@ -1,3 +1,5 @@
+.PHONY: all test lint tox format release clean develop htmldoc
+
 all: test lint
 
 test:
@@ -11,11 +13,10 @@ tox:
 	tox -p auto
 
 format:
-	black --exclude src/tentakel/tpg.py tentakel tests
-	isort tentakel tests
+	black --exclude src/tentakel/tpg.py src tests
+	isort src tests
 
 release: clean
-	rm -rf dist
 	poetry build
 	twine upload dist/*
 
@@ -24,26 +25,9 @@ clean:
 	rm -rf build dist
 	rm -rf .tox .mypy_cache .pytest_cache
 
+htmldoc:
+	groff -Thtml -man doc/tentakel.1 > doc/tentakel.1.html
 
 develop:
 	poetry install
-	pip install pytest pylint flake8 flake8-mypy coverage
-
-#
-# OLD (TODO: remove)
-#
-configure:
-	cd py && $(PYTHON) setup.py config
-	cd py && $(PYTHON) setup.py build
-
-htmldoc:
-	rm -f doc/tentakel.1.html
-	groff -Thtml -man doc/tentakel.1 > tentakel.1.html
-
-install: configure
-	cd py && $(PYTHON) setup.py install --prefix=$(PREFIX)
-
-regress:
-	cd py/lekatnet && $(PYTHON) config.py
-	cd py/lekatnet && $(PYTHON) remote.py
 

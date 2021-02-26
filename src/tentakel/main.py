@@ -127,6 +127,7 @@ def main():
         dests = remote.RemoteCollator(conf, group_name)
         dests.exec_all(command)
         dests.display_all()
+        dests.join_all()
     else:
         # interactive mode: open shell
         sh = shell.TentakelShell(conf, group_name)

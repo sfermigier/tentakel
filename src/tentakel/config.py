@@ -50,7 +50,6 @@ import pwd
 import re
 import sys
 import tempfile
-
 from typing import List
 
 from . import error, tpg

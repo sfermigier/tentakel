@@ -43,7 +43,6 @@ import queue
 import sys
 import threading
 from abc import ABCMeta, abstractmethod
-
 from typing import Type
 
 from . import error, tpg
@@ -263,8 +262,6 @@ class RemoteCollator:
             sys.stdout.write(self.expand_format(result_map))
 
         assert RemoteCommand.finished_objects.qsize() == 0
-
-        self.join_all()
 
 
 _remote_command_plugins = {}

@@ -46,6 +46,9 @@ class TentakelShell(cmd.Cmd):
         self.conf = conf
         self.dests = remote.RemoteCollator(conf, group_name)
 
+    def __del__(self):
+        self.dests.join_all()
+
     def emptyline(self):
         pass
 
@@ -80,9 +83,6 @@ class TentakelShell(cmd.Cmd):
 
         print("\n".join(self.conf.get_groups()))
 
-    # Deprecated, remove in 3.1
-    do_listgroups = do_groups
-
     def do_hosts(self, rest):
         """hosts: list of affected hosts"""
 
@@ -91,11 +91,13 @@ class TentakelShell(cmd.Cmd):
     def do_quit(self, rest):
         """quit or ctrl-d: quit program."""
 
+        self.dests.join_all()
         return 1
 
     def default(self, rest):
         if rest == "EOF":
             print()
+            self.dests.join_all()
             return 1
         else:
             print("unknown command")

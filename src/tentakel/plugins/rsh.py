@@ -33,6 +33,7 @@ from tentakel.remote import RemoteCommand, register_remote_command_plugin
 
 class RSHRemoteCommand(RemoteCommand):
     """RSH remote execution class."""
+
     rsh_path: str
     user: str
 
