@@ -60,8 +60,8 @@ class FormatString(tpg.Parser):
 
     FORMAT/f ->
           $ f = ""
-      ( escape/e  $ f = f + self.getEscape(e)
-      | fmtchar/fc  $ f = f + self.getSpecialChar(fc)
+      ( escape/e  $ f = f + self.get_escape(e)
+      | fmtchar/fc  $ f = f + self.get_special_char(fc)
       | char/c  $ f = f + c
       )*
     ;
@@ -71,20 +71,20 @@ class FormatString(tpg.Parser):
         super().__init__()
         self.map = {r"%%": "%"}
 
-    def getMap(self):
+    def _get_map(self):
         return self.map
 
-    def setMap(self, userMap):
+    def _set_map(self, userMap):
         self.map.update(userMap)
 
-    formatMap = property(getMap, setMap, doc="current format character mapping")
+    format_map = property(_get_map, _set_map, doc="current format character mapping")
 
-    def getEscape(self, e):
+    def get_escape(self, e):
         """Return a dictionary which maps escape strings to literals."""
         return {r"\\": r"\\", r"\n": "\n", r"\t": "\t"}[e]
 
-    def getSpecialChar(self, s):
-        return self.formatMap[s]
+    def get_special_char(self, s):
+        return self.format_map[s]
 
 
 class RemoteCommand(threading.Thread, metaclass=ABCMeta):
@@ -105,7 +105,7 @@ class RemoteCommand(threading.Thread, metaclass=ABCMeta):
 
     # auxiliary queue that holds references to objects that
     # have results ready
-    finished_objects = queue.Queue()
+    finished_objects: queue.Queue = queue.Queue()
 
     def __init__(self, destination, params):
         super().__init__()
@@ -124,7 +124,7 @@ class RemoteCommand(threading.Thread, metaclass=ABCMeta):
         # and therefore a TODO
         self.__maxparallel = int(params["maxparallel"])
 
-        # Create the semaphore as a class attribute only once and only when needed
+        # Create the semaphore as a class attribute only once, and only when needed
         if "slot" not in self.__class__.__dict__ and not self.__maxparallel <= 0:
             self.__class__.slot = threading.BoundedSemaphore(self.__maxparallel)
 
@@ -134,16 +134,16 @@ class RemoteCommand(threading.Thread, metaclass=ABCMeta):
     def _rexec(self, command):
         pass
 
-    def execute(self, command):
+    def execute(self, command: str):
         """Execute a command in this thread."""
         self._command_queue.put_nowait(command)
 
-    def putResult(self, result):
+    def put_result(self, result):
         """Push result onto the result queue."""
         self._result_queue.put(result)
         self.__class__.finished_objects.put(self)
 
-    def getResult(self):
+    def get_result(self):
         """Return result from result queue."""
         return self._result_queue.get()
 
@@ -156,7 +156,7 @@ class RemoteCommand(threading.Thread, metaclass=ABCMeta):
                 result = self._rexec(command)
                 if self.__maxparallel > 0:
                     self.slot.release()
-                self.putResult(result)
+                self.put_result(result)
             except queue.Empty:
                 pass
             self._stopevent.wait(self._sleep_period)
@@ -196,6 +196,7 @@ class RemoteCollator:
     def use_conf(self, conf, group_name):
         """Load the specified group from configuration object conf and add
         RemoteCommand objects for each contained host."""
+        # FIXME: not sure what this does
         save = self
         self.clear()
         try:
@@ -206,11 +207,11 @@ class RemoteCollator:
             self = save
             error.warn(f"unknown group: '{group_name}'")
 
-    def getDestinations(self):
+    def get_destinations(self):
         """Return expanded list of hosts."""
         return [x.destination for x in self.remote_objects]
 
-    def add(self, obj):
+    def add(self, obj: RemoteCommand):
         """Add a RemoteObject."""
         assert isinstance(obj, RemoteCommand)
         self.remote_objects.append(obj)
@@ -229,10 +230,10 @@ class RemoteCollator:
           map = { r"%d": "something" }
         """
 
-        self.formatter.formatMap = map
+        self.formatter.format_map = map
         return self.formatter(self.format)
 
-    def exec_all(self, command):
+    def exec_all(self, command: str):
         """Execute command on all remote objects."""
 
         for obj in self.remote_objects:
@@ -245,14 +246,15 @@ class RemoteCollator:
         while display_count > 0:
             obj = RemoteCommand.finished_objects.get()
             display_count -= 1
-            status, output = obj.getResult()
+            status, output = obj.get_result()
             result_map = {
-                r"%d": obj.destination,
-                r"%t": str(round(obj.duration, 2)),
-                r"%o": output,
-                r"%s": str(status),
+                "%d": obj.destination,
+                "%t": str(round(obj.duration, 2)),
+                "%o": output,
+                "%s": str(status),
             }
             sys.stdout.write(self.expand_format(result_map))
+
         assert RemoteCommand.finished_objects.qsize() == 0
 
 
@@ -262,6 +264,7 @@ _remote_command_plugins = {}
 def register_remote_command_plugin(method: str, cls: Type[RemoteCommand]):
     """Needs to be imported and executed by remote command plugins."""
     assert issubclass(cls, RemoteCommand)
+
     _remote_command_plugins[method] = cls
 
 

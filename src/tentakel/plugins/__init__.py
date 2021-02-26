@@ -15,7 +15,7 @@ import os
 from tentakel.config import __user_plugin_dir
 
 # extend the packages scope to the users plugin directory
-__path__.append(__user_plugin_dir)
+__path__.append(__user_plugin_dir)  # type: ignore
 
 
 def __importPlugins():

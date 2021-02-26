@@ -86,7 +86,7 @@ class TentakelShell(cmd.Cmd):
     def do_hosts(self, rest):
         """hosts: list of affected hosts"""
 
-        print("\n".join(self.dests.getDestinations()))
+        print("\n".join(self.dests.get_destinations()))
 
     def do_quit(self, rest):
         """quit or ctrl-d: quit program."""

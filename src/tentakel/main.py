@@ -42,6 +42,12 @@ import getopt
 import os
 import sys
 
+try:
+    from importlib import metadata
+except ImportError:
+    # Running on pre-3.8 Python; use importlib-metadata package
+    import importlib_metadata as metadata  # type: ignore
+
 import tentakel.config as config
 import tentakel.error as error
 import tentakel.remote as remote
@@ -49,31 +55,34 @@ import tentakel.shell as shell
 
 
 def main():
-    tentakel_version = "tentakel-3.0"
-    destinations = None
     group_name = "default"
     flag_listgroups = 0
     override_config = ""
 
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "g:hlvc:")
+        opts, args = getopt.getopt(sys.argv[1:], "g:hlvc:D")
     except getopt.GetoptError:
+        print_help()
         error.err("parameter error")
-        sys.exit()
 
     for o, v in opts:
+        if o == "-h":
+            print_help()
+            sys.exit(0)
+        if o == "-v":
+            print(get_version())
+            sys.exit(0)
+        if o == "-D":
+            print_info()
+            sys.exit(0)
+
         if o == "-g":
             group_name = v
         if o == "-c":
             override_config = v
-        if o == "-h":
-            print(__doc__)
-            sys.exit(0)
         if o == "-l":
             flag_listgroups = 1
-        if o == "-v":
-            print(tentakel_version)
-            sys.exit(0)
+
     command = " ".join(args)
 
     # check wether the user has chosen a specific configuration file
@@ -97,7 +106,7 @@ def main():
 
     if config_file is None:
         error.err("no configuration file found")
-        sys.exit()
+        sys.exit(1)
 
     # load configuration
     conf = config.ConfigBase()
@@ -122,6 +131,19 @@ def main():
         # interactive mode: open shell
         sh = shell.TentakelShell(conf, group_name)
         sh.cmdloop(intro="interactive mode")
+
+
+def print_help():
+    print(__doc__)
+
+
+def print_info():
+    print(f"path: {__file__}")
+    print(f"version: {get_version()}")
+
+
+def get_version():
+    return metadata.version("tentakel")
 
 
 if __name__ == "__main__":
