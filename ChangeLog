@@ -1,6 +1,11 @@
 Changelog
 =========
 
+v3.1.1 (2021-02-26)
+-------------------
+
+- Better fix for hangup at the end of process.
+
 v3.1.0 (2021-02-26)
 -------------------
 
