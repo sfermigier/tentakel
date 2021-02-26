@@ -11,12 +11,12 @@ tox:
 	tox -p auto
 
 format:
-	black --exclude src/tentakel/tpg.py tentakel
-	isort tentakel
+	black --exclude src/tentakel/tpg.py tentakel tests
+	isort tentakel tests
 
-release:
+release: clean
 	rm -rf dist
-	python setup.py sdist
+	poetry build
 	twine upload dist/*
 
 clean:
