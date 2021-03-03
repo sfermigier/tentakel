@@ -1,9 +1,12 @@
-.PHONY: all test lint tox format release clean develop htmldoc
+.PHONY: all test test-with-typeguard lint tox format release clean develop htmldoc
 
 all: test lint
 
 test:
 	pytest
+
+test-with-typeguard:
+	pytest --typeguard-packages=tentakel
 
 lint:
 	flake8 src tests
