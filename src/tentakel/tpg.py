@@ -1762,12 +1762,12 @@ class TPGParser(tpg.Parser):
                 options, default = TPGParser.Options.option_dict[name]
             except KeyError:
                 opts = TPGParser.Options.option_dict.keys()
-                self.parser.error("Unknown option (%s). Valid options are %s"%(name, ', '.join(sorted(opts))))
+                self.parser.error(f"Unknown option ({name}). Valid options are {', '.join(sorted(opts))}")
             try:
                 value = options[value]
             except KeyError:
                 values = options.keys()
-                self.parser.error("Unknown value (%s). Valid values for %s are %s"%(value, name, ', '.join(sorted(values))))
+                self.parser.error(f"Unknown value ({value}). Valid values for {name} are {', '.join(sorted(values))}")
             setattr(self, name, value)
         def lexer_compile_options(self):
             options = [ self.lexer_ignorecase,
@@ -1895,7 +1895,7 @@ class TPGParser(tpg.Parser):
         def gen_init_ret(self, indent):
             return self.ret.gen_code() == self.name and indent + f"{self.name} = None" or ()
         def gen_ret(self, indent):
-            return self.ret and indent + "return %s"%self.ret.gen_code() or ()
+            return self.ret and indent + f"return {self.ret.gen_code()}" or ()
         def gen_code(self, indent, counters, pos):
             if self.token is not None:
                 if self.ret is not None:
@@ -2115,7 +2115,7 @@ class TPGParser(tpg.Parser):
         def gen_doc(self, parent):
             return ""
         def gen_code(self, indent, counters, pos):
-            return indent + "self.check(%s)"%self.cond.gen_code()
+            return indent + f"self.check({self.cond.gen_code()})"
 
     class Error(NotEmpty):
         def __init__(self, msg):
@@ -2128,7 +2128,7 @@ class TPGParser(tpg.Parser):
         def gen_doc(self, parent):
             return ""
         def gen_code(self, indent, counters, pos):
-            return indent + "self.error(%s)"%self.msg.gen_code()
+            return indent + f"self.error({self.msg.gen_code()})"
 
     class Mark(NotEmpty):
         def __init__(self, mark):
@@ -2141,7 +2141,7 @@ class TPGParser(tpg.Parser):
         def gen_doc(self, parent):
             return ""
         def gen_code(self, indent, counters, pos):
-            return indent + "%s = self.mark()"%self.mark.gen_code()
+            return indent + f"{self.mark.gen_code()} = self.mark()"
 
     class PY_Ident(str):
         def gen_code(self):

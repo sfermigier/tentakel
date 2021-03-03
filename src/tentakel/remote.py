@@ -70,13 +70,14 @@ class FormatString(tpg.Parser):
         super().__init__()
         self.map = {r"%%": "%"}
 
-    def _get_map(self):
+    @property
+    def format_map(self):
+        """Current format character mapping"""
         return self.map
 
-    def _set_map(self, userMap):
-        self.map.update(userMap)
-
-    format_map = property(_get_map, _set_map, doc="current format character mapping")
+    @format_map.setter
+    def format_map(self, user_map):
+        self.map.update(user_map)
 
     def get_escape(self, e):
         """Return a dictionary which maps escape strings to literals."""

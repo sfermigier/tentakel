@@ -148,7 +148,7 @@ class ConfigGroup(dict):
         for param in PARAMS.keys():
             if self[param]:
                 groups.append('{}="{}"'.format(param, re.sub('"', '""', self[param])))
-        return "group {} ({})".format(self["name"], ", ".join(groups))
+        return f"group {self['name']} ({', '.join(groups)})"
 
 
 class ConfigBase(dict):

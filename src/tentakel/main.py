@@ -92,7 +92,7 @@ def main():
         if os.path.isfile(override_config):
             config_file = override_config
         else:
-            error.err("no such file: '%s'" % override_config)
+            error.err(f"no such file: '{override_config}'")
     else:
         # look for configuration files from default locations
         configs = [
