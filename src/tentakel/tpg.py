@@ -50,7 +50,6 @@ __author__ = 'Christophe Delord'
 __email__ = 'cdsoft.fr'
 __url__ = 'http://cdsoft.fr/tpg/'
 
-import parser
 import re
 import sre_parse
 import sys
@@ -1730,7 +1729,7 @@ class TPGParser(tpg.Parser):
 
     def code_check(self, code, tok):
         try:
-            parser.suite(code.code)
+            compile(code.code, "<str>", "single")
         except Exception:
             erroneous_code = "\n".join([ "%2d: %s"%(i+1, l) for (i, l) in enumerate(code.code.splitlines()) ])
             raise LexicalError((tok.line, tok.column), f"Invalid Python code ({exc}): \n{erroneous_code}")
