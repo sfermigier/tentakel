@@ -35,3 +35,8 @@ htmldoc:
 develop:
 	poetry install
 
+publish: clean
+	git push --tags
+	poetry build
+	twine upload dist/*
+
