@@ -1,6 +1,6 @@
 #
 # Copyright (c) 2002, 2003, 2004, 2005 Sebastian Stark
-# Copyright (c) 2011, 2019 Stefane Fermigier
+# Copyright (c) 2011, 2019-2023 Stefane Fermigier
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions
@@ -45,12 +45,13 @@ where each tuple contains the name of the host and a complete set of
 parameters, taken from its nearest enclosing group.
 """
 
+from __future__ import annotations
+
 import os
 import pwd
 import re
 import sys
 import tempfile
-from typing import List
 
 from . import error, tpg
 
@@ -74,7 +75,7 @@ class TConf(tpg.Parser):
 
     set lexer = ContextSensitiveLexer
 
-    token keyword  : '%(keywords)s'  str ;
+    token keyword  : '{keywords}'  str ;
     token eq       : '='      str ;
     token word     : '\w+'      str ;
     token vchar    : '""|[^"]'    str ;
@@ -83,7 +84,7 @@ class TConf(tpg.Parser):
 
     separator spaces  : '\s+' ;
 
-    START/e ->      $ e = {"groups": {}, "settings": PARAMS}
+    START/e ->      $ e = {{"groups": {{}}, "settings": PARAMS}}
     (  SETTING/s    $ e["settings"].update(s)
       | GROUP/g     $ e["groups"][g["name"]] = g
       | COMMENT
@@ -93,7 +94,7 @@ class TConf(tpg.Parser):
     COMMENT ->   @start '\s*#.*' @end
     ;
 
-    SETTING/s ->  'set'  $ s = {}
+    SETTING/s ->  'set'  $ s = {{}}
       PARAM/<p,v>        $ s[p] = v
     ;
 
@@ -111,7 +112,7 @@ class TConf(tpg.Parser):
 
     GROUPNAME/n -> word/n ;
 
-    GROUPSPEC/s ->        $ s = {}
+    GROUPSPEC/s ->        $ s = {{}}
       '\('
         ( PARAM/<p,v>     $ s[p] = v
         )?
@@ -120,15 +121,15 @@ class TConf(tpg.Parser):
       '\)'
     ;
 
-    MEMBERS/l ->  $ l = {"hosts": [], "lists": []}
+    MEMBERS/l ->  $ l = {{"hosts": [], "lists": []}}
       ( hitem/i   $ l["hosts"].append(i[1:])
       | litem/i   $ l["lists"].append(i[1:])
       | COMMENT
       )*
     ;
-    """ % {
-        "keywords": "|".join(PARAMS.keys())
-    }
+    """.format(
+        keywords="|".join(PARAMS.keys())
+    )
 
 
 class ConfigGroup(dict):
@@ -236,7 +237,7 @@ class ConfigBase(dict):
             out += "\n"
         return out
 
-    def get_groups(self) -> List[str]:
+    def get_groups(self) -> list[str]:
         """Return list of all group names."""
 
         return list(self["groups"].keys())

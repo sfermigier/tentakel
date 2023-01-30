@@ -39,11 +39,12 @@ Provides the two classes which are most important in tentakel:
     It is also responsible for outputting the results.
 """
 
+from __future__ import annotations
+
 import queue
 import sys
 import threading
 from abc import ABCMeta, abstractmethod
-from typing import Type
 
 from . import error, tpg
 
@@ -268,7 +269,7 @@ class RemoteCollator:
 _remote_command_plugins = {}
 
 
-def register_remote_command_plugin(method: str, cls: Type[RemoteCommand]):
+def register_remote_command_plugin(method: str, cls: type[RemoteCommand]):
     """Needs to be imported and executed by remote command plugins."""
     assert issubclass(cls, RemoteCommand)
 

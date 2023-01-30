@@ -48,10 +48,7 @@ except ImportError:
     # Running on pre-3.8 Python; use importlib-metadata package
     import importlib_metadata as metadata  # type: ignore
 
-import tentakel.config as config
-import tentakel.error as error
-import tentakel.remote as remote
-import tentakel.shell as shell
+from tentakel import config, error, remote, shell
 
 
 def main():

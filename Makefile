@@ -9,8 +9,9 @@ test-with-typeguard:
 	pytest --typeguard-packages=tentakel
 
 lint:
+	ruff src tests
 	flake8 src tests
-	mypy src tests
+	mypy --show-error-codes src tests
 
 tox:
 	tox -p auto

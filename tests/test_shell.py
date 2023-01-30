@@ -26,7 +26,7 @@
 import os
 import sys
 
-from pytest import fixture, mark
+import pytest
 
 import tentakel
 from tentakel.config import ConfigBase
@@ -34,10 +34,10 @@ from tentakel.shell import TentakelShell
 
 CI = bool(os.environ.get("CI") or os.environ.get("TOX_ENV_NAME"))
 
-pytestmark = mark.skipif(CI, reason="Don't run on travis")
+pytestmark = pytest.mark.skipif(CI, reason="Don't run on travis")
 
 
-@fixture
+@pytest.fixture()
 def config():
     # look for configuration files from default locations
     config_file = None
@@ -59,7 +59,7 @@ def config():
     return conf
 
 
-@fixture
+@pytest.fixture()
 def shell(config):
     return TentakelShell(config, "default")
 
