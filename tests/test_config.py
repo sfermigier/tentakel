@@ -34,15 +34,13 @@ def test_config_from_doc():
     assert isinstance(c1, ConfigBase)
 
     # load example config
-    with open("doc/tentakel.conf.example") as f:
-        c1.load(f)
+    c1.load("doc/tentakel.conf.example")
 
     # regenerate ourselves from a dump
-    with tempfile.TemporaryFile("w+") as tmp:
-        c1.dump(tmp)
+    with tempfile.NamedTemporaryFile("w") as tmp:
+        c1.dump(tmp.name)
         c2 = ConfigBase()
-        tmp.seek(0, 0)
-        c2.load(tmp)
+        c2.load(tmp.name)
 
     assert c1 == c2
 
@@ -63,8 +61,5 @@ def test_ugly_config():
         "group t3 () +local-host\n",
         "#comment\n",
     ]
-    with tempfile.TemporaryFile("w+") as tmp:
-        tmp.writelines(uglyconfig)
-        tmp.seek(0, 0)
-        c3 = ConfigBase()
-        c3.load(tmp)
+    c3 = ConfigBase()
+    c3.parse("".join(uglyconfig))

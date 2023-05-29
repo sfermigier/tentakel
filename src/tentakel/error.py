@@ -29,9 +29,10 @@
 import sys
 
 
-def err(errstring):
-    sys.stderr.write(f"tentakel error: {errstring}\n")
-    sys.exit(1)
+class Abort(SystemExit):
+    def __init__(self, message):
+        super().__init__(message)
+        sys.stderr.write(f"tentakel error: {message}\n")
 
 
 def warn(warnstring):

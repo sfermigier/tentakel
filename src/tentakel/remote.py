@@ -47,6 +47,7 @@ import threading
 from abc import ABCMeta, abstractmethod
 
 from . import error, tpg
+from .error import Abort
 
 
 class FormatString(tpg.Parser):
@@ -149,7 +150,7 @@ class RemoteCommand(threading.Thread, metaclass=ABCMeta):
         return self._result_queue.get()
 
     def run(self):
-        while not self._stopevent.isSet():
+        while not self._stopevent.is_set():
             try:
                 command = self._command_queue.get(timeout=self._command_timeout)
                 if self.__maxparallel > 0:
@@ -169,7 +170,7 @@ class RemoteCommand(threading.Thread, metaclass=ABCMeta):
 
 
 def remote_command_factory(destination, params):
-    """Depending in the method, instantiate a corresponding RemoteCommand
+    """Depending on the method, instantiate a corresponding RemoteCommand
     derived object and return it."""
 
     method = params["method"]
@@ -177,7 +178,7 @@ def remote_command_factory(destination, params):
         cls = _remote_command_plugins[method]
         return cls(destination, params)
     except KeyError:
-        error.err(f'Method not implemented: "{method}"')
+        raise Abort(f'Method not implemented: "{method}"')
 
 
 class RemoteCollator:

@@ -52,8 +52,10 @@ import pwd
 import re
 import sys
 import tempfile
+from pathlib import Path
 
 from . import error, tpg
+from .error import Abort
 
 PARAMS = {
     "ssh_path": "/usr/bin/ssh",
@@ -70,7 +72,7 @@ __user_dir = os.path.join(os.environ["HOME"], ".tentakel")
 __user_plugin_dir = os.path.join(__user_dir, "plugins")
 
 
-class TConf(tpg.Parser):
+class ConfigParser(tpg.Parser):
     __doc__ = r"""
 
     set lexer = ContextSensitiveLexer
@@ -149,6 +151,7 @@ class ConfigGroup(dict):
         for param in PARAMS.keys():
             if self[param]:
                 groups.append('{}="{}"'.format(param, re.sub('"', '""', self[param])))
+
         return f"group {self['name']} ({', '.join(groups)})"
 
 
@@ -173,21 +176,27 @@ class ConfigBase(dict):
     def parse(self, txt):
         """Parse a string containing configuration directives into the
         configuration tree."""
-        tp = TConf()
-        self.update(tp(txt))
+        parser = ConfigParser()
+        self.update(parser(txt))
 
-    def load(self, file):
+    def load(self, path: str | Path):
         """Load configuration from file."""
 
-        try:
-            self.parse("".join(file.readlines()))
-        except tpg.SyntacticError as excerr:  # pragma: nocover
-            error.warn(f"in {file.name}: {excerr.msg}")
-        except OSError:  # pragma: nocover
-            error.err(f"could not read from file: '{file.name}'")
+        if isinstance(path, str):
+            path = Path(path)
 
-    def dump(self, file):
+        try:
+            self.parse(path.read_text())
+        except tpg.SyntacticError as excerr:  # pragma: nocover
+            error.warn(f"in {path}: {excerr.msg}")
+        except OSError:  # pragma: nocover
+            raise Abort(f"could not read from file: '{path}'")
+
+    def dump(self, path: str | Path):
         """Save configuration to file."""
+
+        if isinstance(path, str):
+            path = Path(path)
 
         comment = [
             "#\n",
@@ -200,10 +209,10 @@ class ConfigBase(dict):
         ]
 
         try:
-            file.writelines(comment)
-            file.writelines(str(self))
+            text = "".join(comment) + "\n" + str(self)
+            path.write_text(text)
         except OSError:  # pragma: nocover
-            error.err(f"could not write to file: '{file.name}'")
+            raise Abort(f"could not write to file: '{path}'")
 
     def edit(self):
         """Interactively edit configuration."""
@@ -214,7 +223,7 @@ class ConfigBase(dict):
             tempedit.seek(0, 0)
             editor = os.getenv("VISUAL") or os.getenv("EDITOR") or "vi"
             os.spawnvp(os.P_WAIT, editor, [editor, tempedit.name])
-            self.load(tempedit)
+            self.load(Path(tempedit.name))
         finally:
             tempedit.close()
 
@@ -242,12 +251,12 @@ class ConfigBase(dict):
 
         return list(self["groups"].keys())
 
-    def _get_group(self, group_name):
+    def _get_group(self, group_name: str):
         """Return group specific configuration for group_name."""
 
         return self["groups"][group_name]
 
-    def get_group_members(self, group_name):
+    def get_group_members(self, group_name: str):
         """Return list of group_name members with sub lists expanded
         recursively."""
 
@@ -260,7 +269,8 @@ class ConfigBase(dict):
                 if sys.exc_info()[0] == KeyError:
                     error.warn(f"in group '{group_name}': no such group '{list}'")
                 if sys.exc_info()[0] == RuntimeError:
-                    error.err("runtime error: possible loop in configuration file")
+                    raise Abort("runtime error: possible loop in configuration file")
+
         return out
 
     def get_param(self, param: str, group=None):

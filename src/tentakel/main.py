@@ -41,6 +41,9 @@ See tentakel(1) for more information
 import getopt
 import os
 import sys
+from pathlib import Path
+
+from tentakel.error import Abort
 
 try:
     from importlib import metadata
@@ -48,7 +51,7 @@ except ImportError:
     # Running on pre-3.8 Python; use importlib-metadata package
     import importlib_metadata as metadata  # type: ignore
 
-from tentakel import config, error, remote, shell
+from . import config, remote, shell
 
 
 def main():
@@ -60,7 +63,7 @@ def main():
         opts, args = getopt.getopt(sys.argv[1:], "g:hlvc:D")
     except getopt.GetoptError:
         print_help()
-        error.err("parameter error")
+        raise Abort("parameter error")
 
     for o, v in opts:
         if o == "-h":
@@ -89,7 +92,7 @@ def main():
         if os.path.isfile(override_config):
             config_file = override_config
         else:
-            error.err(f"no such file: '{override_config}'")
+            raise Abort(f"no such file: '{override_config}'")
     else:
         # look for configuration files from default locations
         configs = [
@@ -102,13 +105,11 @@ def main():
                 break
 
     if config_file is None:
-        error.err("no configuration file found")
-        sys.exit(1)
+        raise Abort("no configuration file found")
 
     # load configuration
     conf = config.ConfigBase()
-    with open(config_file) as f:
-        conf.load(f)
+    conf.load(Path(config_file))
 
     # process -g parameter
     if flag_listgroups:

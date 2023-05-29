@@ -9,28 +9,25 @@ authors = [
   "Stefane Fermigier <sf@fermigier.com>",
 ]
 readme = "README.md"
-
 packages = [{ include = "tentakel", from = "src" }]
-
 
 [tool.poetry.scripts]
 tentakel = 'tentakel.main:main'
 
-
 [tool.poetry.dependencies]
 python = "^3.9"
 
-
 [tool.poetry.dev-dependencies]
 pytest = "*"
-
 abilian-devtools = "*"
-
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
 
-
 [tool.ruff]
 exclude = ["src/tentakel/tpg.py"]
+
+[tool.pyright]
+exclude = ['.nox', 'tests', 'sandbox', 'doc', 'scripts', 'tmp', "src/tentakel/tpg.py", "src/tentakel/plugins/rsh.py"]
+include = ["src"]

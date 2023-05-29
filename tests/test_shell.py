@@ -54,8 +54,7 @@ def config():
 
     # load configuration
     conf = ConfigBase()
-    with open(config_file) as f:
-        conf.load(f)
+    conf.load(config_file)
     return conf
 
 
