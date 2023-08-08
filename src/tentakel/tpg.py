@@ -1776,7 +1776,7 @@ class TPGParser(tpg.Parser):
                         self.lexer_verbose,
                         self.lexer_unicode,
                       ]
-            return "+".join([ "tpg.re.%s"%opt for opt in options if opt ]) or 0
+            return "+".join([ f"tpg.re.{opt}" for opt in options if opt ]) or 0
 
     class Empty:
         def empty(self):
