@@ -6,7 +6,10 @@ license = "BSD"
 homepage = "https://github.com/sfermigier/tentakel"
 authors = [
   "Sebastian Stark, Marlon Berlin <cran@users.sourceforge.net, imaginat@users.sourceforge.net>",
-  "Stefane Fermigier <sf@fermigier.com>",
+  "Stefane Fermigier <sf@abilian.com>",
+]
+maintainers = [
+  "Stefane Fermigier <sf@abilian.com>",
 ]
 readme = "README.md"
 packages = [{ include = "tentakel", from = "src" }]
