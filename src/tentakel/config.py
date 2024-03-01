@@ -219,7 +219,7 @@ class ConfigBase(dict):
 
         tempedit = tempfile.NamedTemporaryFile()
         try:
-            self.dump(tempedit)
+            self.dump(tempedit.name)
             tempedit.seek(0, 0)
             editor = os.getenv("VISUAL") or os.getenv("EDITOR") or "vi"
             os.spawnvp(os.P_WAIT, editor, [editor, tempedit.name])
