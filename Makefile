@@ -9,7 +9,7 @@ test-with-typeguard:
 	pytest --typeguard-packages=tentakel
 
 lint:
-	ruff src tests
+	ruff check src tests
 	flake8 src tests
 	mypy --show-error-codes src tests
 
