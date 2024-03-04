@@ -63,3 +63,13 @@ def test_ugly_config():
     ]
     c3 = ConfigBase()
     c3.parse("".join(uglyconfig))
+
+
+def test_whitespace_format():
+    wsconfig = [
+        'set method="ssh"\n',
+        'set format=" ""%o xxx"\n',
+        'group g(format=" %o ")',
+    ]
+    c4 = ConfigBase()
+    c4.parse("".join(wsconfig))

@@ -101,9 +101,9 @@ class ConfigParser(tpg.Parser):
     ;
 
     PARAM/<p,v> ->  keyword/p eq
-      '"'
-      @start (vchar)* @end  $ t = self.extract(start, end)
-      '"'                   $ v = re.sub('""', '"', t)
+      @start
+      '"' (vchar)* '"'
+      @end              $ v = self.extract(start, end)[1:-1].replace('""', '"')
     ;
 
     GROUP/g -> 'group'  $ g = ConfigGroup()
