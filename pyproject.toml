@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "tentakel"
-version = "4.0.2"
+version = "4.0.3"
 description = "distributed command execution"
 license = "BSD"
 homepage = "https://github.com/sfermigier/tentakel"
