@@ -9,7 +9,6 @@ In addition to the modules physically contained in this packages
 it also loads modules from the users plugin directory.
 """
 
-
 import os
 
 from tentakel.config import __user_plugin_dir
