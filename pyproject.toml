@@ -21,7 +21,7 @@ tentakel = 'tentakel.main:main'
 python = "^3.9"
 
 [tool.poetry.dev-dependencies]
-pytest = "^7.4.0"
+#pytest = "^7.4.0"
 abilian-devtools = "^0.5.2"
 
 [build-system]

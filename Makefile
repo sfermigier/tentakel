@@ -40,3 +40,6 @@ publish: clean
 	poetry build
 	twine upload dist/*
 
+update-deps:
+	poetry update
+	poetry show -o
