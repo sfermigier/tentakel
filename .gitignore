@@ -4,4 +4,7 @@
 /.tox
 /.venv
 /sandbox
+/.envrc
+/notes
+/.coverage
 

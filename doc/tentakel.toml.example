@@ -1,0 +1,50 @@
+# Example configuration file for tentakel (TOML format)
+#
+# This is an example of tentakel configuration using TOML format.
+# For the legacy format, see tentakel.conf.example
+
+# Global settings
+[settings]
+ssh_path = "/usr/bin/ssh"
+method = "ssh"
+# user = "root"  # Use EUID of the tentakel process when user is unset
+# format = "%d %o\n"
+# maxparallel = 3  # Run at most 3 commands in parallel (integer, not string)
+
+# Groups configuration
+[groups.default]
+includes = ["all"]
+
+[groups.all]
+user = "stark"
+includes = ["debws"]
+
+[groups.debws]
+format = "%d(%s): %o\n"
+hosts = [
+    # "mosel",
+    "aare",
+    "donau",
+    "euphrat",
+    "garonne",
+    "havel",
+    "iller",
+    "isar",
+    "maas",
+    "mekong",
+    "nagold",
+    "nahe",
+    "oder",
+    "rhone",
+    "saar",
+    "unstrut",
+]
+
+[groups.bar_systems]
+user = "seb"
+hosts = ["localhost"]
+# Non-existent group will parse correctly but give an error at runtime
+includes = ["support"]
+
+[groups.local]
+hosts = ["127.0.0.1"]
