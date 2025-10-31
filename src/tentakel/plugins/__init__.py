@@ -10,6 +10,7 @@ it also loads modules from the users plugin directory.
 """
 
 import os
+import pathlib
 
 from tentakel.config import __user_plugin_dir
 
@@ -20,7 +21,7 @@ __path__.append(__user_plugin_dir)  # type: ignore
 def __importPlugins():
     p = []
     for path in __user_plugin_dir, os.path.dirname(__file__):
-        if os.path.exists(path):
+        if pathlib.Path(path).exists():
             files = os.listdir(path)
             p += [x[:-3] for x in files if x.endswith(".py") and not x == "__init__.py"]
     return p

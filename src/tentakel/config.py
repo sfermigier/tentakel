@@ -152,9 +152,9 @@ class ConfigGroup(dict):
 
     def __str__(self):
         groups = []
-        for param in PARAMS.keys():
+        for param in PARAMS:
             if self[param]:
-                groups.append('{}="{}"'.format(param, re.sub('"', '""', self[param])))
+                groups.append('{}="{}"'.format(param, self[param].replace('"', '""')))
 
         return f"group {self['name']} ({', '.join(groups)})"
 
@@ -220,7 +220,7 @@ class ConfigBase(dict):
             path = Path(path)
 
         try:
-            with open(path, "rb") as f:
+            with Path(path).open("rb") as f:
                 data = tomllib.load(f)
         except OSError:  # pragma: nocover
             raise Abort(f"could not read from file: '{path}'")
@@ -332,7 +332,7 @@ class ConfigBase(dict):
             group_dict = {}
 
             # Export group parameters (only non-empty values)
-            for param in PARAMS.keys():
+            for param in PARAMS:
                 value = group_obj.get(param, "")
                 if value:
                     # Convert maxparallel back to integer
@@ -355,7 +355,7 @@ class ConfigBase(dict):
             data["groups"] = groups
 
         try:
-            with open(path, "wb") as f:
+            with Path(path).open("wb") as f:
                 tomli_w.dump(data, f)
         except OSError:  # pragma: nocover
             raise Abort(f"could not write to file: '{path}'")
@@ -428,20 +428,18 @@ class ConfigBase(dict):
         If param is not a valid parameter identifier, return None
         """
 
-        if param not in PARAMS.keys():  # pragma: nocover
+        if param not in PARAMS:  # pragma: nocover
             error.warn(f"invalid parameter: '{param}'")
             return None
-        else:
-            try:
-                val = self._get_group(group)[param]
-                if val == "":
-                    return self["settings"][param]
-                else:
-                    return val
-            except KeyError:
+        try:
+            val = self._get_group(group)[param]
+            if val == "":
                 return self["settings"][param]
+            return val
+        except KeyError:
+            return self["settings"][param]
 
     def get_group_params(self, group_name):
         """Return complete configuration for the group group_name."""
 
-        return {k: self.get_param(k, group_name) for k in PARAMS.keys()}
+        return {k: self.get_param(k, group_name) for k in PARAMS}

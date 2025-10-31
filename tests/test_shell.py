@@ -24,6 +24,7 @@
 
 
 import os
+import pathlib
 import sys
 
 import pytest
@@ -37,7 +38,7 @@ CI = bool(os.environ.get("CI") or os.environ.get("TOX_ENV_NAME"))
 pytestmark = pytest.mark.skipif(CI, reason="Don't run on travis")
 
 
-@pytest.fixture()
+@pytest.fixture
 def config():
     # look for configuration files from default locations
     config_file = None
@@ -46,7 +47,7 @@ def config():
         "/etc/tentakel.conf",
     ]
     for c in configs:
-        if os.path.isfile(c):
+        if pathlib.Path(c).is_file():
             config_file = c
             break
 
@@ -58,7 +59,7 @@ def config():
     return conf
 
 
-@pytest.fixture()
+@pytest.fixture
 def shell(config):
     return TentakelShell(config, "default")
 

@@ -1,0 +1,44 @@
+preview = true
+
+lint.select = [
+    "ALL",
+]
+
+lint.extend-ignore = [
+    # Later...
+    "ANN", # flake8-annotations
+    "D", # pydocstyle
+    "DOC",
+    "TRY",
+    "PLR",
+    "ARG",
+    "FBT",
+    "ERA",
+    "A",
+    # False positives
+    "COM812", #  	[*] missing-trailing-comma
+    "ISC001",
+    "TD002", #  	[ ] missing-todo-author
+    "TD003", #  	[ ] missing-todo-link
+    "T201", #    	[*] print
+    "RUF005", # Confusing syntax
+    "E501", #    	[ ] line-too-long
+    "S101", # use of assert
+    "RUF001", #	[ ] ambiguous-unicode-character-string
+    # FIX or review This
+    "S608", # Potential SQL injection
+    # Review later
+    "SLF001", #	[ ] private-member-access
+    "CPY001", #	[ ] missing-copyright-notice
+    "PT011", # 	[ ] pytest-raises-too-broad
+    # "PLC0415", #	import-outside-top-level
+    "PTH118", # 	os-path-join
+    "S311", #   	suspicious-non-cryptographic-random-usage
+    "EXE001", # 	shebang-not-executable
+    "F401", #   	unused-import
+    "PT021", #  	pytest-fixture-finalizer-callback
+    "RUF012", # 	mutable-class-default
+    "SIM102", # 	collapsible-if
+    "SIM108", # 	if-else-block-instead-of-if-exp
+    "PERF401",
+]

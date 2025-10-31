@@ -74,7 +74,7 @@ def test_config_from_doc():
         c1.dump(tmp.name)
         c2 = ConfigBase()
         c2.load(tmp.name)
-        os.unlink(tmp.name)
+        Path(tmp.name).unlink()
 
     assert c1 == c2
 
@@ -281,7 +281,7 @@ hosts = ["host1"]
     config.dump(output_path)
 
     # Verify TOML has native integers
-    with open(output_path, "rb") as f:
+    with Path(output_path).open("rb") as f:
         data = tomllib.load(f)
         assert isinstance(data["settings"]["maxparallel"], int)
         assert data["settings"]["maxparallel"] == 10

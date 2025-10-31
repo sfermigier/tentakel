@@ -44,9 +44,7 @@ class RSHRemoteCommand(RemoteCommand):
         self.delim = md5(str(random.random())).hexdigest()
 
     def _rexec(self, command):
-        s = '{} -l {} {} "{}; echo {} \\$?"'.format(
-            self.rsh_path, self.user, self.destination, command, self.delim
-        )
+        s = f'{self.rsh_path} -l {self.user} {self.destination} "{command}; echo {self.delim} \\$?"'
         t1 = time.time()
         ol = subprocess.getoutput(s).split("\n")
         for line_number, line in enumerate(ol):

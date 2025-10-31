@@ -41,11 +41,11 @@ See tentakel(1) for more information
 import getopt
 import os
 import sys
-from pathlib import Path
 from importlib import metadata
+from pathlib import Path
 
-from .error import Abort
 from . import config, remote, shell
+from .error import Abort
 
 
 def main():
@@ -83,7 +83,7 @@ def main():
     # on the command line
     config_file = None
     if override_config:
-        if os.path.isfile(override_config):
+        if Path(override_config).is_file():
             config_file = override_config
         else:
             raise Abort(f"no such file: '{override_config}'")
@@ -99,8 +99,8 @@ def main():
         ]
 
         for toml_path, conf_path in config_locations:
-            toml_exists = os.path.isfile(toml_path)
-            conf_exists = os.path.isfile(conf_path)
+            toml_exists = Path(toml_path).is_file()
+            conf_exists = Path(conf_path).is_file()
 
             # Error if both formats exist in the same location
             if toml_exists and conf_exists:
@@ -113,7 +113,7 @@ def main():
             if toml_exists:
                 config_file = toml_path
                 break
-            elif conf_exists:
+            if conf_exists:
                 config_file = conf_path
                 break
 

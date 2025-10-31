@@ -31,7 +31,7 @@ import cmd
 from . import remote
 
 try:
-    import readline  # noqa
+    import readline
 except ImportError:
     pass
 
@@ -99,8 +99,7 @@ class TentakelShell(cmd.Cmd):
             print()
             self.dests.join_all()
             return 1
-        else:
-            print("unknown command")
+        print("unknown command")
 
     def help_help(self):
         print("help <something>: show usage of <something>")
