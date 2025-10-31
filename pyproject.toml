@@ -1,36 +1,42 @@
-[tool.poetry]
+[project]
+authors = [
+    {name = "Sebastian Stark, Marlon Berlin", email = "cran@users.sourceforge.net, imaginat@users.sourceforge.net"},
+    {name = "Stefane Fermigier", email = "sf@abilian.com"},
+]
+maintainers = [
+    {name = "Stefane Fermigier", email = "sf@abilian.com"},
+]
+license = {text = "BSD"}
+requires-python = "<4.0,>=3.9"
+dependencies = [
+    "tomli>=2.0.0; python_version<'3.11'",
+    "tomli-w>=1.0.0",
+]
 name = "tentakel"
 version = "4.0.3"
 description = "distributed command execution"
-license = "BSD"
-homepage = "https://github.com/sfermigier/tentakel"
-authors = [
-  "Sebastian Stark, Marlon Berlin <cran@users.sourceforge.net, imaginat@users.sourceforge.net>",
-  "Stefane Fermigier <sf@abilian.com>",
-]
-maintainers = [
-  "Stefane Fermigier <sf@abilian.com>",
-]
 readme = "README.md"
-packages = [{ include = "tentakel", from = "src" }]
 
-[tool.poetry.scripts]
-tentakel = 'tentakel.main:main'
+[project.urls]
+homepage = "https://github.com/sfermigier/tentakel"
 
-[tool.poetry.dependencies]
-python = "^3.9"
+[project.scripts]
+tentakel = "tentakel.main:main"
 
-[tool.poetry.dev-dependencies]
-#pytest = "^7.4.0"
-abilian-devtools = "^0.5.2"
+[dependency-groups]
+dev = [
+    "abilian-devtools<1.0.0,>=0.5.2",
+]
 
 [build-system]
-requires = ["poetry-core>=1.0.0"]
-build-backend = "poetry.core.masonry.api"
+requires = ["uv_build>=0.8.4,<0.9.0"]
+build-backend = "uv_build"
 
 [tool.ruff]
 exclude = ["src/tentakel/tpg.py"]
 
 [tool.pyright]
-exclude = ['.nox', 'tests', 'sandbox', 'doc', 'scripts', 'tmp', "src/tentakel/tpg.py", "src/tentakel/plugins/rsh.py"]
+exclude = [
+    '.nox', 'tests', 'sandbox', 'doc', 'scripts', 'tmp', "src/tentakel/tpg.py", "src/tentakel/plugins/rsh.py"
+]
 include = ["src"]
