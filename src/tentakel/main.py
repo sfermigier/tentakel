@@ -42,15 +42,9 @@ import getopt
 import os
 import sys
 from pathlib import Path
+from importlib import metadata
 
-from tentakel.error import Abort
-
-try:
-    from importlib import metadata
-except ImportError:
-    # Running on pre-3.8 Python; use importlib-metadata package
-    import importlib_metadata as metadata  # type: ignore
-
+from .error import Abort
 from . import config, remote, shell
 
 
@@ -85,7 +79,7 @@ def main():
 
     command = " ".join(args)
 
-    # check wether the user has chosen a specific configuration file
+    # check whether the user has chosen a specific configuration file
     # on the command line
     config_file = None
     if override_config:
@@ -95,13 +89,32 @@ def main():
             raise Abort(f"no such file: '{override_config}'")
     else:
         # look for configuration files from default locations
-        configs = [
-            os.path.join(config.__user_dir, "tentakel.conf"),
-            "/etc/tentakel.conf",
+        # Check both .toml and .conf in each location
+        config_locations = [
+            (
+                os.path.join(config.__user_dir, "tentakel.toml"),
+                os.path.join(config.__user_dir, "tentakel.conf"),
+            ),
+            ("/etc/tentakel.toml", "/etc/tentakel.conf"),
         ]
-        for c in configs:
-            if os.path.isfile(c):
-                config_file = c
+
+        for toml_path, conf_path in config_locations:
+            toml_exists = os.path.isfile(toml_path)
+            conf_exists = os.path.isfile(conf_path)
+
+            # Error if both formats exist in the same location
+            if toml_exists and conf_exists:
+                raise Abort(
+                    f"conflicting config files found: '{toml_path}' and '{conf_path}'. "
+                    f"Please keep only one format or use -c to specify which to use."
+                )
+
+            # Prefer TOML if it exists
+            if toml_exists:
+                config_file = toml_path
+                break
+            elif conf_exists:
+                config_file = conf_path
                 break
 
     if config_file is None:

@@ -1,6 +1,6 @@
 #
 # Copyright (c) 2002, 2003, 2004, 2005 Sebastian Stark
-# Copyright (c) 2011, 2019-2023 Stefane Fermigier
+# Copyright (c) 2011, 2019-2025 Stefane Fermigier
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions
@@ -50,9 +50,15 @@ from __future__ import annotations
 import os
 import pwd
 import re
-import sys
 import tempfile
 from pathlib import Path
+
+try:
+    import tomllib
+except ImportError:
+    import tomli as tomllib  # type: ignore
+
+import tomli_w
 
 from . import error, tpg
 from .error import Abort
@@ -129,9 +135,7 @@ class ConfigParser(tpg.Parser):
       | COMMENT
       )*
     ;
-    """.format(
-        keywords="|".join(PARAMS.keys())
-    )
+    """.format(keywords="|".join(PARAMS.keys()))
 
 
 class ConfigGroup(dict):
@@ -171,7 +175,7 @@ class ConfigBase(dict):
     def __init__(self):
         super().__init__()
         self["groups"] = {}
-        self["settings"] = PARAMS
+        self["settings"] = PARAMS.copy()
 
     def parse(self, txt):
         """Parse a string containing configuration directives into the
@@ -180,7 +184,24 @@ class ConfigBase(dict):
         self.update(parser(txt))
 
     def load(self, path: str | Path):
-        """Load configuration from file."""
+        """Load configuration from file.
+
+        Auto-detects format based on file extension:
+        - .toml: TOML format
+        - .conf or other: Custom format
+        """
+
+        if isinstance(path, str):
+            path = Path(path)
+
+        # Auto-detect format based on extension
+        if path.suffix == ".toml":
+            self.load_toml(path)
+        else:
+            self.load_conf(path)
+
+    def load_conf(self, path: str | Path):
+        """Load configuration from custom .conf file."""
 
         if isinstance(path, str):
             path = Path(path)
@@ -192,8 +213,77 @@ class ConfigBase(dict):
         except OSError:  # pragma: nocover
             raise Abort(f"could not read from file: '{path}'")
 
+    def load_toml(self, path: str | Path):
+        """Load configuration from TOML file."""
+
+        if isinstance(path, str):
+            path = Path(path)
+
+        try:
+            with open(path, "rb") as f:
+                data = tomllib.load(f)
+        except OSError:  # pragma: nocover
+            raise Abort(f"could not read from file: '{path}'")
+        except tomllib.TOMLDecodeError as e:  # pragma: nocover
+            raise Abort(f"invalid TOML in {path}: {e}")
+
+        # Load settings
+        if "settings" in data:
+            settings = data["settings"]
+            # Validate all settings are known parameters
+            for key in settings:
+                if key not in PARAMS:
+                    error.warn(f"unknown setting in {path}: '{key}'")
+            # Convert maxparallel to string for internal consistency
+            if "maxparallel" in settings:
+                settings["maxparallel"] = str(settings["maxparallel"])
+            self["settings"].update(settings)
+
+        # Load groups
+        if "groups" in data:
+            for group_name, group_data in data["groups"].items():
+                group = ConfigGroup()
+                group["name"] = group_name
+
+                # Set parameters (excluding hosts and includes)
+                for key, value in group_data.items():
+                    if key == "hosts":
+                        # Convert host list to internal format
+                        group["hosts"] = value
+                    elif key == "includes":
+                        # Convert includes list to internal format
+                        group["lists"] = value
+                    elif key in PARAMS:
+                        # Convert maxparallel to string for internal consistency
+                        if key == "maxparallel":
+                            value = str(value)
+                        group[key] = value
+                    else:
+                        error.warn(
+                            f"unknown parameter in group '{group_name}': '{key}'"
+                        )
+
+                self["groups"][group_name] = group
+
     def dump(self, path: str | Path):
-        """Save configuration to file."""
+        """Save configuration to file.
+
+        Auto-detects format based on file extension:
+        - .toml: TOML format
+        - .conf or other: Custom format
+        """
+
+        if isinstance(path, str):
+            path = Path(path)
+
+        # Auto-detect format based on extension
+        if path.suffix == ".toml":
+            self.dump_toml(path)
+        else:
+            self.dump_conf(path)
+
+    def dump_conf(self, path: str | Path):
+        """Save configuration to custom .conf file."""
 
         if isinstance(path, str):
             path = Path(path)
@@ -211,6 +301,62 @@ class ConfigBase(dict):
         try:
             text = "".join(comment) + "\n" + str(self)
             path.write_text(text)
+        except OSError:  # pragma: nocover
+            raise Abort(f"could not write to file: '{path}'")
+
+    def dump_toml(self, path: str | Path):
+        """Save configuration to TOML file."""
+
+        if isinstance(path, str):
+            path = Path(path)
+
+        from typing import Any
+
+        data: dict[str, Any] = {}
+
+        # Export settings (only non-default values)
+        settings = {}
+        for key, value in self["settings"].items():
+            if value != PARAMS.get(key):
+                # Convert maxparallel back to integer
+                if key == "maxparallel":
+                    settings[key] = int(value)
+                else:
+                    settings[key] = value
+        if settings:
+            data["settings"] = settings
+
+        # Export groups
+        groups = {}
+        for group_name, group_obj in self["groups"].items():
+            group_dict = {}
+
+            # Export group parameters (only non-empty values)
+            for param in PARAMS.keys():
+                value = group_obj.get(param, "")
+                if value:
+                    # Convert maxparallel back to integer
+                    if param == "maxparallel":
+                        group_dict[param] = int(value)
+                    else:
+                        group_dict[param] = value
+
+            # Export hosts
+            if group_obj.get("hosts"):
+                group_dict["hosts"] = group_obj["hosts"]
+
+            # Export includes (from lists)
+            if group_obj.get("lists"):
+                group_dict["includes"] = group_obj["lists"]
+
+            groups[group_name] = group_dict
+
+        if groups:
+            data["groups"] = groups
+
+        try:
+            with open(path, "wb") as f:
+                tomli_w.dump(data, f)
         except OSError:  # pragma: nocover
             raise Abort(f"could not write to file: '{path}'")
 
@@ -265,11 +411,10 @@ class ConfigBase(dict):
         for list in group["lists"]:
             try:
                 out += self.get_group_members(list)
-            except (KeyError, RuntimeError):  # pragma: nocover
-                if sys.exc_info()[0] == KeyError:
-                    error.warn(f"in group '{group_name}': no such group '{list}'")
-                if sys.exc_info()[0] == RuntimeError:
-                    raise Abort("runtime error: possible loop in configuration file")
+            except KeyError:  # pragma: nocover
+                error.warn(f"in group '{group_name}': no such group '{list}'")
+            except RuntimeError:  # pragma: nocover
+                raise Abort("runtime error: possible loop in configuration file")
 
         return out
 
