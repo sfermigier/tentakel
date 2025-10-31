@@ -21,6 +21,8 @@ Tentakel is a tool for running the same command across many servers simultaneous
 
 ```bash
 pip install tentakel
+# Or
+uv tool install tentakel
 ```
 
 ### Basic Configuration
